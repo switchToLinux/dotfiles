@@ -11,7 +11,7 @@
 # 配置文件存放路径: ~/.config/i3/ , ~/.i3/
 
 ############ i3配置 ####################
-# 全局变量 Mod4-Win键
+# 全局变量 Mod4-Win键, Mod1-Alt
 set $mod Mod4
 
 # set locker variable
