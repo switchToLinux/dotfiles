@@ -1,6 +1,13 @@
 # dotfiles
 i3wm +polybar +picom +mpd dotfiles configuration
 
+## 快速安装
+
+```
+curl -sSL -o i3config https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
+chmod +x i3config
+./i3config
+```
 
 ## 信息
 
