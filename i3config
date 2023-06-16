@@ -216,7 +216,7 @@ function install_dotfiles() {
         ! git submodule update --init --recursive  && logerr "克隆子模块失败!稍后再试试吧" && return 1
     }
     create_symlink $tmp_path/i3_polybar ~/.config/i3
-    create_symlink $tmp_path/polybar_themes ~/.config/polybar
+    create_symlink $tmp_path/polybar_themes ~/.config/polybar_themes
     create_symlink $tmp_path/picom ~/.config/picom
     mkdir -p ~/.local/share/mpd
     create_symlink $tmp_path/mpd ~/.config/mpd
@@ -230,6 +230,17 @@ function install_dotfiles() {
     echo "完成 dotfiles 配置任务!"
 }
 
+function compile_i3lock_fancy() {
+    url="https://github.com/meskarune/i3lock-fancy.git"
+    tmp_path=$tmp_dir/i3lock_fancy
+    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
+    [[ -d "$tmp_path" ]] || git clone $url $tmp_path
+    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
+    
+    install_build_deps
+    cd $tmp_path && sudo make install
+
+}
 function install_others() {
     # 使用命令安装
     which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpd mpc ncmpcpp dunst
@@ -242,6 +253,7 @@ function show_menu_install() {
     menu_item 1 i3wm
     menu_item 2 polybar
     menu_item 3 picom
+    menu_item 4 i3lock_fancy
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
@@ -257,6 +269,7 @@ function start_main() { # 安装菜单选择
             1) compile_i3wm             ;;
             2) compile_polybar          ;;
             3) compile_picom            ;;
+            4) compile_i3lock_fancy     ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             q|"") return 0              ;;  # 返回上级菜单
