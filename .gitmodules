@@ -1,0 +1,3 @@
+[submodule "polybar_themes"]
+	path = polybar_themes
+	url = https://github.com/switchToLinux/polybar_themes.git

@@ -1,0 +1,297 @@
+#!/usr/bin/env bash
+########################################################################
+# File Name: i3config
+# Author: Awkee
+# mail: next4nextjob@gmail.com
+# Created Time: 2023年 06月 15日 星期四 19:28:08 CST
+#
+# 非强制性约束: 网络下载使用curl命令而不用wget，没有任何歧视含义，仅处于统一要求
+#
+# 功能简述:  个人Linux桌面环境配置工具
+########################################################################
+# set -e              # 命令执行失败就中止继续执行
+# 环境变量参数:
+#   OUTPUTLOG - no 表示只输出日志信息到文件中,不在终端显示，默认为 yes(终端显示)
+#
+
+source ~/.bashrc
+
+#### 默认选项 #####
+default_confirm="no"    # 是否提示确认，no-提示，yes-自动选择yes
+PMT=">>>"
+if [ "$OUTPUTLOG" = "" ] ; then
+    OUTPUTLOG="yes"  # 默认输出日志内容到 stdout
+fi
+
+
+curl_cmd="curl -C - "  # 支持断点继续下载
+
+# Define Colors
+RED='\e[41m'
+NC='\e[0m' # No color
+BG='\e[7m' # Highlighting Background color
+TC='\e[1m' # Highlighting Text color
+
+########### 文字显示颜色输出函数 ######
+function echo_white()  { printf "\033[0;37m$@\033[0m"     ; }
+function echo_whiter() { printf "\033[0;37;7m$@\033[0m"   ; }
+function echo_red()    { printf "\033[0;31m$@\033[0m"     ; }
+function echo_redr()   { printf "\033[0;31;7m$@\033[0m"   ; }
+function echo_green()  { printf "\033[0;32m$@\033[0m"     ; }
+function echo_greenr() { printf "\033[0;32;7m$@\033[0m"   ; }
+function white_line()  { printf "\033[0;37m$@\033[0m\n"   ; }
+function whiter_line() { printf "\033[0;37;7m$@\033[0m\n" ; }
+function red_line()    { printf "\033[0;31;1m$@\033[0m\n" ; }
+function redr_line()   { printf "\033[0;31;7m$@\033[0m\n" ; }
+function green_line()  { printf "\033[0;32;1m$@\033[0m\n" ; }
+function greenr_line() { printf "\033[0;32;7m$@\033[0m\n" ; }
+
+line_feed="+------------------------------------------------------------+"
+
+# 临时存储代码、下载文件目录
+tmp_dir=/tmp
+item_index=0   # 记录菜单选项序号
+item_line_count=2   # 每行显示菜单数量
+MLEN=60   # 单行最大长度
+ILEN=30   # 单个选项长度
+
+function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|$TC $@ $NC" ; tput hpa $rlen ; echo "|" ; }
+function menu_head() { echo $line_feed ;   menu_line "$@" ; echo $line_feed ; }
+# 一行可以有 item_line_count 个菜单选项
+function menu_item() { let item_index=$item_index+1 ; n=$1 ; shift ; let rlen="$item_index * $ILEN + 1" ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; [[ "$item_index" == "$item_line_count" ]] && echo "|" && item_index=0 ; }
+# 输出单行长菜单选项,长度有限制
+function menu_iteml() { let rlen="$item_line_count * $ILEN + 1" ; n=$1 ; shift ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; echo "|" ; }
+# 用于输入长信息(非菜单选项),不限制结尾长度
+function menu_info() { n=$1 ; shift ; echo -e "|  $BG ${n} $NC $@" ; }
+function menu_tail() { [[ "$item_index" != "0" ]] && echo "|" ; echo $line_feed ; item_index=0 ; }
+
+# 日志记录
+log_file="/tmp/one4all.log"
+function output_msg() { LEVEL="$1" ; shift ; echo -e "$(date +'%Y年%m月%d日%H:%M:%S'):${LEVEL}: $@" ; }
+function output_log() { if [ "$OUTPUTLOG" = "yes" ] ; then  output_msg $@ | tee -a $log_file ; else output_msg $@ >> $log_file ; fi }
+function loginfo() { output_log "INFO" $@  ; }
+function logerr()  { output_log "ERROR" $@ ; }
+
+################################################################
+#  文本信息设定
+
+# 欢迎和再见提示信息
+WELCOME="^_^你笑起来真好看!像春天的花一样!"
+SEE_YOU="^_^出去晒晒太阳吧!多运动才更健康!"
+
+
+########### 运行条件检测 ###########
+function prompt() { # 提示确认函数，如果使用 -y 参数默认为Y确认
+    msg="$@"
+    if [ "$default_confirm" != "yes" ] ; then
+        read -r -n 1 -e  -p "$msg (y/`echo_greenr N`)" str_answer
+        case "$str_answer" in
+            y*|Y*)  echo "已确认" ; return 0 ;;
+            *)      echo "已取消" ; return 1 ;;
+        esac
+    else
+        echo "$msg"
+    fi
+    return 0
+}
+# 检查是否有root权限并提示，需要root权限的命令要添加sudo
+function check_root() { [[ "`uid -u`" = "0" ]]  && ! prompt "提示:确认在root用户下或者使用sudo运行?" && exit 0 ; }
+
+function check_basic() { # 基础依赖命令检测与安装
+    which curl >/dev/null || sudo $pac_cmd_ins curl     # 检测 curl 命令
+    which git >/dev/null || sudo $pac_cmd_ins git       # 检测 git 命令
+    # Anaconda3 环境可能导致编译失败.
+    echo "python3 version: `python3 --version` ,path: `which python3`"
+    anaconda -V >/dev/null 2>&1 && echo "检测到有有 anaconda 环境， 正在执行 conda deactivate 关闭 Anaconda 环境" && conda deactivate
+    echo "python3 version: `python3 --version` ,path: `which python3`"
+}
+
+# 创建软链接或重命名目录
+function create_symlink() {
+    source_file="$1"
+    target_file="$2"
+
+    [[ ! -f "$source_file" ]] && loginfo "找不到 $source_file 文件" && return 1
+    [[ -L "$target_file" ]] && loginfo "目标路径是软链接，删除软链接" && rm "$target_file"
+    [[ -d "$target_file" ]] && loginfo "目标路径是目录，重命名目录" && mv ${target_file} "${target_file}_$(date +%Y-%m-%d)"
+    # 创建软链接
+    ln -sf "$source_file" "$target_file"
+}
+
+function init_i3() {
+    echo "Pulling Changes From the Submodule Remote"
+    git submodule update --recursive --remote
+    read -p "i3bar select(default i3blocks): i3blocks/polybar/i3status-rust:" str_answer
+    if [ "$str_answer" = "i3blocks" -o "$str_answer" = "" ]; then
+        [[ ! -r ./i3blocks/i3blocks-contrib ]] && cd i3blocks && ln -sf ../repos/i3blocks-contrib i3blocks-contrib && cd ../
+        
+        [[ -r ~/.config/$str_answer ]] && rm -f ~/.config/$str_answer
+        ln -sf `pwd`/$str_answer ~/.config/$str_answer
+        echo "init $str_answer config"
+        
+        [[ -r ~/.config/i3 ]] && rm -f ~/.config/i3
+        ln -sf `pwd`/i3_$str_answer ~/.config/i3
+        echo "init i3 config"
+    elif [ "$str_answer" = "polybar" ] ; then
+        [[ -r ~/.config/$str_answer ]] && rm -f ~/.config/$str_answer
+        ln -sf `pwd`/$str_answer ~/.config/$str_answer
+        echo "init $str_answer config"
+        
+        [[ -r ~/.config/i3 ]] && rm -f ~/.config/i3
+        ln -sf `pwd`/i3_$str_answer ~/.config/i3
+        echo "init i3 config"
+    elif [ "$str_answer" = "i3status-rust" ] ; then
+        [[ -r ~/.config/$str_answer ]] && rm -f ~/.config/$str_answer
+        ln -sf `pwd`/$str_answer ~/.config/$str_answer
+        echo "init $str_answer config"
+        
+        [[ -r ~/.config/i3 ]] && rm -f ~/.config/i3
+        ln -sf `pwd`/i3_$str_answer ~/.config/i3
+        echo "init i3 config"
+    fi
+}
+
+function install_build_deps() {
+    which apt-get && sudo apt-get install   -y build-essential git cmake cmake-data pkg-config python3-sphinx python3-packaging && return 0
+    which dnf     && sudo dnf install       -y gcc-c++ git cmake @development-tools python3-sphinx python3-packaging && return 0
+    which zypper  && sudo zypper install    -y gcc git cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme && return 0
+}
+
+function install_polybar_deps() {
+    which apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev && return 0
+    which dnf       && sudo dnf install     -y libuv cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel && return 0
+    which zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel && return 0
+}
+
+function install_polybar_deps_opt() {
+    which apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev && return 0
+    which dnf       && sudo dnf install     -y xcb-util-xrm-devel xcb-util-cursor-devel alsa-lib-devel pulseaudio-libs-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
+    which zypper    && sudo zypper install  -y libxcb-xkb1 xcb-util-xrm-devel xcb-util-cursor-devel alsa-devel libpulse-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
+}
+
+function compile_polybar() {
+    ! i3 -v && echo "没找到 i3 命令，请确保先安装了 i3wm 环境后再安装 polybar" && return 1
+    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    install_build_deps
+    install_polybar_deps
+    install_polybar_deps_opt
+    tmp_path=${tmp_dir}/polybar
+    echo "gcc version : `gcc -dumpversion` , 推荐使用 gcc10 版本编译器(官方要求gcc>=5.1)"
+    [[ -d $tmp_path ]] && prompt "`echo_red '检测到您已经克隆了代码，是否重新克隆代码'`" && rm -rf $tmp_path
+    [[ -d "$tmp_path" ]] || git clone --recursive https://github.com/polybar/polybar ${tmp_path}
+    cd $tmp_path
+    ./build.sh --all-features --gcc --jobs
+}
+
+function compile_i3wm() {
+    tmp_path="$tmp_dir/i3wm"
+    i3 -v && echo "i3 命令已经安装过了" && ! prompt "仍然继续编译安装 i3 么? 建议手工卸载后再尝试" && return 1
+    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    [[ "$str_branch" == "" ]] && str_branch="next"
+    [[ -d $tmp_path ]] && prompt "`echo_red '检测到您已经克隆了代码，是否重新克隆代码'`" && rm -rf $tmp_path
+    [[ -d "$tmp_path" ]] || git clone https://github.com/i3/i3 $tmp_path
+    cd $tmp_path && git checkout ${str_branch} && mkdir -p build && cd build && meson --prefix=${str_dst} -Ddocs=false -Dmans=false .. && ninja && sudo ninja install
+    [[ -x "$str_dst/bin/i3" ]] || echo "安装失败!" && return 3
+    echo "i3wm 安装成功,当前 i3wm 版本: `i3 -v`"
+}
+
+function install_picom_deps() {
+    which apt-get  >/dev/null 2>&1 && sudo apt-get install -y libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl-dev libegl-dev libpcre2-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev meson
+    which dnf      >/dev/null 2>&1 && sudo dnf     install -y dbus-devel gcc git libconfig-devel libdrm-devel libev-devel libX11-devel libX11-xcb libXext-devel libxcb-devel libGL-devel libEGL-devel meson pcre2-devel pixman-devel uthash-devel xcb-util-image-devel xcb-util-renderutil-devel xorg-x11-proto-devel
+    which zypper   >/dev/null 2>&1 && sudo zypper  install -y gcc git meson libX11-devel libX11-xcb1 libXext-devel xproto-devel libxcb-devel libpixman-1-0-devel Mesa-libGL-devel Mesa-libEGL-devel pcre2-devel libev-devel uthash-devel libconfig-devel libxcb-composite0 libxcb-damage0 libxcb-dpms0 libxcb-glx0 libxcb-image0 libxcb-present0 libxcb-randr0 libxcb-render0 libxcb-shape0 libxcb-xfixes0
+}
+function compile_picom() {
+    url="https://github.com/yshui/picom.git"
+    tmp_path=$tmp_dir/picom
+    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
+    [[ -d "$tmp_path" ]] || git clone $url $tmp_path
+    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
+    
+    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    [[ "$str_branch" == "" ]] && str_branch="next"
+    
+    install_picom_deps
+    cd $tmp_path && git checkout ${str_branch} && git submodule update --init --recursive
+    meson setup --prefix=${str_dst} --buildtype=release . build   && ninja -C build && ninja -C build install
+}
+function install_dotfiles() {
+    # 克隆自己的 dotfiles 配置文档
+    tmp_path=$HOME/.config/dotfiles
+    [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 目录已经存在， dotfiles已经安装过,仍继续安装?\"`" && return 0
+    [[ -d "$tmp_path" ]] && rm -rf $tmp_path
+    git clone https://github.com/switchToLinux/dotfiles.git $tmp_path
+    cd $tmp_path && [[ -f .gitmodules ]] && {
+        echo_green "获取所有子模块"
+        ! git submodule update --init --recursive  && logerr "克隆子模块失败!稍后再试试吧" && return 1
+    }
+    create_symlink $tmp_path/i3_polybar ~/.config/i3
+    create_symlink $tmp_path/polybar_themes ~/.config/polybar
+    create_symlink $tmp_path/picom ~/.config/picom
+    mkdir -p ~/.local/share/mpd
+    create_symlink $tmp_path/mpd ~/.config/mpd
+    create_symlink $tmp_path/dunst ~/.config/dunst
+}
+
+function install_others() {
+    # 使用命令安装
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety mpd mpc ncmpcpp dunst
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety mpd mpclient ncmpcpp dunst
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety mpd mpclient ncmpcpp dunst
+}
+
+function show_menu_install() {
+    menu_head "安装选项菜单"
+    menu_item 1 i3wm
+    menu_item 2 polybar
+    menu_item 3 picom
+    menu_item 9 other[feh/mpd/dunst.]
+    menu_item 0 dotfiles
+    menu_tail
+    menu_item q 返回上级菜单
+    menu_tail
+}
+function start_main() { # 安装菜单选择
+    while true
+    do
+        show_menu_install
+        read -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
+        case "$str_answer" in
+            1) compile_i3wm             ;;
+            2) compile_polybar          ;;
+            3) compile_picom            ;;
+            9) install_others           ;;
+            0) install_dotfiles         ;;
+            q|"") return 0              ;;  # 返回上级菜单
+            *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
+        esac
+    done
+}
+
+
+####### Main process #################################
+menu_head "$WELCOME"
+check_basic     # 基础依赖命令检测与安装
+
+if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
+    start_main
+else  # 命令执行模式(执行后退出)
+    command="$1"
+    case "$command" in
+        i3)
+            install_i3wm ;;
+        polybar)
+            compile_polybar ;;
+        polybar_themes)
+            install_polybar_themes ;;
+    esac
+fi
+
+menu_head "${SEE_YOU}"

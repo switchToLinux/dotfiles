@@ -1,0 +1,323 @@
+# Oxide theme
+#
+# Author: Diki Ananta <diki1aap@gmail.com>
+# Repository: https://github.com/dikiaap/dotfiles
+# License: MIT
+# i3 config file (v4)
+
+# 更多详细配置参考： https://wiki.archlinux.org/title/I3
+# font for window titles and bar
+# font pango:Source Sans Pro 10
+font pango:Hack 10
+
+#(Mod1 = Alt, Mod4 = Super/Win)
+set $mod Mod4
+
+# set locker variable
+set $Locker i3lock-fancy -f Source-Sans-Pro && sleep 1
+
+
+# use these keys for focus, movement, and resize directions
+set $left   j
+set $down   k
+set $up     l
+set $right  semicolon
+
+# define names for workspaces
+set $ws1    "1:   Terminal "
+set $ws2    "2:   Code "
+set $ws3    "3:    Chromium "
+set $ws4    "4:   Files "
+set $ws5    "5:   Documents "
+set $ws6    "6:   Media "
+set $ws7    "7:   Design "
+set $ws8    "8:   Chat "
+set $ws9    "9:   General "
+set $ws10   "10:   Settings "
+
+# define names for workspaces
+# set $ws1    "1:  1 "
+# set $ws2    "2:  2 "
+# set $ws3    "3:  3 "
+# set $ws4    "4:  4 "
+# set $ws5    "5:  5 "
+# set $ws6    "6:  6 "
+# set $ws7    "7:  7 "
+# set $ws8    "8:  8 "
+# set $ws9    "9:  9 "
+# set $ws10   "10:  10 "
+
+# use $mod+Mouse to drag floating windows to their wanted position
+floating_modifier $mod
+
+# move tiling windows via drag & drop by left-clicking into the title bar
+tiling_drag modifier titlebar
+
+
+# control focused window when follows the mouse movements
+focus_follows_mouse no
+
+# window border settings
+# 默认窗口边框设置
+default_border          none
+default_floating_border none
+
+# hiding borders adjacent to the screen edges
+#隐藏窗口边缘
+hide_edge_borders none
+
+# 窗口间距设置
+smart_gaps on
+gaps inner 2
+gaps outer 2
+
+# set popups during fullscreen mode
+popup_during_fullscreen smart
+
+# start a terminal: xfce4-terminal / alacritty / i3-sensible-terminal
+# bindsym $mod+Return workspace $ws1; exec --no-startup-id alacritty
+bindsym $mod+Return workspace $ws1; exec --no-startup-id xfce4-terminal
+bindsym $mod+g workspace $ws3; exec --no-startup-id google-chrome
+
+# VSC
+# ### 注意 ### 用这个快捷键打开的 VS code 不会读取到配置在用户路径下默认shell 的 rc 文件里的环境变量，比如 Latex Workshop 的工作可能会出问题，这种情况可以通过应用启动器开启 VS code 以避免
+bindsym $mod+c workspace $ws2; exec --no-startup-id code
+
+# bar toggle, hide or show 
+bindsym $mod+m bar mode toggle
+
+# start a program launcher
+#bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -i -fn 'Source Sans Pro-10' -nb '#212121' -sb '#2b83a6' -sf '#ffffff'"
+bindsym $mod+d exec --no-startup-id rofi -show drun
+
+# switching window with win+tab
+bindsym $mod+Tab exec --no-startup-id rofi -show window
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# change focus
+bindsym $mod+$left  focus left
+bindsym $mod+$down  focus down
+bindsym $mod+$up    focus up
+bindsym $mod+$right focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left   focus left
+bindsym $mod+Down   focus down
+bindsym $mod+Up     focus up
+bindsym $mod+Right  focus right
+
+# move focused window
+bindsym $mod+Shift+$left    move left
+bindsym $mod+Shift+$down    move down
+bindsym $mod+Shift+$up      move up
+bindsym $mod+Shift+$right   move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left     move left
+bindsym $mod+Shift+Down     move down
+bindsym $mod+Shift+Up       move up
+bindsym $mod+Shift+Right    move right
+
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+bindsym $mod+Shift+a focus child
+
+
+# toggle tiling / floating
+# 切换窗口 平铺或者浮动
+bindsym $mod+space floating toggle
+
+# change focus between tiling / floating windows
+# 切换焦点 平铺窗口 或者 浮动窗口(浮动窗口会在最前端显示)
+bindsym $mod+Shift+space focus mode_toggle
+
+# ------- scratchpad暂存器工作区的窗口切换 ----- #
+# move the currently focused window to the scratchpad
+# 将当前焦点窗口放入暂存器容器中(暂时不可见)
+bindsym $mod+Shift+minus move scratchpad
+# show the next scratchpad window or hide the focused scratchpad window
+# 切换暂存器中的窗口(如果有多个窗口会切换下一个窗口)
+bindsym $mod+minus scratchpad show
+
+# set a window to stick to the glass
+# 设置浮动窗口前置可见(在所有窗口最前端)，比如播放器浮动窗口
+bindsym $mod+Shift+s sticky toggle
+
+# sticky preview for media
+# 设置当前焦点窗口浮动并且前置(需要根据自己屏幕分辨率修改)
+bindsym $mod+Shift+p fullscreen disable; floating enable; \
+    resize set 512 px 512 px; sticky enable; \
+    move window to position 854 px 300 px
+# 浮动 sticky 窗口 256大小
+bindsym $mod+Shift+o fullscreen disable; floating enable; \
+    resize set 512 px 256 px; sticky enable; \
+    move window to position 800 px 500 px
+
+# shortcut to change window border
+bindsym $mod+t border normal    0
+bindsym $mod+y border pixel     1
+bindsym $mod+u border none
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# shortcut applications
+bindsym Print                   exec --no-startup-id gnome-screenshot
+bindsym $mod+Print              exec --no-startup-id gnome-screenshot -a
+bindsym $mod+Shift+x            exec --no-startup-id $Locker
+
+# volume
+bindsym XF86AudioLowerVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
+bindsym XF86AudioRaiseVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
+bindsym XF86AudioMute           exec --no-startup-id amixer -q -D pulse sset Master toggle
+
+# notification
+bindsym Ctrl+space              exec --no-startup-id dunstctl close
+bindsym Ctrl+Shift+space        exec --no-startup-id dunstctl close-all
+bindsym Ctrl+grave              exec --no-startup-id dunstctl history-pop
+bindsym Ctrl+period             exec --no-startup-id dunstctl context
+
+# reload the configuration file 重新加载配置
+bindsym $mod+Shift+c reload
+# restart i3 inplace 重启 i3wm
+bindsym $mod+Shift+r restart
+
+# ------ manage i3 session  -------- #
+
+# 设置 锁屏、退出、重启、关机操作功能
+# bindsym $mod+Shift+e exec --no-startup-id i3-nagbar -t warning -f "pango:Hack 12" -m "Do you really want to exit?" -B "    Exit " "i3-msg exit" -B "    Lock " "pkill i3-nagbar && $Locker" -B "    Reboot " "pkill i3-nagbar && reboot" -B "    Shutdown " "pkill i3-nagbar && shutdown -h now"
+set $mode_system select: 锁屏(L) 退出用户(E) 重启(R) 关机(O) 取消(Esc)
+bindsym $mod+Shift+e mode "$mode_system"
+mode "$mode_system" {
+ bindsym l mode "default" exec --no-startup-id $Locker
+ bindsym e exec --no-startup-id i3-msg exit, mode "default"
+ bindsym r exec --no-startup-id systemctl reboot, mode "default"
+ bindsym o exec --no-startup-id systemctl poweroff, mode "default"
+ bindsym Escape mode "default"
+}
+
+# resize window 手动调整当前窗口大小
+bindsym $mod+r mode "  "
+mode "  " {
+    # pressing left and up will shrink the window's width and height
+    # pressing right and down will grow the window's width and height
+    bindsym $left   resize shrink width 10 px or 10 ppt
+    bindsym $down   resize grow height 10 px or 10 ppt
+    bindsym $up     resize shrink height 10 px or 10 ppt
+    bindsym $right  resize grow width 10 px or 10 ppt
+
+    # same bindings, but for the arrow keys
+    bindsym Left    resize shrink width 10 px or 10 ppt
+    bindsym Down    resize grow height 10 px or 10 ppt
+    bindsym Up      resize shrink height 10 px or 10 ppt
+    bindsym Right   resize grow width 10 px or 10 ppt
+
+    # back to normal: Enter or win+r
+    bindsym Return mode "default"
+    bindsym $mod+r mode "default"
+}
+
+# set specific windows to floating mode
+# 弹出窗口需要设置为浮动窗口
+for_window [window_role="About"] floating enable
+for_window [window_role="Organizer"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="page-info"] floating enable
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="toolbox"] floating enable
+for_window [window_role="webconsole"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [title="Preferences$"]  floating enable
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #2b83a6 #2b83a6 #ffffff #dddddd   #2b83a6
+client.focused_inactive #212121 #212121 #86888c #292d2e   #5a5a5a
+client.unfocused        #212121 #212121 #86888c #292d2e   #5a5a5a
+client.urgent           #d64e4e #d64e4e #ffffff #d64e4e   #d64e4e
+client.placeholder      #212121 #0c0c0c #ffffff #212121   #262626
+client.background       #212121
+
+# start i3bar to display a workspace bar
+bar {
+    status_command          i3blocks
+    bindsym button4         nop
+    bindsym button5         nop
+    position                bottom
+    mode                    hide
+    tray_output             primary
+    separator_symbol        "·"
+    workspace_buttons       yes
+    strip_workspace_numbers yes
+
+    colors {
+        background  #212121
+        statusline  #dddddd
+        separator   #666666
+        # class             border  backgr. text
+        focused_workspace   #2b83a6 #2b83a6 #ffffff
+        active_workspace    #212121 #212121 #ffffff
+        inactive_workspace  #212121 #212121 #86888c
+        urgent_workspace    #d64e4e #d64e4e #ffffff
+        binding_mode        #229c56 #229c56 #ffffff
+    }
+}
+
+# startup applications
+# exec 启动时只执行一次
+# exec_always每次重新加载i3配置文件都会执行一次
+# --no-startup-id 参数禁止 startup-notification 支持
+# exec_always 与 exec 区别: exec_always 会在每次重启i3时都会执行命令，而 exec只会执行一次。
+exec_always --no-startup-id xautolock -time 10 -locker "$Locker"
+exec_always --no-startup-id nm-applet
+exec_always --no-startup-id pulseaudio --start
+exec_always --no-startup-id lxpolkit
+# exec_always --no-startup-id feh --bg-fill --randomize ~/.wallpapers/*
+exec_always --no-startup-id picom
+# 合成器 compton 或者 xcompmgr
+exec_always --no-startup-id compton
+
+# 个性化配置(比如自己的自启动程序列表，自己的快捷启动设置)
+include ~/.config/i3/config.d/*.conf
+

@@ -1,0 +1,105 @@
+# configure example https://github.com/ncmpcpp/ncmpcpp/blob/master/doc/config
+ncmpcpp_directory = ~/.config/ncmpcpp
+lyrics_directory = ~/.config/ncmpcpp/lyrics
+mpd_host = localhost
+mpd_port = 6600
+mpd_connection_timeout = 5
+# mpd_music_dir = ~/Music
+# mpd_crossfade_time = 5
+
+visualizer_output_name = mpd_fifo
+visualizer_in_stereo = yes
+# spectrum/ellipse/wave_filled analyzer or wave form
+visualizer_type = ellipse
+# visualizer_spectrum_smooth_look = yes
+# visualizer_fps = 60
+visualizer_look = ▮●
+# visualizer_color = blue, cyan, green, yellow, magenta, red
+visualizer_color = 41, 83, 119, 155, 185, 215, 209, 203, 197, 161
+
+system_encoding = "UTF-8"
+playlist_disable_highlight_delay = 5
+message_delay_time = 5
+song_list_format = {%a - }{%t}|{$8%f$9}$R{$3(%l)$9}
+song_status_format = {{%a{ "%b"{ (%y)}} - }{%t}}|{%f}
+song_library_format = {%n - }{%t}|{%f}
+alternative_header_first_line_format = $b$1$aqqu$/a$9 {%t}|{%f} $1$atqq$/a$9$/b
+alternative_header_second_line_format = {{$4$b%a$/b$9}{ - $7%b$9}{ ($4%y$9)}}|{%D}
+now_playing_prefix = $b
+now_playing_suffix = $/b
+song_window_title_format = {%a - }{%t}|{%f}
+browser_sort_mode = name
+browser_sort_format = {%a - }{%t}|{%f} {(%l)}
+song_columns_list_format = (20)[]{a} (6f)[green]{NE} (50)[white]{t|f:Title} (20)[cyan]{b} (7f)[magenta]{l}
+
+##### various settings #####
+playlist_show_mpd_host = no
+playlist_show_remaining_time = no
+playlist_shorten_total_times = no
+playlist_separate_albums = no
+## Note: Possible display modes: classic, columns.
+playlist_display_mode = columns
+browser_display_mode = classic
+search_engine_display_mode = classic
+playlist_editor_display_mode = classic
+incremental_seeking = yes
+seek_time = 1
+volume_change_step = 2
+autocenter_mode = yes
+centered_cursor = yes
+progressbar_look = =>
+default_place_to_search_in = database
+user_interface = alternative
+media_library_primary_tag = genre
+default_find_mode = wrapped
+header_visibility = yes
+statusbar_visibility = yes
+titles_visibility = yes
+header_text_scrolling = yes
+cyclic_scrolling = yes
+lines_scrolled = 2
+follow_now_playing_lyrics = yes
+fetch_lyrics_for_current_song_in_background = yes
+store_lyrics_in_song_dir = yes
+allow_for_physical_item_deletion = no
+screen_switcher_mode = playlist,browser, media_library, visualizer
+# startup_screen = playlist
+startup_screen = visualizer
+# startup_slave_screen = "visualizer"
+# startup_slave_screen_focus = no
+# locked_screen_width_part = 30
+jump_to_now_playing_song_at_start = yes
+ask_before_clearing_playlists = yes
+clock_display_seconds = no
+display_volume_level = no
+display_bitrate = no
+display_remaining_time = no
+ignore_leading_the = no
+mouse_support = yes
+enable_window_title = no
+# 1-mpd, 2-ncmpcpp regex, 3-match exact value
+search_engine_default_search_mode = 2
+external_editor = vim
+use_console_editor = yes
+colors_enabled = yes
+empty_tag_color = cyan
+header_window_color = default
+volume_color = default
+state_line_color = green
+state_flags_color = default:b
+main_window_color = yellow
+color1 = white
+color2 = green
+progressbar_color = black:b
+progressbar_elapsed_color = green:b
+statusbar_color = yellow
+#
+statusbar_time_color = default:b
+#
+player_state_color = default
+#
+alternative_ui_separator_color = black:b
+#
+window_border_color = green
+#
+active_window_border = red
