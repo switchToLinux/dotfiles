@@ -29,8 +29,8 @@ font $default_fonts
 
 # window border settings
 # 默认窗口边框设置(有边框才能显示 split indicator)
-default_border     pixel   2
-default_floating_border pixel 2
+default_border     pixel   1
+default_floating_border pixel 1
 
 # hiding borders adjacent to the screen edges
 #隐藏窗口边缘
