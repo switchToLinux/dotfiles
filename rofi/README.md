@@ -1,0 +1,22 @@
+# rofi
+
+
+## 配置方法
+
+官方配置文档：
+- https://davatorium.github.io/rofi/CONFIG/
+- https://github.com/davatorium/rofi/blob/next/doc/rofi-theme.5.markdown
+
+配置最简单的方式是直接选择主题方案，例如:
+```
+configuration {
+  modes: [ combi ];
+  combi-modes: [ window, drun, run ];
+}
+
+@theme "fancy2"
+/* Insert theme modifications after this */
+
+```
+
+

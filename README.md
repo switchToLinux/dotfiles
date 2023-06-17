@@ -39,9 +39,11 @@ chmod +x i3config
 - [x] 配置 picom 合成器，优化透明效果
 - [x] 配置 mpd 音乐播放器(编译源码安装mpd过程问题较多，暂自行安装 mpd/mpc/ncmpcpp)
 - [x] 配置 ncmpcpp 音乐播放器客户端
-- [ ] 配置 ranger 文件浏览器
+- [x] 配置 ranger 文件浏览器
 - [ ] 集成 eww 配置
-- [ ] 配置 dunst 通知管理
+- [x] 配置 dunst 通知管理
+- [x] 配置 rofi 启动器
+
 
 ## 关于配置快捷键
 

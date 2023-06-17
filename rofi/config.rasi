@@ -1,0 +1,10 @@
+
+configuration {
+  modes: [ window, drun, run, ssh ];
+  font: "Noto Sans Mono CJK SC Mono 14";
+  dpi: 144;
+}
+// @import "myConfig"
+
+@theme "fancy2"
+/* Insert theme modifications after this */

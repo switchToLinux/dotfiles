@@ -58,3 +58,14 @@ gaps outer|horizontal|vertical|top|right|bottom|left current|all set|plus|minus|
 i3-msg gaps outer all set 10
 ```
 执行后所有窗口立即产生变化。
+
+## clipboard剪切板
+
+使用[clipmenud](https://github.com/cdown/clipmenu) 解决剪切板问题。
+
+依赖安装:
+- xsel
+- [clipnotify](https://github.com/cdown/clipnotify.git)  : 安装到 /usr 目录
+
+
+

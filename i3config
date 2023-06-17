@@ -221,6 +221,10 @@ function install_dotfiles() {
     mkdir -p ~/.local/share/mpd
     create_symlink $tmp_path/mpd ~/.config/mpd
     create_symlink $tmp_path/dunst ~/.config/dunst
+    create_symlink $tmp_path/ranger ~/.config/ranger
+    create_symlink $tmp_path/rofi ~/.config/rofi
+    create_symlink $tmp_path/ncmpcpp ~/.config/ncmpcpp
+
     echo "配置 ~/.Xresources 文件"
     
     data="WGZ0LmRwaTogICAgICAgMTkyClhmdC5hbnRpYWxpYXM6IGZhbHNlClhmdC5oaW50aW5nOiAgIGZhbHNlClhmdC5hdXRvaGludDogIHRydWUKWGZ0LmhpbnRzdHlsZTogaGludHNsaWdodApYZnQubGNkZmlsdGVyOiBsY2RkZWZhdWx0ClhmdC5yZ2JhOiAgICAgIHJnYgo="
