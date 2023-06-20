@@ -131,12 +131,16 @@ bindsym $mod+Shift+s sticky toggle
 # sticky preview for media
 # 设置当前焦点窗口浮动并且前置(需要根据自己屏幕分辨率修改)
 bindsym $mod+Shift+p fullscreen disable; floating enable; \
-    resize set 512 px 512 px; sticky enable; \
-    move window to position 854 px 300 px
-# 浮动 sticky 窗口 256大小
+    resize set 1920 px 1080 px; sticky enable; \
+    move window to position 1900 px 940 px
+# 浮动 sticky 窗口 for youtube video
 bindsym $mod+Shift+o fullscreen disable; floating enable; \
-    resize set 512 px 256 px; sticky enable; \
-    move window to position 800 px 500 px
+    resize set 2024 px 992 px; sticky enable; \
+    move window to position 2025 px 980 px
+# 浮动 sticky 窗口 for youtube video
+bindsym $mod+Shift+i fullscreen disable; floating enable; \
+    resize set 1700 px 960 px; sticky enable; \
+    move window to position 2126 px 1150 px
 
 
 # Define names for default workspaces for which we configure key bindings later on.
@@ -190,10 +194,10 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
+bindsym $mod+Shift+r exec xrdb -I$HOME ~/.Xresources , restart
 
 # 设置 锁屏、退出、重启、关机操作功能
-bindsym $mod+shift+l exec i3-nagbar -t warning -f $default_fonts -m "确定退出系统?" -B "    退出 " "i3-msg exit" -B "    锁屏 " "pkill i3-nagbar && $Locker" -B "    重启 " "pkill i3-nagbar && reboot" -B "    关机 " "pkill i3-nagbar && shutdown -h now"
+bindsym $mod+shift+l exec i3-nagbar -t warning -f $default_fonts -m "Exit?" -B "    " "i3-msg exit" -B "    " "pkill i3-nagbar && $Locker" -B "    " "pkill i3-nagbar && reboot" -B "    " "pkill i3-nagbar && shutdown -h now"
 bindsym $mod+l exec  $Locker
 
 # resize window (you can also use the mouse for that)
@@ -234,7 +238,8 @@ for_window [title="Preferences$"]  floating enable
 # for_window [class="[tT]erminal$"] move container to workspace $ws1
 
 
-# Color shemes for windows 
+# Color shemes for windows
+# use ~/.Xresources color schema
 set $focused_color  #F0F000
 set $bgcolor        #523d6499
 set $unfocus_color  #3636364D
@@ -249,13 +254,6 @@ client.unfocused        $unfocus_color  $bgcolor        $unfocus_text   $unfocus
 client.focused_inactive $unfocus_color  $bgcolor        $unfocus_text   $unfocus_color  $unfocus_color
 client.urgent           $focused_color  $bgcolor        $text           $u_bgcolor      $u_bgcolor
 
-
-exec_always --no-startup-id xautolock -time 10 -locker "$Locker"
-exec_always --no-startup-id nm-applet
-exec_always --no-startup-id lxpolkit
-
-# picom 合成器 -f 切换工作区过渡效果
-exec_always --no-startup-id picom -cf -b
 
 # 个性化配置(比如自己的自启动程序列表，自己的快捷启动设置)
 include ~/.config/i3/config.d/*.conf

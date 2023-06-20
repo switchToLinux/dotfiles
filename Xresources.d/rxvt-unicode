@@ -1,0 +1,58 @@
+
+URxvt.perl-ext-common:  default,matcher,selection-to-clipboard,resize-font
+
+! font and colors
+! xft:Noto Sans Mono CJK SC Mono:style=Regular:size=12,
+URxvt.font: xft:DejaVu Sans Mono for Powerline:style=Regular:size=12,xft:EmojiOne Color:style=Regular:size=12
+! if the distance between characters can feel too wide. The spacing can be reduced by one pixel
+URxvt.letterSpace: -1
+
+! color and transparency
+! URxvt 配色方案
+
+URxvt.depth: 32
+URxvt.background: [85]#303030
+URxvt*inheritPixmap: true
+! really transparent
+! URxvt*transparent: true
+! URxvt*shading: 0 to 99 darkens, 101 to 200 lightens
+URxvt*shading: 80,110
+
+
+!######### scrolbar style - rxvt
+! plain (compact), NeXT, or xtermn
+URxvt.scrollstyle: plain
+URxvt.scrollBar_right: true
+
+! do not scroll with output
+URxvt*scrollTtyOutput: false
+
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+
+!## tabbed extension
+! Shift + Down Arrow open new tab
+! Shift + Left Arrow goto previous tab
+! Shift + Right Arrow gotto next tab
+! Ctrl + Left Arrow move the current tab to left
+! Ctrl + Right Arrow move the current tab to right
+! Ctrl + D close the current tab
+!URxvt.tabbed.tabbar-fg: 2
+!URxvt.tabbed.tabbar-bg: 0
+!URxvt.tabbed.tab-fg:    3
+!URxvt.tabbed.tab-bg:    0
+!URxvt.tabbed.new-button: true
+!URxvt.tabbed.autohide: true
+!URxvt.tabbed.reopen-on-close: yes
+!URxvt.keysym.Control-t: perl:tabbedex:new_tab
+!URxvt.keysym.Control-Tab: perl:tabbedex:next_tab
+!URxvt.keysym.Control-Shift-Tab: perl:tabbedex:prev_tab
+!URxvt.keysym.Control-Shift-Left: perl:tabbedex:move_tab_left
+!URxvt.keysym.Control-Shift-Right: perl:tabbedex:move_tab_right
+!URxvt.keysym.Control-Shift-R: perl:tabbedex:rename_tab
+!URxvt.tabbed.no-tabbedex-keys: true
+!

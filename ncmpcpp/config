@@ -7,6 +7,7 @@ mpd_connection_timeout = 5
 # mpd_music_dir = ~/Music
 # mpd_crossfade_time = 5
 
+visualizer_data_source = ~/.local/share/mpd/mpd.fifo
 visualizer_output_name = mpd_fifo
 visualizer_in_stereo = yes
 # spectrum/ellipse/wave_filled analyzer or wave form
@@ -103,3 +104,5 @@ alternative_ui_separator_color = black:b
 window_border_color = green
 #
 active_window_border = red
+## you have dunst?
+execute_on_song_change = notify-send "Now Playing" "$(mpc --format '%title% - %artist%' current)"

@@ -1,0 +1,12 @@
+Xft.dpi:       192
+Xft.antialias: true
+Xft.hinting:   false
+Xft.autohint:  true
+Xft.hintstyle: hintslight
+Xft.lcdfilter: lcddefault
+Xft.rgba:      rgb
+
+! recommand color:  nord / xcolors-apple-dark 
+#include ".config/Xresources-themes/nord.Xresources"
+
+#include ".config/Xresources.d/rxvt-unicode"

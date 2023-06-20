@@ -23,6 +23,8 @@ chmod +x i3config
 |File Manager|[Thunar](https://archlinux.org/packages/extra/x86_64/thunar/)|
 |Shell|[Zsh](https://archlinux.org/packages/extra/x86_64/zsh/)|
 |wallpaper| [feh](https://github.com/derf/feh)-[variety](https://github.com/varietywalls/variety)|
+|Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
+
 
 > i3wm 推荐编译源码版本，通常自带版本比较低，有些新功能不支持.
 > 
@@ -43,6 +45,7 @@ chmod +x i3config
 - [ ] 集成 eww 配置
 - [x] 配置 dunst 通知管理
 - [x] 配置 rofi 启动器
+- [x] 配置 ~/.Xresources 主题
 
 
 ## 关于配置快捷键
