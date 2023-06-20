@@ -99,11 +99,11 @@ function prompt() { # 提示确认函数，如果使用 -y 参数默认为Y确�
 function check_root() { [[ "`uid -u`" = "0" ]]  && ! prompt "提示:确认在root用户下或者使用sudo运行?" && exit 0 ; }
 
 function check_basic() { # 基础依赖命令检测与安装
-    which apt-get >/dev/null && pac_cmd_ins=apt-get
-    which dnf >/dev/null && pac_cmd_ins=dnf
-    which zypper >/dev/null && pac_cmd_ins=zypper
-    which curl >/dev/null || sudo $pac_cmd_ins install -y curl     # 检测 curl 命令
-    which git >/dev/null  || sudo $pac_cmd_ins install -y git       # 检测 git 命令
+    which apt-get >/dev/null 2>&1 && pac_cmd_ins=apt-get
+    which dnf >/dev/null 2>&1 && pac_cmd_ins=dnf
+    which zypper >/dev/null 2>&1 && pac_cmd_ins=zypper
+    which curl >/dev/null 2>&1 || sudo $pac_cmd_ins install -y curl     # 检测 curl 命令
+    which git >/dev/null  2>&1 || sudo $pac_cmd_ins install -y git       # 检测 git 命令
     # Anaconda3 环境可能导致编译失败.
     echo "python3 version: `python3 --version` ,path: `which python3`"
     anaconda -V >/dev/null 2>&1 && echo "检测到有有 anaconda 环境， 正在执行 conda deactivate 关闭 Anaconda 环境" && conda deactivate
