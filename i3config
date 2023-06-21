@@ -266,12 +266,23 @@ function install_xresources_themes() {
     echo "#include \"$tmp_path/nord.Xresources\""
 }
 
+function install_clipmenu() {
+    # 依赖安装
+    sudo $pac_cmd_ins install -y xsel
+    tmp_path="$tmp_dir/clipnotify"
+    [[ -d $tmp_path ]] || git clone https://github.com/cdown/clipnotify.git $tmp_path
+    cd $tmp_path && make && sudo PREFIX=/usr make install
+    tmp_path="$tmp_dir/clipmenu"
+    [[ -r "$tmp_path" ]] || git clone https://github.com/cdown/clipmenu $tmp_path
+    cd $tmp_path && sudo make install
+}
 function show_menu_install() {
     menu_head "安装选项菜单"
     menu_item 1 i3wm
     menu_item 2 polybar
     menu_item 3 picom
     menu_item 4 i3lock_fancy
+    menu_item 5 clipmenu
     menu_item 8 xresources-themes
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
@@ -289,6 +300,7 @@ function start_main() { # 安装菜单选择
             2) compile_polybar          ;;
             3) compile_picom            ;;
             4) compile_i3lock_fancy     ;;
+            5) install_clipmenu         ;;
             8) install_xresources_themes ;;
             9) install_others           ;;
             0) install_dotfiles         ;;

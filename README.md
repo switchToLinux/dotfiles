@@ -24,7 +24,7 @@ chmod +x i3config
 |Shell|[Zsh](https://archlinux.org/packages/extra/x86_64/zsh/)|
 |wallpaper| [feh](https://github.com/derf/feh)-[variety](https://github.com/varietywalls/variety)|
 |Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
-
+|clipboard| [clipmenu](https://github.com/cdown/clipmenu) |
 
 > i3wm 推荐编译源码版本，通常自带版本比较低，有些新功能不支持.
 > 
