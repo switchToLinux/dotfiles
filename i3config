@@ -231,6 +231,10 @@ function install_dotfiles() {
 
     i3_desktop_data="W0Rlc2t0b3AgRW50cnldCk5hbWU9aTMKQ29tbWVudD1pbXByb3ZlZCBkeW5hbWljIHRpbGluZyB3aW5kb3cgbWFuYWdlcgpFeGVjPWkzClRyeUV4ZWM9aTMKVHlwZT1BcHBsaWNhdGlvbgpYLUxpZ2h0RE0tRGVza3RvcE5hbWU9aTMKRGVza3RvcE5hbWVzPWkzCktleXdvcmRzPXRpbGluZzt3bTt3aW5kb3dtYW5hZ2VyO3dpbmRvdzttYW5hZ2VyOwoK"
     sudo sh -c "echo $i3_desktop_data| base64 -d > /usr/share/xsessions/i3.desktop"
+
+    desktop_data="W0Rlc2t0b3AgRW50cnldCkVuY29kaW5nPVVURi04ClR5cGU9QXBwbGljYXRpb24KTmFtZT1pMwpOb0Rpc3BsYXk9dHJ1ZQpHZW5lcmljTmFtZT1BIGR5bmFtaWMgdGlsaW5nIHdpbmRvdyBtYW5hZ2VyCkNvbW1lbnQ9aW1wcm92ZWQgZHluYW1pYyB0aWxpbmcgd2luZG93IG1hbmFnZXIKSWNvbj1pMwpFeGVjPWkzClgtR05PTUUtV01OYW1lPWkzClgtR05PTUUtQXV0b3N0YXJ0LVBoYXNlPVdpbmRvd01hbmFnZXIKWC1HTk9NRS1Qcm92aWRlcz13aW5kb3dtYW5hZ2VyClgtR05PTUUtQXV0b3N0YXJ0LU5vdGlmeT1mYWxzZQoK"
+    sudo sh -c "echo $desktop_data | base64 -d > /usr/share/applications/i3.desktop"
+
     echo "完成 dotfiles 配置任务!"
 }
 
@@ -247,9 +251,9 @@ function compile_i3lock_fancy() {
 }
 function install_others() {
     # 使用命令安装
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpd mpc ncmpcpp dunst
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpd mpclient ncmpcpp dunst
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpd mpclient ncmpcpp dunst
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpd mpc ncmpcpp dunst rxvt-unicode
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
 }
 
 function install_xresources_themes() {
