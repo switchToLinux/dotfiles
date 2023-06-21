@@ -298,6 +298,14 @@ function config_resolution() {
     sed -E -i "s/(font:.*)[0-9]{1,}(\";)/\1$font_size\2/g" ~/.config/rofi/config.rasi
 }
 
+function update_i3config() {
+    # 更新 i3config 到最新版本
+    tmp_path="$tmp_dir/i3config"
+    install_path="$0"
+    curl -sSL -o $tmp_path https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
+    [[ "$?" == "0" ]] && mv ${install_path} ${install_path}.old && mv $tmp_path ${install_path}
+}
+
 function show_menu_install() {
     menu_head "安装选项菜单"
     menu_item 1 i3wm
@@ -310,6 +318,7 @@ function show_menu_install() {
     menu_item 0 dotfiles
     menu_item x match_resolution
     menu_tail
+    menu_item u update_i3config
     menu_item q 返回上级菜单
     menu_tail
 }
@@ -328,6 +337,7 @@ function start_main() { # 安装菜单选择
             9) install_others           ;;
             0) install_dotfiles         ;;
             x) config_resolution        ;;
+            u) update_i3config          ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
         esac
