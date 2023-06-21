@@ -29,8 +29,8 @@ font $default_fonts
 
 # window border settings
 # 默认窗口边框设置(有边框才能显示 split indicator)
-default_border     pixel   1
-default_floating_border pixel 1
+default_border     pixel   2
+default_floating_border pixel 2
 
 # hiding borders adjacent to the screen edges
 #隐藏窗口边缘
@@ -45,7 +45,7 @@ smart_gaps off
 gaps inner 0
 gaps outer 0
 # 设置窗口垂直间距(给bar留出悬浮空间)
-gaps vertical 10
+gaps vertical 0
 gaps horizontal 0
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
@@ -240,18 +240,28 @@ for_window [title="Preferences$"]  floating enable
 
 # Color shemes for windows
 # use ~/.Xresources color schema
-set $focused_color  #F0F000
-set $bgcolor        #523d6499
-set $unfocus_color  #3636364D
-set $text           #ffffff
-set $u_bgcolor      #ff0000
-set $indicator      #ff0000
-set $unfocus_text   #969696
+# The ~/.Xresources should contain a line such as
+#     *color0: #121212
+# and must be loaded properly, e.g., by using
+#     xrdb ~/.Xresources
+# This value is picked up on by other applications (e.g., the URxvt terminal
+# emulator) and can be used in i3 like this:
+# set_from_resource $<name> <resource_name> <fallback>
+# set_from_resource $black i3wm.color0 #000000
+
+# set $focused_color  #F0F000
+set_from_resource $focused_color    background  #00303030
+set_from_resource $bgcolor          background  #523d6499
+set_from_resource $unfocus_color    fadeColor   #3636364D
+set_from_resource $text             foreground  #ffffff
+set_from_resource $u_bgcolor        color1      #ff0000
+set_from_resource $indicator        color1      #ff0000
+set_from_resource $unfocus_text     fadeColor   #969696
 
 # class                 border          background      text            indicator       child_border
 client.focused          $focused_color  $bgcolor        $text           $indicator      $focused_color
-client.unfocused        $unfocus_color  $bgcolor        $unfocus_text   $unfocus_color  $unfocus_color
-client.focused_inactive $unfocus_color  $bgcolor        $unfocus_text   $unfocus_color  $unfocus_color
+client.unfocused        $unfocus_color  $unfocus_color  $unfocus_text   $unfocus_color  $unfocus_color
+client.focused_inactive $unfocus_color  $unfocus_color  $unfocus_text   $unfocus_color  $unfocus_color
 client.urgent           $focused_color  $bgcolor        $text           $u_bgcolor      $u_bgcolor
 
 
