@@ -276,6 +276,28 @@ function install_clipmenu() {
     [[ -r "$tmp_path" ]] || git clone https://github.com/cdown/clipmenu $tmp_path
     cd $tmp_path && sudo make install
 }
+function config_resolution() {
+    # 自适应分辨率 1080p/2k/4k
+    # 获取屏幕分辨率
+    resolution=$(xrandr | grep ' connected primary' | awk '{print $4}' | awk -F'[x+]' '{ print $2 }')
+    # 分辨率检测并设置polybar高度
+    if [[ $resolution -le 1080 ]] ; then # 老旧非高分屏幕 11英寸-13英寸
+        dpi=96
+        font_size=10
+    elif [[ $resolution -le 1440 ]]; then
+        dpi=140
+        font_size=12
+    else # elif [[ $resolution -gt 1440 ]]; then
+        dpi=196
+        font_size=12
+    fi
+    echo "resolution: $resolution , dpi: $dpi , font_size: $font_size"
+    # 修改跟分辨率相关配置
+    sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" ~/.Xresources
+    sed -i "s/dpi:.*/dpi: $dpi;/g" ~/.config/rofi/config.rasi
+    sed -E -i "s/(font:.*)[0-9]{1,}(\";)/\1$font_size\2/g" ~/.config/rofi/config.rasi
+}
+
 function show_menu_install() {
     menu_head "安装选项菜单"
     menu_item 1 i3wm
@@ -286,6 +308,7 @@ function show_menu_install() {
     menu_item 8 xresources-themes
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
+    menu_item x match_resolution
     menu_tail
     menu_item q 返回上级菜单
     menu_tail
@@ -304,6 +327,7 @@ function start_main() { # 安装菜单选择
             8) install_xresources_themes ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
+            x) config_resolution        ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
         esac
