@@ -13,6 +13,7 @@
 # 环境变量参数:
 #   OUTPUTLOG - no 表示只输出日志信息到文件中,不在终端显示，默认为 yes(终端显示)
 #
+I3CONFIG_VERSION="v0.1.0"
 
 source ~/.bashrc
 
@@ -317,12 +318,13 @@ function update_i3config() {
     # 更新 i3config 到最新版本
     tmp_path="$tmp_dir/i3config"
     install_path="$0"
-    curl -sSL -o $tmp_path https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
+    curl -L -o $tmp_path https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
     [[ "$?" == "0" ]] && mv ${install_path} ${install_path}.old && mv $tmp_path ${install_path}
+    echo "已更新 i3config 到最新版本 ${I3CONFIG_VERSION}"
 }
 
 function show_menu_install() {
-    menu_head "安装选项菜单"
+    menu_head "i3config ${I3CONFIG_VERSION} 安装选项菜单"
     menu_item 1 i3wm
     menu_item 2 polybar
     menu_item 3 picom
