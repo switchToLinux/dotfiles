@@ -52,8 +52,12 @@ line_feed="+------------------------------------------------------------+"
 tmp_dir=/tmp
 item_index=0   # 记录菜单选项序号
 item_line_count=2   # 每行显示菜单数量
-MLEN=60   # 单行最大长度
 ILEN=30   # 单个选项长度
+MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
+
+# 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
+export TERM=xterm-256color
+export COLORTERM=truecolor
 
 function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|$TC $@ $NC" ; tput hpa $rlen ; echo "|" ; }
 function menu_head() { echo $line_feed ;   menu_line "$@" ; echo $line_feed ; }
