@@ -273,14 +273,71 @@ function install_others() {
     which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
 }
 
+function select_xresources_themes() {
+    tmp_path=~/.config/Xresources-themes
+    current_input=""
+    basedir="$tmp_path"
+    exit_loop=false
+    selected_theme=""
+
+    menu_head "Xresources-themes主题(大量主题集合):"
+    menu_iteml base16   "166个 base16 主题"
+    menu_iteml iterm2   "162个 iterm2 主题"
+    menu_iteml xcolors  "113个 xcolors 主题"
+    menu_iteml raven    "8个 raven 主题"
+    menu_iteml nord     "1个 nord 主题"
+    menu_iteml arcadia  "6个 arcadia 主题"
+    menu_iteml hyper    "2个 hyper 主题"
+    menu_iteml random   "random 随机一个主题"
+    menu_tail
+    echo "请输入主题名称"
+    while ! $exit_loop; do
+        read -r -s -n 1 char
+
+        if [[ $char == $'\177' ]]; then # 退格键
+            current_input="${current_input%?}"
+        elif [[ "$char" == '' ]]; then # 输入为空时表示结束输入
+            exit_loop=true
+        else # 将输入的字符追加到当前目录
+            current_input="${current_input}${char}"
+        fi
+
+        # 清除当前行并显示新内容
+        tput el1  && echo -ne "\r输入主题名称: ${current_input}"
+
+        if [[ "${current_input}" == "random" ]] ; then  # 随机选择一个主题
+            maxn=`ls -r "$basedir"|wc -l`
+            str_rand="$(($RANDOM%${maxn}))"
+            selected_theme=`ls -r "$basedir" |sed -n "${str_rand}p"`
+            break
+        fi
+        # 列出匹配的文件和目录
+        selected_theme=$(ls -r "$basedir" | grep -m 1 "$current_input")
+        ls -r "$basedir" | grep "$current_input" | sed 's/.Xresources//g' | while read -r entry; do
+            echo -n " $entry"
+        done
+    done
+
+    selected_theme="${selected_theme//[$'\t\r\n ']}"
+    echo
+    prompt "您选择的主题为: ${selected_theme}" || return 1
+    sed -E -i "s|^(#include \".config/Xresources-themes/)(.*.Xresources)\"|\1${selected_theme}\"|g" ~/.Xresources
+    xrdb ~/.Xresources && i3-msg restart
+    menu_iteml "成功切换为 $selected_theme 主题"
+    menu_tail
+}
+
 function install_xresources_themes() {
     # 配置 ~/.Xresources 主题
     echo "配置 ~/.Xresources 主题"
     tmp_path=~/.config/Xresources-themes
+    [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
     [[ -r $tmp_path ]] || git clone https://github.com/janoamaral/Xresources-themes $tmp_path
-    echo "how to use the Xresources themes?"
-    echo "add theme file to ~/.Xresources file:"
-    echo "#include \"$tmp_path/nord.Xresources\""
+    # echo "how to use the Xresources themes?"
+    # echo "add theme file to ~/.Xresources file:"
+    # echo "#include \"$tmp_path/nord.Xresources\""
+    # Xresources主题设置
+    select_xresources_themes
 }
 
 function install_clipmenu() {
@@ -334,6 +391,8 @@ function show_menu_install() {
     menu_item 8 xresources-themes
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
+    menu_tail
+    menu_item s select_xresources_themes
     menu_item x match_resolution
     menu_tail
     menu_item u update_i3config
@@ -354,6 +413,7 @@ function start_main() { # 安装菜单选择
             8) install_xresources_themes ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
+            s) select_xresources_themes ;;
             x) config_resolution        ;;
             u) update_i3config          ;;
             q|"") return 0              ;;  # 返回上级菜单
