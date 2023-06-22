@@ -14,6 +14,7 @@
 #   OUTPUTLOG - no 表示只输出日志信息到文件中,不在终端显示，默认为 yes(终端显示)
 #
 I3CONFIG_VERSION="v0.1.0"
+dotfiles_path=$HOME/.config/dotfiles
 
 source ~/.bashrc
 
@@ -82,7 +83,7 @@ function menu_info() { n=$1 ; shift ; echo -e "|  $BG ${n} $NC $@" ; }
 function menu_tail() { [[ "$item_index" != "0" ]] && echo "|" ; echo $line_feed ; item_index=0 ; }
 
 # 日志记录
-log_file="/tmp/one4all.log"
+log_file="/tmp/i3config.log"
 function output_msg() { LEVEL="$1" ; shift ; echo -e "$(date +'%Y年%m月%d日%H:%M:%S'):${LEVEL}: $@" ; }
 function output_log() { if [ "$OUTPUTLOG" = "yes" ] ; then  output_msg $@ | tee -a $log_file ; else output_msg $@ >> $log_file ; fi }
 function loginfo() { output_log "INFO" $@  ; }
@@ -224,8 +225,8 @@ function compile_picom() {
 }
 function install_dotfiles() {
     # 克隆自己的 dotfiles 配置文档
-    tmp_path=$HOME/.config/dotfiles
-    [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 代码已经克隆过， 是否重新克隆安装?\"`" && rm -rf $tmp_path
+    tmp_path=$dotfiles_path
+    [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 代码已经克隆过， 是否重新克隆安装?\"`" && mv ${tmp_path} ${tmp_path}.`date +%Y%m%d%H%M`
     [[ -d "$tmp_path" ]] || git clone https://github.com/switchToLinux/dotfiles.git $tmp_path
     cd $tmp_path && [[ -f .gitmodules ]] && {
         echo_green "获取所有子模块"
@@ -309,9 +310,8 @@ function config_resolution() {
     fi
     echo "resolution: $resolution , dpi: $dpi , font_size: $font_size"
     # 修改跟分辨率相关配置
-    sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" ~/.Xresources
-    sed -i "s/dpi:.*/dpi: $dpi;/g" ~/.config/rofi/config.rasi
-    sed -E -i "s/(font:.*)[0-9]{1,}(\";)/\1$font_size\2/g" ~/.config/rofi/config.rasi
+    sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" $dotfiles_path/Xresources
+    sed -E -i "s/dpi:.*/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" $dotfiles_path/rofi/config.rasi
 }
 
 function update_i3config() {
