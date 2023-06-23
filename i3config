@@ -62,14 +62,12 @@ MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
 function check_term() {
 	echo "Checking term type : $TERM "
 	echo "Checking term color: $COLORTERM"
-	echo "$TERM terminal support color: `tput colors`"
-	echo "truecolor/24bit support more color values"
-	echo "8bit only support 0-7 color values"
     # 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
     export TERM=xterm
     export COLORTERM=truecolor
-    echo "current term type: $TERM"
-    echo "current term color: $COLORTERM"
+    echo "当前终端类型: $TERM"
+    echo "当前终端色彩: $COLORTERM ,但实际终端支持色彩: `tput colors`"
+	echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
 }
 
 function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|$TC $@ $NC" ; tput hpa $rlen ; echo "|" ; }
@@ -273,7 +271,11 @@ function install_others() {
 
 function select_xresources_themes() {
     tput clear
+    echo "配置 ~/.Xresources 主题"
     tmp_path=~/.config/Xresources-themes
+    [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
+    [[ -r $tmp_path ]] || git clone --depth 1 https://github.com/janoamaral/Xresources-themes $tmp_path
+
     current_input=""
     basedir="$tmp_path"
     exit_loop=false
@@ -336,18 +338,7 @@ function select_xresources_themes() {
     menu_tail
 }
 
-function install_xresources_themes() {
-    # 配置 ~/.Xresources 主题
-    echo "配置 ~/.Xresources 主题"
-    tmp_path=~/.config/Xresources-themes
-    [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
-    [[ -r $tmp_path ]] || git clone https://github.com/janoamaral/Xresources-themes $tmp_path
-    # echo "how to use the Xresources themes?"
-    # echo "add theme file to ~/.Xresources file:"
-    # echo "#include \"$tmp_path/nord.Xresources\""
-    # Xresources主题设置
-    select_xresources_themes
-}
+
 
 function install_clipmenu() {
     # 依赖安装
@@ -419,7 +410,6 @@ function start_main() { # 安装菜单选择
             3) compile_picom            ;;
             4) compile_i3lock_fancy     ;;
             5) install_clipmenu         ;;
-            8) install_xresources_themes ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             s) select_xresources_themes ;;
