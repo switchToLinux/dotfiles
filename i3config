@@ -123,7 +123,8 @@ function check_basic() { # 基础依赖命令检测与安装
     which git >/dev/null  2>&1 || sudo $pac_cmd_ins install -y git       # 检测 git 命令
     # Anaconda3 环境可能导致编译失败.
     echo "python3 version: `python3 --version` ,path: `which python3`"
-    anaconda -V >/dev/null 2>&1 && echo "检测到有有 anaconda 环境， 正在执行 conda deactivate 关闭 Anaconda 环境" && conda deactivate
+    # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
+    anaconda -V >/dev/null 2>&1 && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败" && conda deactivate && echo " 本脚本会关闭Anaconda 环境"
     echo "python3 version: `python3 --version` ,path: `which python3`"
 }
 
@@ -227,11 +228,8 @@ function install_dotfiles() {
     # 克隆自己的 dotfiles 配置文档
     tmp_path=$dotfiles_path
     [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 代码已经克隆过， 是否重新克隆安装?\"`" && mv ${tmp_path} ${tmp_path}.`date +%Y%m%d%H%M`
-    [[ -d "$tmp_path" ]] || git clone https://github.com/switchToLinux/dotfiles.git $tmp_path
-    cd $tmp_path && [[ -f .gitmodules ]] && {
-        echo_green "获取所有子模块"
-        ! git submodule update --init --recursive  && logerr "克隆子模块失败!稍后再试试吧" && return 1
-    }
+    [[ -d "$tmp_path" ]] || git clone --depth=1 --shallow-submodules --recurse-submodules https://github.com/switchToLinux/dotfiles.git $tmp_path
+    cd $tmp_path || return 1
     create_symlink $tmp_path/i3_polybar ~/.config/i3
     create_symlink $tmp_path/polybar_themes ~/.config/polybar_themes
     create_symlink $tmp_path/picom ~/.config/picom
@@ -274,6 +272,7 @@ function install_others() {
 }
 
 function select_xresources_themes() {
+    tput clear
     tmp_path=~/.config/Xresources-themes
     current_input=""
     basedir="$tmp_path"
@@ -289,8 +288,9 @@ function select_xresources_themes() {
     menu_iteml arcadia  "6个 arcadia 主题"
     menu_iteml hyper    "2个 hyper 主题"
     menu_iteml random   "random 随机一个主题"
+    menu_iteml "推荐: nord"
     menu_tail
-    echo "请输入主题名称"
+    echo -n "输入主题名称:"
     while ! $exit_loop; do
         read -r -s -n 1 char
 
@@ -311,11 +311,20 @@ function select_xresources_themes() {
             selected_theme=`ls -r "$basedir" |sed -n "${str_rand}p"`
             break
         fi
-        # 列出匹配的文件和目录
+        # 获取终端窗口的行数
+        rows=$(tput lines)
+        # 保存当前光标位置
+        tput sc
+        # 将光标移动到最后一行
+        echo
+        tput el
+        # 列出匹配的文件和目录,仅显示前10条
         selected_theme=$(ls -r "$basedir" | grep -m 1 "$current_input")
-        ls -r "$basedir" | grep "$current_input" | sed 's/.Xresources//g' | while read -r entry; do
+        ls -r "$basedir" | grep "$current_input" | sed 's/.Xresources//g' | head -10 | while read -r entry; do
             echo -n " $entry"
         done
+        # 恢复光标位置
+        tput rc
     done
 
     selected_theme="${selected_theme//[$'\t\r\n ']}"
