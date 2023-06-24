@@ -250,18 +250,6 @@ function install_dotfiles() {
 
     echo "完成 dotfiles 配置任务!"
 }
-
-function compile_i3lock_fancy() {
-    url="https://github.com/meskarune/i3lock-fancy.git"
-    tmp_path=$tmp_dir/i3lock_fancy
-    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
-    [[ -d "$tmp_path" ]] || git clone $url $tmp_path
-    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
-    
-    install_build_deps
-    cd $tmp_path && sudo make install
-
-}
 function compile_i3lock_color() {
     url="https://github.com/Raymo111/i3lock-color.git"
     tmp_path=$tmp_dir/i3lock-color
@@ -271,7 +259,6 @@ function compile_i3lock_color() {
     
     install_build_deps
     cd $tmp_path && ./install-i3lock-color.sh
-
 }
 function install_others() {
     # 使用命令安装

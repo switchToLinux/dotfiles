@@ -15,7 +15,7 @@ chmod +x i3config
 |:---:|:---:|
 |WM|[i3wm](https://github.com/i3/i3)|
 |Bar|[Polybar](https://github.com/polybar/polybar)|
-|Menu|[Rofi](https://github.com/davatorium/rofi)|
+|Menu|[Rofi](https://github.com/davatorium/rofi)-[rofi-themes](https://github.com/adi1090x/rofi)|
 |Compositor|[Picom](https://archlinux.org/packages/community/x86_64/picom/)|
 |Terminal|[konsole](https://konsole.kde.org)|
 |Widgets|[eww,ElKowars wacky widgets](https://github.com/elkowar/eww)|
@@ -47,7 +47,8 @@ chmod +x i3config
 - [x] 配置 dunst 通知管理
 - [x] 配置 rofi 启动器
 - [x] 配置 ~/.Xresources 主题
-
+- [x] 配置 rofi 主题(包含启动器、小插件和powermenu)
+- [x] 锁屏工具选择`i3lock-color`版本替换原有的i3lock
 
 ## 关于配置快捷键
 
