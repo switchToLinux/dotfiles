@@ -468,9 +468,8 @@ function show_menu_install() {
     menu_item 1 i3wm
     menu_item 2 polybar
     menu_item 3 picom
-    menu_item 4 i3lock_fancy
+    menu_item 4 i3lock_color
     menu_item 5 clipmenu
-    menu_item 6 i3lock_color
     menu_item 8 xresources-themes
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
@@ -492,9 +491,8 @@ function start_main() { # 安装菜单选择
             1) compile_i3wm             ;;
             2) compile_polybar          ;;
             3) compile_picom            ;;
-            4) compile_i3lock_fancy     ;;
+            4) compile_i3lock_color     ;;
             5) install_clipmenu         ;;
-            6) compile_i3lock_color     ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             r) select_rofi_themes       ;;
