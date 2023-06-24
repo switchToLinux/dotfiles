@@ -269,29 +269,12 @@ function install_others() {
     which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
 }
 
-function select_xresources_themes() {
-    tput clear
-    echo "配置 ~/.Xresources 主题"
-    tmp_path=~/.config/Xresources-themes
-    [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
-    [[ -r $tmp_path ]] || git clone --depth 1 https://github.com/janoamaral/Xresources-themes $tmp_path
-
-    current_input=""
-    basedir="$tmp_path"
-    exit_loop=false
-    selected_theme=""
-
-    menu_head "Xresources-themes主题(大量主题集合):"
-    menu_iteml base16   "166个 base16 主题"
-    menu_iteml iterm2   "162个 iterm2 主题"
-    menu_iteml xcolors  "113个 xcolors 主题"
-    menu_iteml raven    "8个 raven 主题"
-    menu_iteml nord     "1个 nord 主题"
-    menu_iteml arcadia  "6个 arcadia 主题"
-    menu_iteml hyper    "2个 hyper 主题"
-    menu_iteml random   "random 随机一个主题"
-    menu_iteml "推荐: nord"
-    menu_tail
+# 主题选择工具,选择结果保存在 select_theme 变量中
+function common_select() {
+    local theme_dir="$1"
+    local prefix="$2"
+    local current_input=""
+    local exit_loop=false
     echo -n "输入主题名称:"
     while ! $exit_loop; do
         read -r -s -n 1 char
@@ -305,24 +288,21 @@ function select_xresources_themes() {
         fi
 
         # 清除当前行并显示新内容
-        tput el1  && echo -ne "\r输入主题名称: ${current_input}"
+        tput ed  && echo -ne "\r输入主题名称: ${current_input}"
 
         if [[ "${current_input}" == "random" ]] ; then  # 随机选择一个主题
-            maxn=`ls -r "$basedir"|wc -l`
+            maxn=`ls "$theme_dir" | grep "$prefix"|wc -l`
             str_rand="$(($RANDOM%${maxn}))"
-            selected_theme=`ls -r "$basedir" |sed -n "${str_rand}p"`
+            selected_theme=`ls "$theme_dir" | grep "$prefix" |sed -n "${str_rand}p"`
             break
         fi
-        # 获取终端窗口的行数
-        rows=$(tput lines)
         # 保存当前光标位置
         tput sc
         # 将光标移动到最后一行
         echo
-        tput el
         # 列出匹配的文件和目录,仅显示前10条
-        selected_theme=$(ls -r "$basedir" | grep -m 1 "$current_input")
-        ls -r "$basedir" | grep "$current_input" | sed 's/.Xresources//g' | head -10 | while read -r entry; do
+        selected_theme=$(ls "$theme_dir" | grep "$prefix" | grep -m 1 "$current_input")
+        ls "$theme_dir" | grep "$prefix" | grep "$current_input" | head -10 | while read -r entry; do
             echo -n " $entry"
         done
         # 恢复光标位置
@@ -331,14 +311,70 @@ function select_xresources_themes() {
 
     selected_theme="${selected_theme//[$'\t\r\n ']}"
     echo
+    tput ed
     prompt "您选择的主题为: ${selected_theme}" || return 1
+}
+
+function select_xresources_themes() {
+    tput clear
+    echo "配置 ~/.Xresources 主题"
+    tmp_path=~/.config/Xresources-themes
+    [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
+    [[ -r $tmp_path ]] || git clone --depth 1 https://github.com/janoamaral/Xresources-themes $tmp_path
+
+    selected_theme=""
+
+    menu_head "Xresources-themes主题(大量主题集合):"
+    menu_iteml base16   "166个 base16 主题"
+    menu_iteml iterm2   "162个 iterm2 主题"
+    menu_iteml xcolors  "113个 xcolors 主题"
+    menu_iteml raven    "8个 raven 主题"
+    menu_iteml nord     "1个 nord 主题"
+    menu_iteml arcadia  "6个 arcadia 主题"
+    menu_iteml hyper    "2个 hyper 主题"
+    menu_iteml random   "random 随机一个主题"
+    menu_iteml "推荐: nord"
+    menu_iteml "提示:将替换 \$mod+d 快捷键对应执行命令为启动器脚本"
+    menu_tail
+    
+    common_select "$tmp_path" "" || return 1
+    [[ "$select_theme" == "" ]] && select_theme="nord"
     sed -E -i "s|^(#include \".config/Xresources-themes/)(.*.Xresources)\"|\1${selected_theme}\"|g" ~/.Xresources
     xrdb ~/.Xresources && i3-msg restart
     menu_iteml "成功切换为 $selected_theme 主题"
     menu_tail
 }
 
+function select_rofi_themes() {
+    echo "开始安装 rofi themes"
+    tmp_path=~/.config/rofi
+    [[ -r $tmp_path ]] && prompt "已经拷贝过 rofi-themes 了，是否重新拷贝?" && rm -rf $tmp_path
+    if [[ ! -r $tmp_path ]] ; then
+        git clone --depth 1 https://github.com/adi1090x/rofi.git $tmp_path
+        cd $tmp_path && bash ./setup.sh && echo "安装 rofi themes 成功"
+    fi
+    #选择rofi主题(Applet/Launcher/Powermenus)
+    menu_head "rofi-themes主题(大量主题集合):"
+    menu_iteml launchers   "启动器主题"
+    menu_iteml applets    "小插件主题"
+    menu_iteml "推荐: 根据官网 https://github.com/adi1090x/rofi 示例进行选择适合自己的主题"
+    menu_tail
+    selected_theme=""
+    common_select "$tmp_path/launchers" "type" || return 1
+    theme_name="${selected_theme}"
+    [[ "$theme_name" == "" ]] && theme_name="type-3"
+    selected_theme=""
+    common_select "$tmp_path/launchers/${theme_name}/" "style" || return 1
+    style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
+    [[ "$style_name" == "" ]] && style_name="style-1"
 
+    sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+    sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
+
+    menu_iteml "成功切换为 $theme_name 主题, 应用 ${style_name} 类型"
+    i3-msg restart
+    menu_tail
+}
 
 function install_clipmenu() {
     # 依赖安装
@@ -367,8 +403,8 @@ function config_resolution() {
     fi
     echo "resolution: $resolution , dpi: $dpi , font_size: $font_size"
     # 修改跟分辨率相关配置
-    sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" $dotfiles_path/Xresources
-    sed -E -i "s/dpi:.*/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" $dotfiles_path/rofi/config.rasi
+    sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" ~/.Xresources
+    sed -E -i "s/dpi:.*/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" ~/.config/rofi/config.rasi
 }
 
 function update_i3config() {
@@ -392,6 +428,7 @@ function show_menu_install() {
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
+    menu_item r select_rofi_themes
     menu_item s select_xresources_themes
     menu_item x match_resolution
     menu_tail
@@ -412,6 +449,7 @@ function start_main() { # 安装菜单选择
             5) install_clipmenu         ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
+            r) select_rofi_themes       ;;
             s) select_xresources_themes ;;
             x) config_resolution        ;;
             u) update_i3config          ;;
