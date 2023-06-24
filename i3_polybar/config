@@ -15,7 +15,7 @@
 set $mod Mod4
 
 # set locker variable
-set $Locker i3lock-fancy -f Source-Sans-Pro && sleep 1
+set $Locker sleep 1 && $HOME/.config/polybar_themes/scripts/i3lock_round.sh
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -197,7 +197,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r exec xrdb -I$HOME ~/.Xresources , restart
 
 # 设置 锁屏、退出、重启、关机操作功能
-bindsym $mod+shift+l exec i3-nagbar -t warning -f $default_fonts -m "Exit?" -B "    " "i3-msg exit" -B "    " "pkill i3-nagbar && $Locker" -B "    " "pkill i3-nagbar && reboot" -B "    " "pkill i3-nagbar && shutdown -h now"
+bindsym $mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/type-2/powermenu.sh
 bindsym $mod+l exec  $Locker
 
 # resize window (you can also use the mouse for that)

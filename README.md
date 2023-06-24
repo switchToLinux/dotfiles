@@ -25,6 +25,7 @@ chmod +x i3config
 |wallpaper| [feh](https://github.com/derf/feh)-[variety](https://github.com/varietywalls/variety)|
 |Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
 |clipboard| [clipmenu](https://github.com/cdown/clipmenu) |
+|locker| [i3lock-color](https://github.com/Raymo111/i3lock-color)|
 
 > i3wm 推荐编译源码版本，通常自带版本比较低，有些新功能不支持.
 > 

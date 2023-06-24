@@ -262,11 +262,22 @@ function compile_i3lock_fancy() {
     cd $tmp_path && sudo make install
 
 }
+function compile_i3lock_color() {
+    url="https://github.com/Raymo111/i3lock-color.git"
+    tmp_path=$tmp_dir/i3lock-color
+    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
+    [[ -d "$tmp_path" ]] || git clone $url $tmp_path
+    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
+    
+    install_build_deps
+    cd $tmp_path && ./install-i3lock-color.sh
+
+}
 function install_others() {
     # 使用命令安装
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpd mpc ncmpcpp dunst rxvt-unicode
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpd mpclient ncmpcpp dunst rxvt-unicode
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpc dunst rxvt-unicode
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpclient dunst rxvt-unicode
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpclient dunst rxvt-unicode
 }
 
 # 主题选择工具,选择结果保存在 select_theme 变量中
@@ -299,7 +310,7 @@ function common_select() {
         # 保存当前光标位置
         tput sc
         # 将光标移动到最后一行
-        echo
+        echo -n "  >>"
         # 列出匹配的文件和目录,仅显示前10条
         selected_theme=$(ls "$theme_dir" | grep "$prefix" | grep -m 1 "$current_input")
         ls "$theme_dir" | grep "$prefix" | grep "$current_input" | head -10 | while read -r entry; do
@@ -334,7 +345,6 @@ function select_xresources_themes() {
     menu_iteml hyper    "2个 hyper 主题"
     menu_iteml random   "random 随机一个主题"
     menu_iteml "推荐: nord"
-    menu_iteml "提示:将替换 \$mod+d 快捷键对应执行命令为启动器脚本"
     menu_tail
     
     common_select "$tmp_path" "" || return 1
@@ -358,19 +368,55 @@ function select_rofi_themes() {
     menu_iteml launchers   "启动器主题"
     menu_iteml applets    "小插件主题"
     menu_iteml "推荐: 根据官网 https://github.com/adi1090x/rofi 示例进行选择适合自己的主题"
+    menu_iteml "提示:将替换 \$mod+d 快捷键对应执行命令为启动器脚本"
+    menu_iteml "提示:将替换 \$mod+shift+l 快捷键对应执行命令为powermenu"
     menu_tail
-    selected_theme=""
-    common_select "$tmp_path/launchers" "type" || return 1
-    theme_name="${selected_theme}"
-    [[ "$theme_name" == "" ]] && theme_name="type-3"
-    selected_theme=""
-    common_select "$tmp_path/launchers/${theme_name}/" "style" || return 1
-    style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
-    [[ "$style_name" == "" ]] && style_name="style-1"
 
-    sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
-    sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
+    if prompt "选择 启动器:" ; then
+        selected_theme=""
+        common_select "$tmp_path/launchers" "type" || return 1
+        theme_name="${selected_theme}"
+        [[ "$theme_name" == "" ]] && theme_name="type-3"
+        selected_theme=""
+        common_select "$tmp_path/launchers/${theme_name}/" "style" || return 1
+        style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
+        [[ "$style_name" == "" ]] && style_name="style-1"
 
+        sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+        sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
+    fi
+    if prompt "选择 applets:" ; then
+        selected_theme=""
+        common_select "$tmp_path/applets" "type" || return 1
+        theme_name="${selected_theme}"
+        [[ "$theme_name" == "" ]] && theme_name="type-3"
+        selected_theme=""
+        common_select "$tmp_path/applets/${theme_name}/" "style" || return 1
+        style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
+        [[ "$style_name" == "" ]] && style_name="style-1"
+        # change theme  type="$HOME/.config/rofi/applets/type-1" # style='style-1.rasi'
+        sed -i "s|config/rofi/applets/type-[0-9]+|config/rofi/applets/${theme_name}|g;s|='style-1.rasi|='${style_name}.rasi|g" ~/.config/rofi/applets/shared/theme.bash
+        echo "选择 applets 颜色方案:"
+        selected_theme=""
+        common_select "$tmp_path/applets" "type" || return 1
+        theme_name="${selected_theme}"
+        [[ "$theme_name" == "" ]] && theme_name="type-3"
+        
+        # change color @import "~/.config/rofi/colors/onedark.rasi"
+        sed -i "s|^config/rofi/applets/shared/(.*).rasi|config/rofi/applets/shared/${theme_name}.rasi|g" ~/.config/rofi/applets/shared/colors.rasi
+    fi
+    if prompt "选择 powermenu:" ; then
+        selected_theme=""
+        common_select "$tmp_path/powermenu" "type" || return 1
+        theme_name="${selected_theme}"
+        [[ "$theme_name" == "" ]] && theme_name="type-3"
+        selected_theme=""
+        common_select "$tmp_path/powermenu/${theme_name}/" "style" || return 1
+        style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
+        [[ "$style_name" == "" ]] && style_name="style-1"
+
+        sed -i "s|^bindsym \$mod+shift+l exec.*|bindsym \$mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/${theme_name}/powermenu.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+    fi
     menu_iteml "成功切换为 $theme_name 主题, 应用 ${style_name} 类型"
     i3-msg restart
     menu_tail
@@ -424,6 +470,7 @@ function show_menu_install() {
     menu_item 3 picom
     menu_item 4 i3lock_fancy
     menu_item 5 clipmenu
+    menu_item 6 i3lock_color
     menu_item 8 xresources-themes
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
@@ -447,6 +494,7 @@ function start_main() { # 安装菜单选择
             3) compile_picom            ;;
             4) compile_i3lock_fancy     ;;
             5) install_clipmenu         ;;
+            6) compile_i3lock_color     ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             r) select_rofi_themes       ;;
