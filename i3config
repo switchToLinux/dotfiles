@@ -276,6 +276,10 @@ function install_urxvt_ext() {
 
 }
 # 主题选择工具,选择结果保存在 select_theme 变量中
+# 用法 common_select <theme_dir> <prefix_str>
+# theme_dir ： 用于列举子目录下的选项
+# prefix_str : 用于过滤条件，比如只希望包含.ini的文件列表就可以设置为 ".ini"
+# 输入表达式说明： 支持正则匹配，例如 ^abc$ 就只会匹配 abc 字符串，因为输入内容会作为grep的匹配表达式.
 function common_select() {
     local theme_dir="$1"
     local prefix="$2"
@@ -318,7 +322,56 @@ function common_select() {
     selected_theme="${selected_theme//[$'\t\r\n ']}"
     echo
     tput ed
-    prompt "您的${prefix}选择为: ${selected_theme}" || return 1
+    prompt "您的${prefix}选择为: ${selected_theme}" || selected_theme=""
+}
+# 主题选择工具,选择结果保存在 select_theme 变量中
+# 用法 common_list_select <data_list> <prompt>
+# data_list : 数据列表，一行一个选项
+# prompt : 提示符，仅用于提示，无其他用途
+# 输入表达式说明： 支持正则匹配，例如 ^abc$ 就只会匹配 abc 字符串，因为输入内容会作为grep的匹配表达式.
+function common_list_select() {
+    local data_list="$1"
+    local prefix="$2"
+    local current_input=""
+    local exit_loop=false
+    echo -n "输入${prefix}名称:"
+    while ! $exit_loop; do
+        read -r -s -n 1 char
+
+        if [[ $char == $'\177' ]]; then # 退格键
+            current_input="${current_input%?}"
+        elif [[ "$char" == '' ]]; then # 输入为空时表示结束输入
+            exit_loop=true
+        else # 将输入的字符追加到当前目录
+            current_input="${current_input}${char}"
+        fi
+
+        # 清除当前行并显示新内容
+        tput ed  && echo -ne "\r输入${prefix}名称: ${current_input}"
+
+        if [[ "${current_input}" == "random" ]] ; then  # 随机选择一个主题
+            maxn=`echo "$data_list" |wc -l`
+            str_rand="$(($RANDOM%${maxn}))"
+            selected_theme=`echo "$data_list" |sed -n "${str_rand}p"`
+            break
+        fi
+        # 保存当前光标位置
+        tput sc
+        # 将光标移动到最后一行
+        echo -n "  >>"
+        # 列出匹配的文件和目录,仅显示前10条
+        selected_theme=$(echo "$data_list" | grep -m 1 "$current_input")
+        echo "$data_list" | grep "$current_input" | head -10 | while read -r entry; do
+            echo -n " $entry"
+        done
+        # 恢复光标位置
+        tput rc
+    done
+
+    selected_theme="${selected_theme//[$'\t\r\n ']}"
+    echo
+    tput ed
+    prompt "您的${prefix}选择为: ${selected_theme}" || selected_theme=""
 }
 
 function select_xresources_themes() {
@@ -460,7 +513,33 @@ function select_rofi_themes() {
     i3-msg restart
     menu_tail
 }
-
+function select_polybar_themes() {
+    prompt "开始设置 polybar 主题"
+    tmp_path="$HOME/.config/polybar_themes"
+    [[ ! -r $tmp_path ]] && return 1
+    menu_head "选择 polybar_themes 主题"
+    selected_theme=""
+    common_select "$tmp_path/themes"
+    theme_name="${selected_theme}"
+    [[ "$theme_name" == "" ]] && theme_name="zioer"
+    menu_head "请为 $theme_name 主题选择 prompt样式(默认triangle)"
+    style_list="`grep '^sep_.*_left = ' ~/.config/polybar_themes/template/icons.ini | awk -F_ '{ a[$2]++}END{for(i in a){ printf("%s\n",i) }}'`"
+    selected_theme=""
+    common_list_select "$style_list" "prompt样式"
+    prompt_style="${selected_theme}"
+    [[ "$prompt_style" == "" ]] && prompt_style="triangle"
+    menu_head "请为 $theme_name 主题选择 颜色搭配方案(默认zioer)"
+    menu_iteml "zioer" "zioer颜色方案默认使用 ~/.Xresources 颜色方案"
+    menu_tail
+    selected_theme=""
+    common_select "$tmp_path/colors"
+    color_name="${selected_theme}"
+    [[ "$color_name" == "" ]] && color_name="zioer"
+    
+    sed -i "s|^exec.*config/polybar_themes.*|exec_always --no-startup-id  ~/.config/polybar_themes/launch.sh ${theme_name} ${prompt_style} ${color_name} > /dev/null 2>\&1|g" ~/.config/i3/config ~/.config/i3/config.d/*
+    menu_iteml "已切换polybar_themes 为 ${theme_name} 主题, ${prompt_style} 样式, ${color_name} 颜色搭配"
+    i3-msg restart
+}
 function install_clipmenu() {
     # 依赖安装
     sudo $pac_cmd_ins install -y xsel
@@ -513,6 +592,7 @@ function show_menu_install() {
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
+    menu_item p select_polybar_themes
     menu_item r select_rofi_themes
     menu_item s select_xresources_themes
     menu_item x match_resolution
@@ -535,6 +615,7 @@ function start_main() { # 安装菜单选择
             8) install_urxvt_ext        ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
+            p) select_polybar_themes    ;;
             r) select_rofi_themes       ;;
             s) select_xresources_themes ;;
             x) config_resolution        ;;
