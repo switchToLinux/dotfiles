@@ -48,13 +48,13 @@ function redr_line()   { printf "\033[0;31;7m$@\033[0m\n" ; }
 function green_line()  { printf "\033[0;32;1m$@\033[0m\n" ; }
 function greenr_line() { printf "\033[0;32;7m$@\033[0m\n" ; }
 
-line_feed="+------------------------------------------------------------+"
+line_feed="+--------------------------------------------------------------------------------+"
 
 # 临时存储代码、下载文件目录
 tmp_dir=/tmp
 item_index=0   # 记录菜单选项序号
 item_line_count=2   # 每行显示菜单数量
-ILEN=30   # 单个选项长度
+ILEN=40   # 单个选项长度
 MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
 
 
@@ -273,7 +273,7 @@ function common_select() {
     local prefix="$2"
     local current_input=""
     local exit_loop=false
-    echo -n "输入主题名称:"
+    echo -n "输入${prefix}名称:"
     while ! $exit_loop; do
         read -r -s -n 1 char
 
@@ -286,7 +286,7 @@ function common_select() {
         fi
 
         # 清除当前行并显示新内容
-        tput ed  && echo -ne "\r输入主题名称: ${current_input}"
+        tput ed  && echo -ne "\r输入${prefix}名称: ${current_input}"
 
         if [[ "${current_input}" == "random" ]] ; then  # 随机选择一个主题
             maxn=`ls "$theme_dir" | grep "$prefix"|wc -l`
@@ -310,7 +310,7 @@ function common_select() {
     selected_theme="${selected_theme//[$'\t\r\n ']}"
     echo
     tput ed
-    prompt "您选择的主题为: ${selected_theme}" || return 1
+    prompt "您的${prefix}选择为: ${selected_theme}" || return 1
 }
 
 function select_xresources_themes() {
@@ -344,12 +344,13 @@ function select_xresources_themes() {
 
 function select_rofi_themes() {
     echo "开始安装 rofi themes"
-    tmp_path=~/.config/rofi
+    tmp_path=~/.config/rofi_themes
     [[ -r $tmp_path ]] && prompt "已经拷贝过 rofi-themes 了，是否重新拷贝?" && rm -rf $tmp_path
     if [[ ! -r $tmp_path ]] ; then
-        git clone --depth 1 https://github.com/adi1090x/rofi.git $tmp_path
+        git clone --depth 1 https://github.com/switchToLinux/rofi_collection.git $tmp_path
         cd $tmp_path && bash ./setup.sh && echo "安装 rofi themes 成功"
     fi
+    tmp_path=~/.config/rofi
     #选择rofi主题(Applet/Launcher/Powermenus)
     menu_head "rofi-themes主题(大量主题集合):"
     menu_iteml launchers   "启动器主题"
@@ -373,38 +374,71 @@ function select_rofi_themes() {
         sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
     fi
     if prompt "选择 applets:" ; then
+        menu_head "选择 applets 类型(默认type-3):"
+        menu_iteml "type-1" "垂直方向显示，图标+文字,居中显示"
+        menu_iteml "type-2" "水平显示内容，图标，居中显示"
+        menu_iteml "type-3" "垂直方向显示, 仅图标,靠右侧边缘显示"
+        menu_iteml "type-4" "水平显示内容，图标，居中显示,顶部有空白显示区域"
+        menu_iteml "type-5" "垂直显示内容，图标+文字，居中显示,左侧有空白显示区域"
         selected_theme=""
         common_select "$tmp_path/applets" "type" || return 1
         theme_name="${selected_theme}"
         [[ "$theme_name" == "" ]] && theme_name="type-3"
+        menu_head "选择 applets 样式(默认style-1):"
+        menu_iteml "style-1" "无圆角类型，按钮长方形"
+        menu_iteml "style-2" "小弧度圆角类型，按钮长方形"
+        menu_iteml "style-3" "大弧度圆角类型，按钮椭圆形"
         selected_theme=""
         common_select "$tmp_path/applets/${theme_name}/" "style" || return 1
         style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
         [[ "$style_name" == "" ]] && style_name="style-1"
         # change theme  type="$HOME/.config/rofi/applets/type-1" # style='style-1.rasi'
-        sed -i "s|config/rofi/applets/type-[0-9]+|config/rofi/applets/${theme_name}|g;s|='style-1.rasi|='${style_name}.rasi|g" ~/.config/rofi/applets/shared/theme.bash
-        echo "选择 applets 颜色方案:"
+        sed -E -i "s|config/rofi/applets/type-([0-9]+)|config/rofi/applets/${theme_name}|g;s|='style-([0-9]+).rasi|='${style_name}.rasi|g" ~/.config/rofi/applets/shared/theme.bash
+        menu_head "选择 applets 颜色方案(默认为 nord):"
         selected_theme=""
-        common_select "$tmp_path/applets" "type" || return 1
-        theme_name="${selected_theme}"
-        [[ "$theme_name" == "" ]] && theme_name="type-3"
+        common_select "$tmp_path/colors" || return 1
+        color_name="${selected_theme}"
+        [[ "$color_name" == "" ]] && color_name="nord"
         
         # change color @import "~/.config/rofi/colors/onedark.rasi"
-        sed -i "s|^config/rofi/applets/shared/(.*).rasi|config/rofi/applets/shared/${theme_name}.rasi|g" ~/.config/rofi/applets/shared/colors.rasi
+        sed -E -i "s|config/rofi/colors/(.*).rasi|config/rofi/colors/${color_name}.rasi|g" ~/.config/rofi/applets/shared/colors.rasi
+        menu_iteml "切换 applets 为 $theme_name 主题, ${style_name} 类型, ${color_name} 颜色方案"
     fi
     if prompt "选择 powermenu:" ; then
+        menu_head "选择 powermenu 主题类型(默认 type-4)"
+        menu_iteml "type-1" "居中显示，图标+文字"
+        menu_iteml "type-2" "居中显示，仅图标"
+        menu_iteml "type-3" "全屏显示，垂直布局，黑色背景"
+        menu_iteml "type-4" "全屏显示，水平布局，渐变色背景"
+        menu_iteml "type-5" "居中显示，水平布局，顶部有空白显示区域"
+        menu_iteml "type-6" "居中显示，垂直布局，左侧有空白显示区域"
         selected_theme=""
         common_select "$tmp_path/powermenu" "type" || return 1
         theme_name="${selected_theme}"
         [[ "$theme_name" == "" ]] && theme_name="type-3"
+        menu_head "选择 powermenu $theme_name 的样式(默认为type-4,style-5)"
+        menu_iteml "提示" "不同type下样式无法归类描述,仅列举典型描述"
+        menu_iteml "type-2,style-4 垂直靠右布局"
+        menu_iteml "type-2,style-5 垂直靠左布局，圆角按钮"
+        menu_iteml "type-2,style-6 水平底部布局，圆角按钮"
+        menu_iteml "type-2,style-8 垂直靠右布局,背景透明，圆角按钮"
+        menu_iteml "type-2,style-10 水平居中布局,背景透明，圆角按钮"
+        menu_iteml "type-3,style-1 水平居中布局,圆角按钮"
+        menu_iteml "type-4,style-1 水平全屏布局,背景透明，圆角按钮"
+        menu_iteml "type-4,style-4 水平全屏布局,背景蓝粉色渐变"
+        menu_iteml "type-4,style-5 水平全屏布局,背景蓝黑色渐变"
+        menu_iteml "type-5,style-4 上下布局,顶部有空白显示图片区域"
+        menu_iteml "type-6,style-4 上下布局,顶部有空白显示图片区域"
+
         selected_theme=""
         common_select "$tmp_path/powermenu/${theme_name}/" "style" || return 1
         style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
         [[ "$style_name" == "" ]] && style_name="style-1"
 
         sed -i "s|^bindsym \$mod+shift+l exec.*|bindsym \$mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/${theme_name}/powermenu.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+        sed -E -i "s|='style-[0-9]+'|='${style_name}'|g" ~/.config/rofi/powermenu/${theme_name}/powermenu.sh
+        menu_iteml "切换 powermenu 为 $theme_name 主题, 应用 ${style_name} 类型"
     fi
-    menu_iteml "成功切换为 $theme_name 主题, 应用 ${style_name} 类型"
     i3-msg restart
     menu_tail
 }
@@ -437,7 +471,7 @@ function config_resolution() {
     echo "resolution: $resolution , dpi: $dpi , font_size: $font_size"
     # 修改跟分辨率相关配置
     sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" ~/.Xresources
-    sed -E -i "s/dpi:.*/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" ~/.config/rofi/config.rasi
+    sed -E -i "s/dpi:.*;/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" ~/.config/rofi/config.rasi
 }
 
 function update_i3config() {

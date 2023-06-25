@@ -197,7 +197,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r exec xrdb -I$HOME ~/.Xresources , restart
 
 # 设置 锁屏、退出、重启、关机操作功能
-bindsym $mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/type-2/powermenu.sh
+bindsym $mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/type-4/powermenu.sh
 bindsym $mod+l exec  $Locker
 
 # resize window (you can also use the mouse for that)
