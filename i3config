@@ -251,6 +251,7 @@ function install_dotfiles() {
     echo "完成 dotfiles 配置任务!"
 }
 function compile_i3lock_color() {
+    prompt "编译安装 i3lock-color" || return 1
     url="https://github.com/Raymo111/i3lock-color.git"
     tmp_path=$tmp_dir/i3lock-color
     [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
@@ -336,7 +337,7 @@ function select_xresources_themes() {
     
     common_select "$tmp_path" "" || return 1
     [[ "$select_theme" == "" ]] && select_theme="nord"
-    sed -E -i "s|^(#include \".config/Xresources-themes/)(.*.Xresources)\"|\1${selected_theme}\"|g" ~/.Xresources
+    sed -E -i "s|^(#include \".config/Xresources-themes/)(.*)\"|\1${selected_theme}\"|g" ~/.Xresources
     xrdb ~/.Xresources && i3-msg restart
     menu_iteml "成功切换为 $selected_theme 主题"
     menu_tail
@@ -361,6 +362,14 @@ function select_rofi_themes() {
     menu_tail
 
     if prompt "选择 启动器:" ; then
+        menu_head "提示" "样式比较多，很难一一描述,仅列举常用几个"
+        menu_iteml "type-1/style-10" "水平顶部条状布局"
+        menu_iteml "type-2/style-6" "垂直靠左布局，类似侧边栏效果"
+        menu_iteml "type-3/style-9" "垂直靠右布局，类似侧边栏效果"
+        menu_iteml "type-4/style-10" "垂直靠右布局，类似侧边栏效果"
+        menu_iteml "type-5/style-3" "垂直居中布局"
+        menu_iteml "type-6/style-5" "垂直居中布局"
+        menu_iteml "type-7/style-4" "垂直靠左布局，类似侧边栏效果"
         selected_theme=""
         common_select "$tmp_path/launchers" "type" || return 1
         theme_name="${selected_theme}"
