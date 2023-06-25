@@ -1,38 +1,41 @@
-
-URxvt.perl-ext-common:  default,matcher,selection-to-clipboard,resize-font
+URxvt.perl-ext-common:  default,matcher,selection-to-clipboard,font-szie
 
 ! font and colors
 ! xft:Noto Sans Mono CJK SC Mono:style=Regular:size=12,
-URxvt.font: xft:DejaVu Sans Mono for Powerline:style=Regular:size=12,xft:EmojiOne Color:style=Regular:size=12
+URxvt.font: xft:DejaVu Sans Mono for Powerline:style=Regular:size=12
 ! if the distance between characters can feel too wide. The spacing can be reduced by one pixel
 URxvt.letterSpace: -1
 
 ! color and transparency
-! URxvt 配色方案
-
 URxvt.depth: 32
 URxvt.background: [85]#303030
 URxvt*inheritPixmap: true
 ! really transparent
-! URxvt*transparent: true
+URxvt*transparent: true
 ! URxvt*shading: 0 to 99 darkens, 101 to 200 lightens
-URxvt*shading: 80,110
+URxvt*shading: 50
 
+URxvt.url-launcher:   firefox
+URxvt.underlineURLs:  True
+URxvt.matcher.button: 1
 
 !######### scrolbar style - rxvt
-! plain (compact), NeXT, or xtermn
-URxvt.scrollstyle: plain
-URxvt.scrollBar_right: true
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.scrollBar_floating: false
+URxvt.scrollstyle: rxvt
+URxvt*saveLines: 50000
 
-! do not scroll with output
-URxvt*scrollTtyOutput: false
+! font-szie extension
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-S-Up:   font-size:incglobal
+URxvt.keysym.C-S-Down: font-size:decglobal
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
 
-! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
-URxvt*scrollWithBuffer: true
-
-! scroll back to the bottom on keypress
-URxvt*scrollTtyKeypress: true
-
+! clipboard copy  : Ctrl+Alt+C
+! clipboard paste : Ctrl+Alt+V
 
 !## tabbed extension
 ! Shift + Down Arrow open new tab

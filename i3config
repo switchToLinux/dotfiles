@@ -268,6 +268,13 @@ function install_others() {
     which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpclient dunst rxvt-unicode
 }
 
+function install_urxvt_ext() {
+    ext_path="$HOME/.urxvt/ext"
+    [[ -r "$ext_path" ]] || mkdir -p $ext_path
+    url="https://raw.githubusercontent.com/majutsushi/urxvt-font-size/master/font-size"
+    curl -o $ext_path/font-size $url
+
+}
 # 主题选择工具,选择结果保存在 select_theme 变量中
 function common_select() {
     local theme_dir="$1"
@@ -381,6 +388,7 @@ function select_rofi_themes() {
 
         sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
         sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
+        cd ~/.config/rofi/scripts && ln -sf ../launchers/${theme_name}/launcher.sh launcher
     fi
     if prompt "选择 applets:" ; then
         menu_head "选择 applets 类型(默认type-3):"
@@ -407,10 +415,10 @@ function select_rofi_themes() {
         selected_theme=""
         common_select "$tmp_path/colors" || return 1
         color_name="${selected_theme}"
-        [[ "$color_name" == "" ]] && color_name="nord"
+        [[ "$color_name" == "" ]] && color_name="nord.rasi"
         
         # change color @import "~/.config/rofi/colors/onedark.rasi"
-        sed -E -i "s|config/rofi/colors/(.*).rasi|config/rofi/colors/${color_name}.rasi|g" ~/.config/rofi/applets/shared/colors.rasi
+        sed -E -i "s|config/rofi/colors/(.*.rasi)|config/rofi/colors/${color_name}|g" ~/.config/rofi/applets/shared/colors.rasi
         menu_iteml "切换 applets 为 $theme_name 主题, ${style_name} 类型, ${color_name} 颜色方案"
     fi
     if prompt "选择 powermenu:" ; then
@@ -446,6 +454,7 @@ function select_rofi_themes() {
 
         sed -i "s|^bindsym \$mod+shift+l exec.*|bindsym \$mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/${theme_name}/powermenu.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
         sed -E -i "s|='style-[0-9]+'|='${style_name}'|g" ~/.config/rofi/powermenu/${theme_name}/powermenu.sh
+        cd ~/.config/rofi/scripts && ln -sf ../powermenu/${theme_name}/powermenu.sh powermenu
         menu_iteml "切换 powermenu 为 $theme_name 主题, 应用 ${style_name} 类型"
     fi
     i3-msg restart
@@ -500,7 +509,7 @@ function show_menu_install() {
     menu_item 3 picom
     menu_item 4 i3lock_color
     menu_item 5 clipmenu
-    menu_item 8 xresources-themes
+    menu_item 8 urxvt_extension
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
@@ -523,6 +532,7 @@ function start_main() { # 安装菜单选择
             3) compile_picom            ;;
             4) compile_i3lock_color     ;;
             5) install_clipmenu         ;;
+            8) install_urxvt_ext        ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             r) select_rofi_themes       ;;
