@@ -232,6 +232,11 @@ function install_dotfiles() {
     [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 代码已经克隆过， 是否重新克隆安装?\"`" && mv ${tmp_path} ${tmp_path}.`date +%Y%m%d%H%M`
     [[ -d "$tmp_path" ]] || git clone --depth=1 --shallow-submodules --recurse-submodules https://github.com/switchToLinux/dotfiles.git $tmp_path
     cd $tmp_path || return 1
+    meta_key="Mod4"
+    prompt "是否使用Alt作为\$mod键(y-同意,N-选择Alt键)" || meta_key="Mod1"
+    sed -i "s/^set \$mod .*/set \$mod ${meta_key}/g" ~/.config/i3/config
+    menu_head "已经选择 $meta_key 作为 \$mod 键(Mod1:Alt,Mod4:Super)"
+
     create_symlink $tmp_path/i3_polybar ~/.config/i3
     create_symlink $tmp_path/polybar_themes ~/.config/polybar_themes
     create_symlink $tmp_path/picom ~/.config/picom
