@@ -3,9 +3,10 @@ i3wm +polybar +picom +mpd dotfiles configuration
 
 ## 快速安装
 
-使用 curl 或者 wget 命令
+使用 curl 或者 wget 命令快速下载 `i3config`命令:
 ```
 curl -L -o i3config https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
+
 wget -O i3config https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3config
 
 chmod +x i3config

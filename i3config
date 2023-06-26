@@ -307,10 +307,14 @@ function compile_rofi() {
     cd $tmp_path && git checkout $str_branch && meson setup build --prefix=${str_dst} &&  ninja -C build && sudo ninja -C build install
 }
 
+
 function install_others() {
     # 使用命令安装
     which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpc ncmpcpp
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpc ncmpcpp
+    # fedora 没有提供mpd安装包(涉及到h264编解码器专利原因),需要替换ffmpeg相关库
+    which dnf >/dev/null 2>&1       && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    which dnf >/dev/null 2>&1       && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpc ncmpcpp
     which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpclient ncmpcpp
 }
 
@@ -563,7 +567,7 @@ function select_polybar_themes() {
     prompt "开始设置 polybar 主题"
     tmp_path="$HOME/.config/polybar_themes"
     [[ ! -r $tmp_path ]] && return 1
-    menu_head "选择 polybar_themes 主题"
+    menu_head "选择 polybar_themes 主题(默认zioer)"
     selected_theme=""
     common_select "$tmp_path/themes"
     theme_name="${selected_theme}"
@@ -633,6 +637,23 @@ function update_i3config() {
     echo "已更新 i3config 到最新版本 ${I3CONFIG_VERSION}"
 }
 
+function auto_install_all() {
+    # 自动安装
+    default_confirm="yes"
+    compile_i3wm             
+    compile_polybar          
+    compile_picom            
+    compile_i3lock_color     
+    install_clipmenu         
+    compile_rofi             
+    install_urxvt_ext        
+    install_others           
+    install_dotfiles         
+    select_polybar_themes    
+    select_rofi_themes       
+    select_xresources_themes 
+    config_resolution        
+}
 function show_menu_install() {
     menu_head "i3config ${I3CONFIG_VERSION} 安装选项菜单"
     menu_item 1 i3wm
@@ -649,6 +670,7 @@ function show_menu_install() {
     menu_item r select_rofi_themes
     menu_item s select_xresources_themes
     menu_item x match_resolution
+    menu_item z 自动安装
     menu_tail
     menu_item u update_i3config
     menu_item q 返回上级菜单
@@ -673,6 +695,7 @@ function start_main() { # 安装菜单选择
             r) select_rofi_themes       ;;
             s) select_xresources_themes ;;
             x) config_resolution        ;;
+            z) auto_install_all         ;;
             u) update_i3config          ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
