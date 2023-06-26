@@ -263,9 +263,9 @@ function compile_i3lock_color() {
 }
 function install_others() {
     # 使用命令安装
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpc dunst rxvt-unicode
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpclient dunst rxvt-unicode
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpclient dunst rxvt-unicode
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpc dunst rxvt-unicode xscreensaver
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpclient dunst rxvt-unicode xscreensaver
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpclient dunst rxvt-unicode xscreensaver
 }
 
 function install_urxvt_ext() {

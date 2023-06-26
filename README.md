@@ -26,12 +26,15 @@ chmod +x i3config
 |Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
 |clipboard| [clipmenu](https://github.com/cdown/clipmenu) |
 |locker| [i3lock-color](https://github.com/Raymo111/i3lock-color)|
+|screensaver| [XScreenSaver](https://www.jwz.org/xscreensaver)|
 
 > i3wm 推荐编译源码版本，通常自带版本比较低，有些新功能不支持.
 > 
 > eww是一个适用于所有wm的组件,可以定制一些小组件功能，但对于不同分辨率切换有些让人头疼.
 >
 > variety可以动态设置壁纸，但它底层还是依赖feh 的。
+>
+> 也许给i3wm再添加个屏保更有趣一点，我们就选择使用 `XScreenSaver` 作为屏保程序，这个比之前使用的`xautolock`更有趣一些，内置了很多的动画效果。
 
 
 
