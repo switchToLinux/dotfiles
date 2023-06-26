@@ -139,9 +139,9 @@ function create_symlink() {
 }
 
 function install_build_deps() {
-    which apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging && return 0
-    which dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja pkg-config cmake @development-tools python3-sphinx python3-packaging && return 0
-    which zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme && return 0
+    which apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
+    which dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
+    which zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
 }
 
 function install_polybar_deps() {
@@ -173,7 +173,8 @@ function compile_polybar() {
 }
 
 function install_i3wm_deps() {
-    which apt-get && sudo apt-get install   -y pkg-config 
+    which apt-get && sudo apt-get install   -y pkg-config libstartup-notification0-dev libxcb-xkb-dev libxcb-xinerama0-dev libxcb-cursor-dev libxcb-keysyms1-dev \
+                            libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev
     which dnf     && sudo dnf install       -y 
     which zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel libyajl-devel asciidoc \
@@ -197,7 +198,7 @@ function compile_i3wm() {
 }
 
 function install_picom_deps() {
-    which apt-get  >/dev/null 2>&1 && sudo apt-get install -y libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl-dev libegl-dev libpcre2-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev
+    which apt-get  >/dev/null 2>&1 && sudo apt-get install -y libxext-dev libxcb1-dev libxcb-util-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl-dev libegl-dev libpcre2-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev
     which dnf      >/dev/null 2>&1 && sudo dnf     install -y dbus-devel libconfig-devel libdrm-devel libev-devel libX11-devel libX11-xcb libXext-devel libxcb-devel libGL-devel libEGL-devel pcre2-devel pixman-devel uthash-devel xcb-util-image-devel xcb-util-renderutil-devel xorg-x11-proto-devel
     which zypper   >/dev/null 2>&1 && sudo zypper  install -y dbus-1-devel libX11-devel libX11-xcb1 libXext-devel xproto-devel \
                 libxcb-devel libpixman-1-0-devel Mesa-libGL-devel Mesa-libEGL-devel pcre2-devel libev-devel uthash-devel \
@@ -249,6 +250,12 @@ function install_dotfiles() {
     sudo sh -c "echo $desktop_data | base64 -d > /usr/share/applications/i3.desktop"
 
     echo "完成 dotfiles 配置任务!"
+}
+
+function install_i3lock_deps() {
+    which apt-get >/dev/null 2>&1 && sudo apt-get install -y libjpeg-dev libpam0g-dev
+    which dnf      >/dev/null 2>&1 && sudo dnf     install -y 
+    which zypper >/dev/null 2>&1 && sudo zypper install -y libjpeg8-devel
 }
 function compile_i3lock_color() {
     prompt "编译安装 i3lock-color" || return 1
