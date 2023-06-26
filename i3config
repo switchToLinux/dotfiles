@@ -140,14 +140,14 @@ function create_symlink() {
 
 function install_build_deps() {
     which apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
-    which dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
+    which dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
     which zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
 }
 
 function install_polybar_deps() {
-    which apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev && return 0
-    which dnf       && sudo dnf install     -y libuv cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel && return 0
-    which zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel && return 0
+    which apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev lm-sensors && return 0
+    which dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors && return 0
+    which zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors && return 0
 }
 
 function install_polybar_deps_opt() {
@@ -161,25 +161,27 @@ function compile_polybar() {
     read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
     [[ "$str_dst" == "" ]] && str_dst="/usr/local"
     [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    tmp_path=${tmp_dir}/polybar
+    [[ -d $tmp_path ]] && prompt "`echo_red '检测到您已经克隆了代码，是否重新克隆代码'`" && rm -rf $tmp_path
+
     install_build_deps
     install_polybar_deps
     install_polybar_deps_opt
-    tmp_path=${tmp_dir}/polybar
     echo "gcc version : `gcc -dumpversion` , 推荐使用 gcc10 版本编译器(官方要求gcc>=5.1)"
-    [[ -d $tmp_path ]] && prompt "`echo_red '检测到您已经克隆了代码，是否重新克隆代码'`" && rm -rf $tmp_path
     [[ -d "$tmp_path" ]] || git clone --recursive https://github.com/polybar/polybar ${tmp_path}
-    cd $tmp_path
-    ./build.sh --all-features --gcc --jobs
+    cd $tmp_path && ./build.sh --all-features --gcc --jobs
 }
 
 function install_i3wm_deps() {
     which apt-get && sudo apt-get install   -y pkg-config libstartup-notification0-dev libxcb-xkb-dev libxcb-xinerama0-dev libxcb-cursor-dev libxcb-keysyms1-dev \
-                            libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev libxcb-randr0-dev \
-                            libxcb-shape0-dev libev-dev
-    which dnf     && sudo dnf install       -y 
+            libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev libxcb-randr0-dev \
+            libxcb-shape0-dev libev-dev
+    which dnf     && sudo dnf install       -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
+            xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel yajl-devel asciidoc \
+            xmlto pcre2-devel startup-notification-devel pango-devel cairo-devel perl-ExtUtils-MakeMaker
     which zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel libyajl-devel asciidoc \
-            xmlto pcre2-devel libstartup-notification-1-0 startup-notification-devel pango-devel cairo-devel libiconv_hook-devel 
+            xmlto pcre2-devel startup-notification-devel pango-devel cairo-devel libiconv_hook-devel 
 }
 function compile_i3wm() {
     tmp_path="$tmp_dir/i3wm"
@@ -250,13 +252,24 @@ function install_dotfiles() {
     desktop_data="W0Rlc2t0b3AgRW50cnldCkVuY29kaW5nPVVURi04ClR5cGU9QXBwbGljYXRpb24KTmFtZT1pMwpOb0Rpc3BsYXk9dHJ1ZQpHZW5lcmljTmFtZT1BIGR5bmFtaWMgdGlsaW5nIHdpbmRvdyBtYW5hZ2VyCkNvbW1lbnQ9aW1wcm92ZWQgZHluYW1pYyB0aWxpbmcgd2luZG93IG1hbmFnZXIKSWNvbj1pMwpFeGVjPWkzClgtR05PTUUtV01OYW1lPWkzClgtR05PTUUtQXV0b3N0YXJ0LVBoYXNlPVdpbmRvd01hbmFnZXIKWC1HTk9NRS1Qcm92aWRlcz13aW5kb3dtYW5hZ2VyClgtR05PTUUtQXV0b3N0YXJ0LU5vdGlmeT1mYWxzZQoK"
     sudo sh -c "echo $desktop_data | base64 -d > /usr/share/applications/i3.desktop"
 
+    # picom 使用gpu 时 ，设置 glx , 使用cpu时设置 xrender
+    # 如果 nvidia-smi 命令 或 amdgpu-pro 命令存在 则使用 glx ， 否则使用 xrender
+    if which nvidia-smi >/dev/null 2>&1 || which amdgpu-pro >/dev/null 2>&1; then
+        backend="glx"
+    else
+        backend="xrender"
+    fi
+
+    # 替换配置文件中的 backend 配置
+    menu_head "设置 picom 使用的后端为 $backend , 如果有独显则可以使用 glx"
+    sed -i "s/^backend = .*/backend = \"$backend\"/" ~/.config/picom/picom.conf
     echo "完成 dotfiles 配置任务!"
 }
 
 function install_i3lock_deps() {
-    which apt-get >/dev/null 2>&1 && sudo apt-get install -y libjpeg-dev libpam0g-dev
-    which dnf      >/dev/null 2>&1 && sudo dnf     install -y 
-    which zypper >/dev/null 2>&1 && sudo zypper install -y libjpeg8-devel
+    which apt-get >/dev/null 2>&1 && sudo apt-get   install -y libjpeg-dev libpam0g-dev
+    which dnf      >/dev/null 2>&1 && sudo dnf      install -y libjpeg-turbo-devel pam pam-devel
+    which zypper >/dev/null 2>&1 && sudo zypper     install -y libjpeg8-devel pam pam-devel
 }
 function compile_i3lock_color() {
     prompt "编译安装 i3lock-color" || return 1
@@ -265,15 +278,40 @@ function compile_i3lock_color() {
     [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
     [[ -d "$tmp_path" ]] || git clone $url $tmp_path
     [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
-    
+
+    install_i3lock_deps
     install_build_deps
     cd $tmp_path && ./install-i3lock-color.sh
 }
+function install_rofi_deps(){
+    which apt-get >/dev/null 2>&1 && sudo apt-get   install -y libgdk-pixbuf-2.0-dev bison flex flex-doc
+    which dnf      >/dev/null 2>&1 && sudo dnf      install -y ghc-gi-gdkpixbuf-devel
+    which zypper >/dev/null 2>&1 && sudo zypper     install -y gdk-pixbuf-devel
+}
+function compile_rofi() {
+    prompt "编译安装 rofi" || return 1
+    url="https://github.com/davatorium/rofi.git"
+    tmp_path=$tmp_dir/rofi
+    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
+    [[ -d "$tmp_path" ]] || git clone --recursive $url $tmp_path
+    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
+
+    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    [[ "$str_branch" == "" ]] && str_branch="next"
+
+    install_rofi_deps
+    install_build_deps
+    cd $tmp_path && git checkout $str_branch && meson setup build --prefix=${str_dst} &&  ninja -C build && sudo ninja -C build install
+}
+
 function install_others() {
     # 使用命令安装
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y rofi feh variety mpc dunst rxvt-unicode xscreensaver
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y rofi feh variety mpclient dunst rxvt-unicode xscreensaver
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y rofi feh variety mpclient dunst rxvt-unicode xscreensaver
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpc ncmpcpp
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpc ncmpcpp
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpclient ncmpcpp
 }
 
 function install_urxvt_ext() {
@@ -548,9 +586,15 @@ function select_polybar_themes() {
     menu_iteml "已切换polybar_themes 为 ${theme_name} 主题, ${prompt_style} 样式, ${color_name} 颜色搭配"
     i3-msg restart
 }
+function install_clipmenu_deps() {
+    which apt-get && sudo apt-get install   -y xsel libxfixes-dev
+    which dnf     && sudo dnf install       -y xsel libXfixes-devel
+    which zypper  && sudo zypper install    -y xsel libXfixes-devel
+}
 function install_clipmenu() {
+    prompt "安装 clipmenu 剪切板菜单"
     # 依赖安装
-    sudo $pac_cmd_ins install -y xsel
+    install_clipmenu_deps
     tmp_path="$tmp_dir/clipnotify"
     [[ -d $tmp_path ]] || git clone https://github.com/cdown/clipnotify.git $tmp_path
     cd $tmp_path && make && sudo PREFIX=/usr make install
@@ -596,6 +640,7 @@ function show_menu_install() {
     menu_item 3 picom
     menu_item 4 i3lock_color
     menu_item 5 clipmenu
+    menu_item 6 rofi
     menu_item 8 urxvt_extension
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
@@ -620,6 +665,7 @@ function start_main() { # 安装菜单选择
             3) compile_picom            ;;
             4) compile_i3lock_color     ;;
             5) install_clipmenu         ;;
+            6) compile_rofi             ;;
             8) install_urxvt_ext        ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
