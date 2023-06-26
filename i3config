@@ -174,7 +174,8 @@ function compile_polybar() {
 
 function install_i3wm_deps() {
     which apt-get && sudo apt-get install   -y pkg-config libstartup-notification0-dev libxcb-xkb-dev libxcb-xinerama0-dev libxcb-cursor-dev libxcb-keysyms1-dev \
-                            libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev
+                            libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev libxcb-randr0-dev \
+                            libxcb-shape0-dev libev-dev
     which dnf     && sudo dnf install       -y 
     which zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel libyajl-devel asciidoc \
@@ -221,7 +222,7 @@ function compile_picom() {
     install_build_deps
     install_picom_deps
     cd $tmp_path && git checkout ${str_branch} && git submodule update --init --recursive
-    meson setup --prefix=${str_dst} --buildtype=release . build   && ninja -C build && ninja -C build install
+    meson setup --prefix=${str_dst} --buildtype=release . build   && ninja -C build && sudo ninja -C build install
 }
 function install_dotfiles() {
     # 克隆自己的 dotfiles 配置文档
