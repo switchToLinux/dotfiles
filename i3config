@@ -30,7 +30,7 @@ curl_cmd="curl -C - "  # 支持断点继续下载
 
 # Define Colors
 RED='\e[41m'
-BRB='\e[5;31;47;7;1m' # Blink Red bold
+BRB='\e[1;7;31;47m' # Blink Red bold
 NC='\e[0m' # No color
 BG='\e[7m' # Highlighting Background color
 TC='\e[1m' # Highlighting Text color
@@ -61,11 +61,13 @@ MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
 
 #### 检测当前终端支持色彩
 function check_term() {
-	echo "Checking term type : $TERM "
-	echo "Checking term color: $COLORTERM"
-    # 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
-    export TERM=xterm
-    export COLORTERM=truecolor
+	# 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
+    if [[ "$TERM" == *"256color"* ]] ; then
+        echo "支持 256color 修改 TERM信息"
+    else
+        export TERM=xterm
+        export COLORTERM=truecolor
+    fi
     echo "当前终端类型: $TERM"
     echo "当前终端色彩: $COLORTERM ,但实际终端支持色彩: `tput colors`"
 	echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
@@ -312,7 +314,6 @@ function compile_rofi() {
     install_build_deps
     cd $tmp_path && git checkout $str_branch && meson setup build --prefix=${str_dst} &&  ninja -C build && sudo ninja -C build install
 }
-
 
 function install_others() {
     # 使用命令安装
@@ -632,7 +633,24 @@ function config_resolution() {
     sed -i "s/Xft.dpi:.*/Xft.dpi: $dpi/g" ~/.Xresources
     sed -E -i "s/dpi:.*;/dpi: $dpi;/g;s/font: \"([^\"]+)( [0-9]+ *)\";/font: \"\1 $font_size\";/g" ~/.config/rofi/config.rasi
 }
-
+function check_terminal_list() {
+    for tname in x-terminal-emulator mate-terminal gnome-terminal terminator xfce4-terminal urxvt rxvt termit Eterm aterm uxterm xterm roxterm termite lxterminal terminology st qterminal lilyterm tilix terminix konsole kitty guake tilda alacritty hyper wezterm
+    do
+        which $tname > /dev/null 2>&1  && echo $tname
+    done
+}
+function select_terminal() {
+    selected_theme=""
+    prompt "选择Terminal终端(默认`echo_greenr i3-sensible-terminal`)" || return 1
+    terminal_list=`check_terminal_list`
+    echo "当前可用终端: $terminal_list"
+    common_list_select "$terminal_list" "terminal"
+    if [[ "$selected_theme" != "" ]] ; then
+        sed -i "s#^set \$TERMINAL .*#set \$TERMINAL $selected_theme#g" ~/.config/i3/config ~/.config/i3/config.d/*
+        echo "已经设置新的 TERMINAL 终端工具，重新加载i3wm后生效"
+        i3-msg restart
+    fi
+}
 function update_i3config() {
     # 更新 i3config 到最新版本
     tmp_path="$tmp_dir/i3config"
@@ -675,6 +693,7 @@ function show_menu_install() {
     menu_item p select_polybar_themes
     menu_item r select_rofi_themes
     menu_item s select_xresources_themes
+    menu_item t select_terminal
     menu_item x match_resolution
     menu_item z 自动安装
     menu_tail
@@ -700,6 +719,7 @@ function start_main() { # 安装菜单选择
             p) select_polybar_themes    ;;
             r) select_rofi_themes       ;;
             s) select_xresources_themes ;;
+            t) select_terminal          ;;
             x) config_resolution        ;;
             z) auto_install_all         ;;
             u) update_i3config          ;;
