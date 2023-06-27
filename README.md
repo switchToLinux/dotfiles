@@ -14,19 +14,27 @@ chmod +x i3config
 
 ```
 
-## 信息
+## 测试通过发行版
+
+验证Linux系统发行版分支:
+- [debian 12](https://www.debian.org/)
+- [fedora 38](https://fedoraproject.org/)
+- [openSUSE leap 15.5](https://get.opensuse.org/leap/)
+
+
+## 系统信息
 
 |Distro|[openSUSE](https://www.opensuse.org/)|
 |:---:|:---:|
 |WM|[i3wm](https://github.com/i3/i3)|
 |Bar|[Polybar](https://github.com/polybar/polybar)|
 |Menu|[Rofi](https://github.com/davatorium/rofi)-[rofi-themes](https://github.com/adi1090x/rofi)|
-|Compositor|[Picom](https://archlinux.org/packages/community/x86_64/picom/)|
+|Compositor|[Picom](https://github.com/yshui/picom)|
 |Terminal|[konsole](https://konsole.kde.org)|
 |Widgets|[eww,ElKowars wacky widgets](https://github.com/elkowar/eww)|
-|Music/Player|[mpd](https://archlinux.org/packages/extra/x86_64/mpd/)-[ncmpcpp](https://archlinux.org/packages/community/x86_64/ncmpcpp/)|
-|File Manager|[Thunar](https://archlinux.org/packages/extra/x86_64/thunar/)|
-|Shell|[Zsh](https://archlinux.org/packages/extra/x86_64/zsh/)|
+|Music/Player|[mpd](https://github.com/MusicPlayerDaemon/MPD)-[ncmpcpp](https://github.com/ncmpcpp/ncmpcpp)|
+|File Manager|[Thunar](https://gitlab.xfce.org/xfce/thunar)|
+|Shell|[Zsh](https://www.zsh.org/)-[oh-my-zsh](https://ohmyz.sh/)|
 |wallpaper| [feh](https://github.com/derf/feh)-[variety](https://github.com/varietywalls/variety)|
 |Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
 |clipboard| [clipmenu](https://github.com/cdown/clipmenu) |
@@ -61,3 +69,9 @@ chmod +x i3config
 ## 关于配置快捷键
 
 如果你喜欢使用bindcode 或者不知道某个键对应的名称，可以执行 `xmodmap -pke`命令查看。
+
+## 鸣谢
+
+本项目只是聚合菜单工具，将其他作者开发的项目融合在一起，并且提供自动编译安装模块，方便用户使用和少出错。
+
+在此，感谢本项目所使用的相关项目作者！感谢开源社区！

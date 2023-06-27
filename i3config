@@ -30,6 +30,7 @@ curl_cmd="curl -C - "  # 支持断点继续下载
 
 # Define Colors
 RED='\e[41m'
+BRB='\e[5;31;47;7;1m' # Blink Red bold
 NC='\e[0m' # No color
 BG='\e[7m' # Highlighting Background color
 TC='\e[1m' # Highlighting Text color
@@ -70,7 +71,7 @@ function check_term() {
 	echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
 }
 
-function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|$TC $@ $NC" ; tput hpa $rlen ; echo "|" ; }
+function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|${BRB} $@ $NC" ; tput hpa $rlen ; echo "|" ; }
 function menu_head() { echo $line_feed ;   menu_line "$@" ; echo $line_feed ; }
 # 一行可以有 item_line_count 个菜单选项
 function menu_item() { let item_index=$item_index+1 ; n=$1 ; shift ; let rlen="$item_index * $ILEN + 1" ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; [[ "$item_index" == "$item_line_count" ]] && echo "|" && item_index=0 ; }
@@ -710,8 +711,8 @@ function start_main() { # 安装菜单选择
 
 
 ####### Main process #################################
-check_basic     # 基础依赖命令检测与安装
 check_term      # 检测TERM终端信息
+check_basic     # 基础依赖命令检测与安装
 
 menu_head "$WELCOME"
 if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
