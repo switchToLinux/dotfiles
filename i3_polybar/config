@@ -260,9 +260,9 @@ set_from_resource $unfocus_text     fadeColor   #969696
 
 # class                 border          background      text            indicator       child_border
 client.focused          $focused_color  $bgcolor        $text           $indicator      $focused_color
-client.unfocused        $unfocus_color  $unfocus_color  $unfocus_text   $unfocus_color  $unfocus_color
-client.focused_inactive $unfocus_color  $unfocus_color  $unfocus_text   $unfocus_color  $unfocus_color
-client.urgent           $focused_color  $bgcolor        $text           $u_bgcolor      $u_bgcolor
+client.unfocused        $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_color
+client.focused_inactive $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_color
+client.urgent           $focused_color  $bgcolor        $text           $indicator      $u_bgcolor
 
 
 # 个性化配置(比如自己的自启动程序列表，自己的快捷启动设置)

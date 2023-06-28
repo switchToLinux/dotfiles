@@ -65,6 +65,8 @@ chmod +x i3config
 - [x] 配置 ~/.Xresources 主题
 - [x] 配置 rofi 主题(包含启动器、小插件和powermenu)
 - [x] 锁屏工具选择`i3lock-color`版本替换原有的i3lock
+- [ ] rofi主题优化，自适应分辨率(字体大小、布局)
+
 
 ## 关于配置快捷键
 
