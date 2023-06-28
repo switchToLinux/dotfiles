@@ -123,9 +123,8 @@ function check_basic() { # 基础依赖命令检测与安装
     which curl >/dev/null 2>&1 || sudo $pac_cmd_ins install -y curl     # 检测 curl 命令
     which git >/dev/null  2>&1 || sudo $pac_cmd_ins install -y git       # 检测 git 命令
     # Anaconda3 环境可能导致编译失败.
-    echo -e "python3 version: ${BRB} `python3 --version` ${NC},path: ${BRB}`which python3`${NC}"
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
-    anaconda -V >/dev/null 2>&1 && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
+    anaconda -V >/dev/null 2>&1 && echo -e "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`which python3`${NC}" && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
     echo -e "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`which python3`${NC}"
 }
 
