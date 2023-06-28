@@ -1,5 +1,5 @@
 # rofi
-
+> 当前配置已经`弃用`!使用`i3config`的`select_rofi_themes`选项安装更多主题和插件。
 
 ## 配置方法
 

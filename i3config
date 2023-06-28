@@ -13,7 +13,7 @@
 # 环境变量参数:
 #   OUTPUTLOG - no 表示只输出日志信息到文件中,不在终端显示，默认为 yes(终端显示)
 #
-I3CONFIG_VERSION="v0.1.1"
+I3CONFIG_VERSION="v0.1.2"
 dotfiles_path=$HOME/.config/dotfiles
 
 source ~/.bashrc
@@ -62,15 +62,15 @@ MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
 #### 检测当前终端支持色彩
 function check_term() {
 	# 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
-    if [[ "$TERM" == *"256color"* ]] ; then
-        echo "支持 256color 修改 TERM信息"
+    if [[ "`tput colors`" -ge "256" ]] ; then
+        echo "支持 256color TERM终端"
     else
         export TERM=xterm
         export COLORTERM=truecolor
     fi
     echo "当前终端类型: $TERM"
-    echo "当前终端色彩: $COLORTERM ,但实际终端支持色彩: `tput colors`"
-	echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
+    echo "当前终端色彩: $COLORTERM"
+	#echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
 }
 
 function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|${BRB} $@ $NC" ; tput hpa $rlen ; echo "|" ; }
@@ -123,10 +123,10 @@ function check_basic() { # 基础依赖命令检测与安装
     which curl >/dev/null 2>&1 || sudo $pac_cmd_ins install -y curl     # 检测 curl 命令
     which git >/dev/null  2>&1 || sudo $pac_cmd_ins install -y git       # 检测 git 命令
     # Anaconda3 环境可能导致编译失败.
-    echo "python3 version: `python3 --version` ,path: `which python3`"
+    echo -e "python3 version: ${BRB} `python3 --version` ${NC},path: ${BRB}`which python3`${NC}"
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
-    anaconda -V >/dev/null 2>&1 && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败" && conda deactivate && echo " 本脚本会关闭Anaconda 环境"
-    echo "python3 version: `python3 --version` ,path: `which python3`"
+    anaconda -V >/dev/null 2>&1 && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
+    echo -e "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`which python3`${NC}"
 }
 
 # 创建软链接或重命名目录
@@ -135,8 +135,8 @@ function create_symlink() {
     target_file="$2"
 
     [[ ! -r "$source_file" ]] && loginfo "找不到 $source_file 目录或文件" && return 1
-    [[ -L "$target_file" ]] && loginfo "目标路径是软链接，删除软链接" && rm "$target_file"
-    [[ -r "$target_file" ]] && loginfo "目标路径是目录或文件，重命名" && mv ${target_file} "${target_file}_$(date +%Y-%m-%d)"
+    [[ -L "$target_file" ]] && loginfo "目标路径 ${target_file} 是软链接，删除软链接" && rm "$target_file"
+    [[ -r "$target_file" ]] && loginfo "目标路径 ${target_file} 是目录或文件，重命名" && mv ${target_file} "${target_file}_$(date +%Y-%m-%d)"
     # 创建软链接
     ln -sf "$source_file" "$target_file"
 }
@@ -235,19 +235,21 @@ function install_dotfiles() {
     [[ -d "$tmp_path" ]] && prompt "`echo_redr \"$tmp_path 代码已经克隆过， 是否重新克隆安装?\"`" && mv ${tmp_path} ${tmp_path}.`date +%Y%m%d%H%M`
     [[ -d "$tmp_path" ]] || git clone --depth=1 --shallow-submodules --recurse-submodules https://github.com/switchToLinux/dotfiles.git $tmp_path
     cd $tmp_path || return 1
+
+    create_symlink $tmp_path/i3_polybar ~/.config/i3
     meta_key="Mod4"
-    prompt "是否使用Alt作为\$mod键(y-同意,N-选择Alt键)" || meta_key="Mod1"
+    prompt "是否使用Supper/Win键作为\$mod键(y-同意,N-选择Alt键)" || meta_key="Mod1"
     sed -i "s/^set \$mod .*/set \$mod ${meta_key}/g" ~/.config/i3/config
     menu_head "已经选择 $meta_key 作为 \$mod 键(Mod1:Alt,Mod4:Super)"
 
-    create_symlink $tmp_path/i3_polybar ~/.config/i3
     create_symlink $tmp_path/polybar_themes ~/.config/polybar_themes
     create_symlink $tmp_path/picom ~/.config/picom
     mkdir -p ~/.local/share/mpd
     create_symlink $tmp_path/mpd ~/.config/mpd
     create_symlink $tmp_path/dunst ~/.config/dunst
     create_symlink $tmp_path/ranger ~/.config/ranger
-    create_symlink $tmp_path/rofi ~/.config/rofi
+    # replace by rofi_themes
+    # create_symlink $tmp_path/rofi ~/.config/rofi
     create_symlink $tmp_path/ncmpcpp ~/.config/ncmpcpp
 
     echo "配置 ~/.Xresources 文件"
@@ -571,7 +573,7 @@ function select_rofi_themes() {
     menu_tail
 }
 function select_polybar_themes() {
-    prompt "开始设置 polybar 主题"
+    prompt "开始设置 polybar 主题" || return 1
     tmp_path="$HOME/.config/polybar_themes"
     [[ ! -r $tmp_path ]] && return 1
     menu_head "选择 polybar_themes 主题(默认zioer)"
@@ -731,10 +733,10 @@ function start_main() { # 安装菜单选择
 
 
 ####### Main process #################################
+menu_head "$WELCOME"
 check_term      # 检测TERM终端信息
 check_basic     # 基础依赖命令检测与安装
 
-menu_head "$WELCOME"
 if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
     start_main
 else  # 命令执行模式(执行后退出)
