@@ -10,3 +10,4 @@ Xft.rgba:      rgb
 #include ".config/Xresources-themes/nord.Xresources"
 
 #include ".config/Xresources.d/rxvt-unicode"
+#include ".config/Xresources.d/xscreensaver_nord"

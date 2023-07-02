@@ -1,0 +1,34 @@
+! screensaver Theme: Nord
+
+*themeNames: Nord
+
+#define x_foreground    #D8DEE9
+#define x_background    #2E3440
+#define x_background_b  #3B4252
+#define x_foreground_t  #ECEFF4
+#define x_background_t  #434C5E
+#define x_foreground_b  #5E81AC
+#define x_background_b  #3B4252
+#define x_border        #EBCB8B
+
+! Nord theme:
+!
+*nord.Dialog.foreground:            x_foreground
+*nord.Dialog.background:            x_background
+*nord.Dialog.button.foreground:     x_foreground
+*nord.Dialog.button.background:     x_background_b
+*nord.Dialog.logo.background:       x_background
+*nord.Dialog.text.foreground:       x_foreground
+*nord.Dialog.error.foreground:      #FF0000
+*nord.Dialog.text.background:       x_background_t
+*nord.Dialog.topShadowColor:        x_border
+*nord.Dialog.bottomShadowColor:     x_border
+*nord.Dialog.shadowWidth:           0
+*nord.Dialog.logo.width:            210
+*nord.Dialog.logo.height:           210
+*nord.Dialog.thermometer.foreground:    x_foreground_b
+*nord.Dialog.thermometer.background:    x_background_b
+*nord.Dialog.thermometer.width:     8
+*nord.Dialog.borderColor:           x_border
+*nord.Dialog.borderWidth:           0
+*nord.Dialog.internalPadding:       24
