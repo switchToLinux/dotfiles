@@ -48,6 +48,7 @@ gaps outer 0
 gaps vertical 0
 gaps horizontal 0
 
+
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec_always --no-startup-id nm-applet
@@ -209,6 +210,11 @@ mode "resize" {
         bindsym Up resize shrink height 10 px or 10 ppt
         bindsym Right resize grow width 10 px or 10 ppt
 
+        bindsym BackSpace       exec i3-msg gaps inner current minus 5
+        bindsym shift+BackSpace exec i3-msg gaps inner current plus  5
+        bindsym equal           exec i3-msg gaps outer current minus 10
+        bindsym shift+equal     exec i3-msg gaps outer current plus  10
+
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
         bindsym Escape mode "default"
@@ -216,6 +222,12 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
+
+# 调整所有窗口(内/外)边距快捷键
+bindsym $mod+BackSpace          exec i3-msg gaps inner all minus 5
+bindsym $mod+shift+BackSpace    exec i3-msg gaps inner all plus  5
+bindsym $mod+equal              exec i3-msg gaps outer all minus 10
+bindsym $mod+shift+equal        exec i3-msg gaps outer all plus  10
 
 ######################################################
 # 针对窗口进行特殊参数配置
