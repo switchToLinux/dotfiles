@@ -120,17 +120,14 @@ bindsym $mod+Shift+s sticky toggle
 
 # sticky preview for media
 # 设置当前焦点窗口浮动并且前置(需要根据自己屏幕分辨率修改)
-bindsym $mod+Shift+p fullscreen disable; floating enable; \
-    resize set 1920 px 1080 px; sticky enable; \
-    move window to position 1900 px 940 px
 # 浮动 sticky 窗口 for youtube video
 bindsym $mod+Shift+o fullscreen disable; floating enable; \
-    resize set 2024 px 992 px; sticky enable; \
-    move window to position 2025 px 980 px
+    resize set 45 ppt 45 ppt; sticky enable; \
+    move window to position 30 px 30 px
 # 浮动 sticky 窗口 for youtube video
 bindsym $mod+Shift+i fullscreen disable; floating enable; \
     resize set 1700 px 960 px; sticky enable; \
-    move window to position 2126 px 1150 px
+    move window to position 30 px 30 px
 
 
 # Define names for default workspaces for which we configure key bindings later on.
@@ -217,7 +214,7 @@ bindsym $mod+BackSpace          exec i3-msg gaps inner all plus  5
 bindsym $mod+shift+BackSpace    exec i3-msg gaps inner all minus 5
 bindsym $mod+equal              exec i3-msg gaps outer all plus  10
 bindsym $mod+shift+equal        exec i3-msg gaps outer all minus 10
-# 调整picom合成器的窗口透明度
+# 调整picom合成器的窗口透明度(0-100)
 bindsym $mod+bracketleft        exec picom-trans -c -o -10
 bindsym $mod+bracketright       exec picom-trans -c -o +10
 
