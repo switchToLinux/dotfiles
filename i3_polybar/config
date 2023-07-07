@@ -124,10 +124,6 @@ bindsym $mod+Shift+s sticky toggle
 bindsym $mod+Shift+o fullscreen disable; floating enable; \
     resize set 45 ppt 45 ppt; sticky enable; \
     move window to position 30 px 30 px
-# 浮动 sticky 窗口 for youtube video
-bindsym $mod+Shift+i fullscreen disable; floating enable; \
-    resize set 1700 px 960 px; sticky enable; \
-    move window to position 30 px 30 px
 
 
 # Define names for default workspaces for which we configure key bindings later on.
