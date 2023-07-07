@@ -1,0 +1,7 @@
+/*
+* firefox 主题配置文件
+*/
+
+/*  隐藏顶部tabs条，左侧显示Sidebery插件 */
+@import "styles/hide_tabs_for_left.css";   /**/
+

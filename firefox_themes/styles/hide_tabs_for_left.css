@@ -1,0 +1,30 @@
+/*
+ 功能说明: 
+ 1. 隐藏顶部的tabs标签
+ 2. 使用插件Sidebery实现左侧Tabs标签功能
+*/
+
+:root {
+    --sidebar-hover-width: 20pt;
+    --sidebar-visible-width: 200pt;
+}
+
+#TabsToolbar {
+    padding: 0 0 !important;
+    visibility: collapse !important;
+}
+
+#sidebar-header {
+    visibility: collapse !important;
+}
+
+#sidebar-box {
+    position: relative !important;
+    overflow: hidden;
+    max-width: var(--sidebar-hover-width) !important;
+}
+
+#sidebar-box:hover {
+    transition: all 200ms !important;
+    max-width: var(--sidebar-visible-width) !important;
+}
