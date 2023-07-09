@@ -98,18 +98,19 @@ WELCOME="^_^你笑起来真好看!像春天的花一样!"
 SEE_YOU="^_^出去晒晒太阳吧!多运动才更健康!"
 
 pac_cmd_ins=
+READ_TIMEOUT=30   # read timeout seconds
 
 ########### 运行条件检测 ###########
 function prompt() { # 提示确认函数，如果使用 -y 参数默认为Y确认
     msg="$@"
     if [ "$default_confirm" != "yes" ] ; then
-        read -r -n 1 -e  -p "$msg (y/`echo_greenr N`)" str_answer
+        read -t $READ_TIMEOUT -r -n 1 -e  -p "$msg (y/`echo_greenr N`)" str_answer
         case "$str_answer" in
             y*|Y*)  echo "已确认" ; return 0 ;;
             *)      echo "已取消" ; return 1 ;;
         esac
     else
-        echo "$msg"
+        echo "$msg (已默认选择 Yes)"
     fi
     return 0
 }
@@ -160,7 +161,7 @@ function install_polybar_deps_opt() {
 
 function compile_polybar() {
     ! i3 -v && echo "没找到 i3 命令，请确保先安装了 i3wm 环境后再安装 polybar" && return 1
-    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    read -t $READ_TIMEOUT -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
     [[ "$str_dst" == "" ]] && str_dst="/usr/local"
     [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
     tmp_path=${tmp_dir}/polybar
@@ -171,7 +172,7 @@ function compile_polybar() {
     install_polybar_deps_opt
     echo "gcc version : `gcc -dumpversion` , 推荐使用 gcc10 版本编译器(官方要求gcc>=5.1)"
     [[ -d "$tmp_path" ]] || git clone --recursive https://github.com/polybar/polybar ${tmp_path}
-    cd $tmp_path && ./build.sh --all-features --gcc --jobs
+    cd $tmp_path && ./build.sh --all-features --gcc --jobs --auto
 }
 
 function install_i3wm_deps() {
@@ -188,10 +189,10 @@ function install_i3wm_deps() {
 function compile_i3wm() {
     tmp_path="$tmp_dir/i3wm"
     i3 -v >/dev/null 2>&1 && echo "i3 命令已经安装过了" && ! prompt "仍然继续编译安装 i3 么? 建议手工卸载后再尝试" && return 1
-    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
-    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    read -t $READ_TIMEOUT -p "`echo_green '输入安装目录,默认 /usr :'`" str_dst
+    [[ "$str_dst" == "" ]] && str_dst="/usr"
     [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
-    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    # read -t $READ_TIMEOUT -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
     [[ "$str_branch" == "" ]] && str_branch="next"
     [[ -d $tmp_path ]] && prompt "`echo_red '检测到您已经克隆了代码，是否重新克隆代码'`" && rm -rf $tmp_path
     [[ -d "$tmp_path" ]] || git clone https://github.com/i3/i3.git $tmp_path
@@ -217,10 +218,10 @@ function compile_picom() {
     [[ -d "$tmp_path" ]] || git clone $url $tmp_path
     [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
     
-    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    read -t $READ_TIMEOUT -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
     [[ "$str_dst" == "" ]] && str_dst="/usr/local"
     [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
-    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    # read -t $READ_TIMEOUT -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
     [[ "$str_branch" == "" ]] && str_branch="next"
     
     install_build_deps
@@ -236,8 +237,8 @@ function install_dotfiles() {
     cd $tmp_path || return 1
 
     create_symlink $tmp_path/i3_polybar ~/.config/i3
-    meta_key="Mod4"
-    prompt "是否使用Supper/Win键作为\$mod键(y-同意,N-选择Alt键)" || meta_key="Mod1"
+    meta_key="Mod1"
+    prompt "是否使用Alt键作为\$mod键(y--选择Alt键,N-选择Supper/Win键)" || meta_key="Mod4"
     sed -i "s/^set \$mod .*/set \$mod ${meta_key}/g" ~/.config/i3/config
     menu_head "已经选择 $meta_key 作为 \$mod 键(Mod1:Alt,Mod4:Super)"
 
@@ -305,10 +306,10 @@ function compile_rofi() {
     [[ -d "$tmp_path" ]] || git clone --recursive $url $tmp_path
     [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
 
-    read -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    read -t $READ_TIMEOUT -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
     [[ "$str_dst" == "" ]] && str_dst="/usr/local"
     [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
-    # read -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
+    # read -t $READ_TIMEOUT -p "`echo_green '选择代码分支 next/stable,默认next:'`" str_branch
     [[ "$str_branch" == "" ]] && str_branch="next"
 
     install_rofi_deps
@@ -317,13 +318,13 @@ function compile_rofi() {
 }
 
 function install_others() {
-    # 使用命令安装
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpc ncmpcpp
+    # 使用命令安装 psmisc(killall)
+    which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpd mpc ncmpcpp firefox-esr psmisc pulseaudio thunar
     # fedora 没有提供mpd安装包(涉及到h264编解码器专利原因),需要替换ffmpeg相关库
     which dnf >/dev/null 2>&1       && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     which dnf >/dev/null 2>&1       && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpc ncmpcpp
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xscreensaver xrandr mpd mpclient ncmpcpp
+    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar
+    which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar
 }
 
 function install_urxvt_ext() {
@@ -345,7 +346,7 @@ function common_select() {
     local exit_loop=false
     echo -n "输入${prefix}名称:"
     while ! $exit_loop; do
-        read -r -s -n 1 char
+        read -t $READ_TIMEOUT -r -s -n 1 char
 
         if [[ $char == $'\177' ]]; then # 退格键
             current_input="${current_input%?}"
@@ -394,7 +395,7 @@ function common_list_select() {
     local exit_loop=false
     echo -n "输入${prefix}名称:"
     while ! $exit_loop; do
-        read -r -s -n 1 char
+        read -t $READ_TIMEOUT -r -s -n 1 char
 
         if [[ $char == $'\177' ]]; then # 退格键
             current_input="${current_input%?}"
@@ -433,7 +434,7 @@ function common_list_select() {
 }
 
 function select_xresources_themes() {
-    tput clear
+    # tput clear
     echo "配置 ~/.Xresources 主题"
     tmp_path=~/.config/Xresources-themes
     [[ -r $tmp_path ]] && prompt "已经拷贝过 Xresources-themes 了，是否重新拷贝?" && rm -rf $tmp_path
@@ -614,6 +615,30 @@ function install_clipmenu() {
     [[ -r "$tmp_path" ]] || git clone https://github.com/cdown/clipmenu $tmp_path
     cd $tmp_path && sudo make install
 }
+function install_xscreensaver_deps() {
+    which apt-get && sudo apt-get install   -y perl intltool libxext-dev libxi-dev libxt-dev libxft-dev libxinerama-dev \
+                        libxrandr-dev libxxf86vm-dev libgl-dev libgl1-mesa-dev libglu1-mesa-dev libgle3-dev libgtk2.0-dev  libgtk-3-dev libgdk-pixbuf-xlib-2.0-dev \
+                        libxml2 libxml2-dev libpam0g libpam0g-dev dbus libsystemd-dev 
+    which dnf     && sudo dnf install       -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
+                        libXrandr-devel libXxf86vm-devel mesa-libGL-devel gtk2-devel gdk-pixbuf2-devel gdk-pixbuf2-xlib-devel \
+                        libxml2-devel pam pam-devel dbus systemd-devel
+    which zypper  && sudo zypper install    -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
+                        libXrandr-devel libXxf86vm-devel Mesa-libGL-devel libgtk-2_0-0 gtk2-devel gdk-pixbuf-devel gdk-pixbuf-xlib-devel \
+                        libxml2-devel pam pam-devel dbus-1 systemd-devel
+}
+function compile_xscreensaver() {
+    str_version="6.06"
+    url="https://www.jwz.org/xscreensaver/xscreensaver-${str_version}.tar.gz"
+    filename="${tmp_dir}/xscreensaver-${str_version}.tar.gz"
+    [[ ! -f ${filename} ]] && curl -L -o ${filename} ${url}
+    tmp_path="${tmp_dir}/xscreensaver-${str_version}"
+    [[ ! -r ${tmp_path} ]] && tar axvf ${filename} -C ${tmp_dir}
+    install_xscreensaver_deps
+    cd $tmp_path && ./configure --prefix=/usr && make -j$(nproc) && sudo make install
+    [[ "$?" != "0" ]] && echo "安装失败!找到错误原因后重新尝试!" && return 2
+    [[ ! -x /usr/bin/xscreensaver ]] && echo "安装失败!没找到 xscreensaver 命令" && return 3
+    echo "恭喜您! xscreensaver 安装成功!"
+}
 function config_resolution() {
     # 自适应分辨率 1080p/2k/4k
     # 获取屏幕分辨率
@@ -662,15 +687,44 @@ function update_i3config() {
     echo "已更新 i3config 到最新版本 ${I3CONFIG_VERSION}"
 }
 
+function get_dm_list() {
+    for dm in lightdm sddm lxdm
+    do
+        echo $dm
+    done
+}
+function install_xinit() {
+    # 选择DM
+    selected_theme=""
+    prompt "选择DM显示管理器(默认`echo_greenr lightdm`)" || return 1
+    dm_list="`get_dm_list`"
+    echo "当前可用终端: $dm_list"
+    common_list_select "$dm_list" "DM"
+    [[ "$selected_theme" == "" ]] && selected_theme="lightdm"
+
+    # 安装X窗口系统和DM
+    which apt-get && sudo apt-get install   -y xinit $selected_theme
+    which dnf     && sudo dnf install       -y xinit $selected_theme
+    which zypper  && sudo zypper install    -y xinit $selected_theme
+
+    # 自启动lightdm
+    sudo systemctl enable --now lightdm.service
+    # 禁止gettty服务
+    sudo systemctl disable getty@.service
+}
+
 function auto_install_all() {
     # 自动安装
     default_confirm="yes"
+    READ_TIMEOUT=5
+    install_xinit
     compile_i3wm             
     compile_polybar          
     compile_picom            
     compile_i3lock_color     
     install_clipmenu         
     compile_rofi             
+    compile_xscreensaver      
     install_urxvt_ext        
     install_others           
     install_dotfiles         
@@ -687,6 +741,7 @@ function show_menu_install() {
     menu_item 4 i3lock_color
     menu_item 5 clipmenu
     menu_item 6 rofi
+    menu_item 7 xscreensaver
     menu_item 8 urxvt_extension
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
@@ -696,6 +751,7 @@ function show_menu_install() {
     menu_item s select_xresources_themes
     menu_item t select_terminal
     menu_item x match_resolution
+    menu_item y install_xinit
     menu_item z 自动安装
     menu_tail
     menu_item u update_i3config
@@ -706,7 +762,7 @@ function start_main() { # 安装菜单选择
     while true
     do
         show_menu_install
-        read -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
+        read -t $READ_TIMEOUT -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
         case "$str_answer" in
             1) compile_i3wm             ;;
             2) compile_polybar          ;;
@@ -714,6 +770,7 @@ function start_main() { # 安装菜单选择
             4) compile_i3lock_color     ;;
             5) install_clipmenu         ;;
             6) compile_rofi             ;;
+            7) compile_xscreensaver     ;;
             8) install_urxvt_ext        ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
@@ -722,6 +779,7 @@ function start_main() { # 安装菜单选择
             s) select_xresources_themes ;;
             t) select_terminal          ;;
             x) config_resolution        ;;
+            y) install_xinit            ;;
             z) auto_install_all         ;;
             u) update_i3config          ;;
             q|"") return 0              ;;  # 返回上级菜单
