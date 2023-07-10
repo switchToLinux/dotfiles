@@ -701,7 +701,7 @@ function update_i3config() {
 }
 
 function get_dm_list() {
-    for dm in lightdm sddm lxdm
+    for dm in lightdm sddm gdm
     do
         echo $dm
     done
@@ -712,17 +712,28 @@ function install_xinit() {
     prompt "选择DM显示管理器(默认`echo_greenr lightdm`)" || return 1
     dm_list="`get_dm_list`"
     echo "当前可用终端: $dm_list"
-    common_list_select "$dm_list" "DM"
+    common_list_select "$dm_list" "显示管理器"
     [[ "$selected_theme" == "" ]] && selected_theme="lightdm"
 
     # 安装X窗口系统和DM
-    command -v apt-get && sudo apt-get install   -y xinit $selected_theme
-    command -v dnf     && sudo dnf install       -y xinit $selected_theme
-    command -v zypper  && sudo zypper install    -y xinit $selected_theme
-    command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit $selected_theme
-
+    if [[ "$selected_theme" == "lightdm" ]] ; then
+        command -v apt-get && sudo apt-get install   -y xinit lightdm lightdm-gtk-greeter
+        command -v dnf     && sudo dnf install       -y xinit lightdm lightdm-gtk
+        command -v zypper  && sudo zypper install    -y xinit lightdm lightdm-gtk-greeter
+        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit lightdm lightdm-gtk-greeter
+    elif [[ "$selected_theme" == "sddm" ]] ; then
+        command -v apt-get && sudo apt-get install   -y xinit sddm
+        command -v dnf     && sudo dnf install       -y xinit sddm
+        command -v zypper  && sudo zypper install    -y xinit sddm
+        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit sddm
+    elif [[ "$selected_theme" == "gdm" ]] ; then
+        command -v apt-get && sudo apt-get install   -y xinit gdm3
+        command -v dnf     && sudo dnf install       -y xinit gdm
+        command -v zypper  && sudo zypper install    -y xinit gdm
+        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit gdm
+    fi
     # 自启动lightdm
-    sudo systemctl enable --now lightdm.service
+    sudo systemctl enable --now $selected_theme.service
     # 禁止gettty服务
     sudo systemctl disable getty@.service
 }
