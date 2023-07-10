@@ -97,7 +97,6 @@ function logerr()  { output_log "ERROR" $@ ; }
 WELCOME="^_^你笑起来真好看!像春天的花一样!"
 SEE_YOU="^_^出去晒晒太阳吧!多运动才更健康!"
 
-pac_cmd_ins=
 READ_TIMEOUT=30   # read timeout seconds
 
 ########### 运行条件检测 ###########
@@ -118,15 +117,15 @@ function prompt() { # 提示确认函数，如果使用 -y 参数默认为Y确�
 function check_root() { [[ "`uid -u`" = "0" ]]  && ! prompt "提示:确认在root用户下或者使用sudo运行?" && exit 0 ; }
 
 function check_basic() { # 基础依赖命令检测与安装
-    which apt-get >/dev/null 2>&1 && pac_cmd_ins=apt-get
-    which dnf >/dev/null 2>&1 && pac_cmd_ins=dnf
-    which zypper >/dev/null 2>&1 && pac_cmd_ins=zypper
-    which curl >/dev/null 2>&1 || sudo $pac_cmd_ins install -y curl     # 检测 curl 命令
-    which git >/dev/null  2>&1 || sudo $pac_cmd_ins install -y git       # 检测 git 命令
+    command -v apt-get >/dev/null 2>&1 && sudo apt-get install   -y curl git
+    command -v dnf     >/dev/null 2>&1 && sudo dnf install       -y curl git
+    command -v zypper  >/dev/null 2>&1 && sudo zypper install    -y curl git
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --noconfirm curl git
+
     # Anaconda3 环境可能导致编译失败.
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
-    anaconda -V >/dev/null 2>&1 && echo -e "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`which python3`${NC}" && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
-    echo -e "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`which python3`${NC}"
+    anaconda -V >/dev/null 2>&1 && echo -e "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`command -v python3`${NC}" && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
+    echo -e "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`command -v python3`${NC}"
 }
 
 # 创建软链接或重命名目录
@@ -142,21 +141,24 @@ function create_symlink() {
 }
 
 function install_build_deps() {
-    which apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
-    which dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
-    which zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
+    command -v apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
+    command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
+    command -v zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm gcc git meson ninja pkg-config cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf && return 0
 }
 
 function install_polybar_deps() {
-    which apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev lm-sensors && return 0
-    which dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors && return 0
-    which zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors && return 0
+    command -v apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev lm-sensors && return 0
+    command -v dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors && return 0
+    command -v zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors && return 0
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm libuv cairo xcb-util libxcb xcb-proto-devel xcb-util-image xcb-util-wm lm_sensors && return 0
 }
 
 function install_polybar_deps_opt() {
-    which apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev && return 0
-    which dnf       && sudo dnf install     -y xcb-util-xrm-devel xcb-util-cursor-devel alsa-lib-devel pulseaudio-libs-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
-    which zypper    && sudo zypper install  -y libxcb-xkb1 xcb-util-xrm-devel xcb-util-cursor-devel alsa-devel libpulse-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
+    command -v apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev && return 0
+    command -v dnf       && sudo dnf install     -y xcb-util-xrm-devel xcb-util-cursor-devel alsa-lib-devel pulseaudio-libs-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
+    command -v zypper    && sudo zypper install  -y libxcb-xkb1 xcb-util-xrm-devel xcb-util-cursor-devel alsa-devel libpulse-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm libxcb xcb-util-xrm xcb-util-cursor alsa-lib libpulse jsoncpp libmpdclient libcurl libnl && return 0
 }
 
 function compile_polybar() {
@@ -176,15 +178,18 @@ function compile_polybar() {
 }
 
 function install_i3wm_deps() {
-    which apt-get && sudo apt-get install   -y pkg-config libstartup-notification0-dev libxcb-xkb-dev libxcb-xinerama0-dev libxcb-cursor-dev libxcb-keysyms1-dev \
+    command -v apt-get && sudo apt-get install   -y pkg-config libstartup-notification0-dev libxcb-xkb-dev libxcb-xinerama0-dev libxcb-cursor-dev libxcb-keysyms1-dev \
             libxcb-icccm4-dev libxcb-xrm-dev libxkbcommon-x11-dev libyajl-dev libcairo2-dev libpango1.0-dev libxfixes-dev libxcb-randr0-dev \
             libxcb-shape0-dev libev-dev
-    which dnf     && sudo dnf install       -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
+    command -v dnf     && sudo dnf install       -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel yajl-devel asciidoc \
             xmlto pcre2-devel startup-notification-devel pango-devel cairo-devel perl-ExtUtils-MakeMaker
-    which zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
+    command -v zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel libyajl-devel asciidoc \
             xmlto pcre2-devel startup-notification-devel pango-devel cairo-devel libiconv_hook-devel 
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm pkg-config libxcb xcb-util libxkbcommon libxkbcommon-x11 xcb-util-cursor \
+            xcb-util-wm xcb-util-keysyms xcb-util-xrm libev yajl asciidoc \
+            xmlto pcre2 startup-notification pango cairo libiconv
 }
 function compile_i3wm() {
     tmp_path="$tmp_dir/i3wm"
@@ -204,12 +209,14 @@ function compile_i3wm() {
 }
 
 function install_picom_deps() {
-    which apt-get  >/dev/null 2>&1 && sudo apt-get install -y libxext-dev libxcb1-dev libxcb-util-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl-dev libegl-dev libpcre2-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev
-    which dnf      >/dev/null 2>&1 && sudo dnf     install -y dbus-devel libconfig-devel libdrm-devel libev-devel libX11-devel libX11-xcb libXext-devel libxcb-devel libGL-devel libEGL-devel pcre2-devel pixman-devel uthash-devel xcb-util-image-devel xcb-util-renderutil-devel xorg-x11-proto-devel
-    which zypper   >/dev/null 2>&1 && sudo zypper  install -y dbus-1-devel libX11-devel libX11-xcb1 libXext-devel xproto-devel \
+    command -v apt-get  >/dev/null 2>&1 && sudo apt-get install -y libxext-dev libxcb1-dev libxcb-util-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl-dev libegl-dev libpcre2-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev
+    command -v dnf      >/dev/null 2>&1 && sudo dnf     install -y dbus-devel libconfig-devel libdrm-devel libev-devel libX11-devel libX11-xcb libXext-devel libxcb-devel libGL-devel libEGL-devel pcre2-devel pixman-devel uthash-devel xcb-util-image-devel xcb-util-renderutil-devel xorg-x11-proto-devel
+    command -v zypper   >/dev/null 2>&1 && sudo zypper  install -y dbus-1-devel libX11-devel libX11-xcb1 libXext-devel xproto-devel \
                 libxcb-devel libpixman-1-0-devel Mesa-libGL-devel Mesa-libEGL-devel pcre2-devel libev-devel uthash-devel \
                 libconfig-devel libxcb-composite0 libxcb-damage0 libxcb-dpms0 libxcb-glx0 libxcb-image0 libxcb-present0 \
                 libxcb-randr0 libxcb-render0 libxcb-shape0 libxcb-xfixes0
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm dbus libx11 libxext \
+                libxcb pixman Mesa-libGL-devel mesa pcre2 libev uthash libconfig
 }
 function compile_picom() {
     url="https://github.com/yshui/picom.git"
@@ -264,7 +271,7 @@ function install_dotfiles() {
 
     # picom 使用gpu 时 ，设置 glx , 使用cpu时设置 xrender
     # 如果 nvidia-smi 命令 或 amdgpu-pro 命令存在 则使用 glx ， 否则使用 xrender
-    if which nvidia-smi >/dev/null 2>&1 || which amdgpu-pro >/dev/null 2>&1; then
+    if command -v nvidia-smi >/dev/null 2>&1 || command -v amdgpu-pro >/dev/null 2>&1; then
         backend="glx"
     else
         backend="xrender"
@@ -277,9 +284,10 @@ function install_dotfiles() {
 }
 
 function install_i3lock_deps() {
-    which apt-get >/dev/null 2>&1 && sudo apt-get   install -y libjpeg-dev libpam0g-dev
-    which dnf      >/dev/null 2>&1 && sudo dnf      install -y libjpeg-turbo-devel pam pam-devel
-    which zypper >/dev/null 2>&1 && sudo zypper     install -y libjpeg8-devel pam pam-devel
+    command -v apt-get >/dev/null 2>&1 && sudo apt-get   install -y libjpeg-dev libpam0g-dev
+    command -v dnf      >/dev/null 2>&1 && sudo dnf      install -y libjpeg-turbo-devel pam pam-devel
+    command -v zypper >/dev/null 2>&1 && sudo zypper     install -y libjpeg8-devel pam pam-devel
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm libjpeg-turbo pam
 }
 function compile_i3lock_color() {
     prompt "编译安装 i3lock-color" || return 1
@@ -294,9 +302,10 @@ function compile_i3lock_color() {
     cd $tmp_path && ./install-i3lock-color.sh
 }
 function install_rofi_deps(){
-    which apt-get >/dev/null 2>&1 && sudo apt-get   install -y libgdk-pixbuf-2.0-dev bison flex flex-doc
-    which dnf      >/dev/null 2>&1 && sudo dnf      install -y ghc-gi-gdkpixbuf-devel
-    which zypper >/dev/null 2>&1 && sudo zypper     install -y gdk-pixbuf-devel
+    command -v apt-get >/dev/null 2>&1 && sudo apt-get   install -y libgdk-pixbuf-2.0-dev bison flex flex-doc
+    command -v dnf      >/dev/null 2>&1 && sudo dnf      install -y ghc-gi-gdkpixbuf-devel
+    command -v zypper >/dev/null 2>&1 && sudo zypper     install -y gdk-pixbuf-devel
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm gdk-pixbuf2
 }
 function compile_rofi() {
     prompt "编译安装 rofi" || return 1
@@ -319,12 +328,13 @@ function compile_rofi() {
 
 function install_others() {
     # 使用命令安装 psmisc(killall)
-    which apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpd mpc ncmpcpp firefox-esr psmisc pulseaudio thunar
+    command -v apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpd mpc ncmpcpp firefox-esr psmisc pulseaudio thunar
     # fedora 没有提供mpd安装包(涉及到h264编解码器专利原因),需要替换ffmpeg相关库
-    which dnf >/dev/null 2>&1       && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    which dnf >/dev/null 2>&1       && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
-    which dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar
-    which zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar
+    command -v dnf >/dev/null 2>&1       && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    command -v dnf >/dev/null 2>&1       && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
+    command -v dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar
+    command -v zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpd mpc ncmpcpp firefox psmisc thunar noto-fonts jack2
 }
 
 function install_urxvt_ext() {
@@ -600,9 +610,10 @@ function select_polybar_themes() {
     i3-msg restart
 }
 function install_clipmenu_deps() {
-    which apt-get && sudo apt-get install   -y xsel libxfixes-dev
-    which dnf     && sudo dnf install       -y xsel libXfixes-devel
-    which zypper  && sudo zypper install    -y xsel libXfixes-devel
+    command -v apt-get && sudo apt-get install   -y xsel libxfixes-dev
+    command -v dnf     && sudo dnf install       -y xsel libXfixes-devel
+    command -v zypper  && sudo zypper install    -y xsel libXfixes-devel
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm xsel libxfixes
 }
 function install_clipmenu() {
     prompt "安装 clipmenu 剪切板菜单"
@@ -616,15 +627,17 @@ function install_clipmenu() {
     cd $tmp_path && sudo make install
 }
 function install_xscreensaver_deps() {
-    which apt-get && sudo apt-get install   -y perl intltool libxext-dev libxi-dev libxt-dev libxft-dev libxinerama-dev \
+    command -v apt-get && sudo apt-get install   -y perl intltool libxext-dev libxi-dev libxt-dev libxft-dev libxinerama-dev \
                         libxrandr-dev libxxf86vm-dev libgl-dev libgl1-mesa-dev libglu1-mesa-dev libgle3-dev libgtk2.0-dev  libgtk-3-dev libgdk-pixbuf-xlib-2.0-dev \
                         libxml2 libxml2-dev libpam0g libpam0g-dev dbus libsystemd-dev 
-    which dnf     && sudo dnf install       -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
+    command -v dnf     && sudo dnf install       -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
                         libXrandr-devel libXxf86vm-devel mesa-libGL-devel gtk2-devel gdk-pixbuf2-devel gdk-pixbuf2-xlib-devel \
                         libxml2-devel pam pam-devel dbus systemd-devel
-    which zypper  && sudo zypper install    -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
+    command -v zypper  && sudo zypper install    -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
                         libXrandr-devel libXxf86vm-devel Mesa-libGL-devel libgtk-2_0-0 gtk2-devel gdk-pixbuf-devel gdk-pixbuf-xlib-devel \
                         libxml2-devel pam pam-devel dbus-1 systemd-devel
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm perl intltool libxext libxi libxft libxinerama \
+                        libXrandr libXxf86vm Mesa gtk2 gdk-pixbuf2 gdk-pixbuf-xlib libxml2 pam dbus systemd
 }
 function compile_xscreensaver() {
     str_version="6.06"
@@ -662,7 +675,7 @@ function config_resolution() {
 function check_terminal_list() {
     for tname in x-terminal-emulator mate-terminal gnome-terminal terminator xfce4-terminal urxvt rxvt termit Eterm aterm uxterm xterm roxterm termite lxterminal terminology st qterminal lilyterm tilix terminix konsole kitty guake tilda alacritty hyper wezterm
     do
-        which $tname > /dev/null 2>&1  && echo $tname
+        command -v $tname > /dev/null 2>&1  && echo $tname
     done
 }
 function select_terminal() {
@@ -703,9 +716,10 @@ function install_xinit() {
     [[ "$selected_theme" == "" ]] && selected_theme="lightdm"
 
     # 安装X窗口系统和DM
-    which apt-get && sudo apt-get install   -y xinit $selected_theme
-    which dnf     && sudo dnf install       -y xinit $selected_theme
-    which zypper  && sudo zypper install    -y xinit $selected_theme
+    command -v apt-get && sudo apt-get install   -y xinit $selected_theme
+    command -v dnf     && sudo dnf install       -y xinit $selected_theme
+    command -v zypper  && sudo zypper install    -y xinit $selected_theme
+    command -v pacman  >/dev/null 2>&1 && sudo pacman -S --needed --noconfirm xorg-xinit $selected_theme
 
     # 自启动lightdm
     sudo systemctl enable --now lightdm.service
