@@ -27,6 +27,7 @@ chmod +x i3config
 |Distro|[openSUSE](https://www.opensuse.org/)|
 |:---:|:---:|
 |WM|[i3wm](https://github.com/i3/i3)|
+|DM|[lightdm](https://github.com/canonical/lightdm)|
 |Bar|[Polybar](https://github.com/polybar/polybar)|
 |Menu|[Rofi](https://github.com/davatorium/rofi)-[rofi-themes](https://github.com/adi1090x/rofi)|
 |Compositor|[Picom](https://github.com/yshui/picom)|
@@ -40,6 +41,8 @@ chmod +x i3config
 |clipboard| [clipmenu](https://github.com/cdown/clipmenu) |
 |locker| [i3lock-color](https://github.com/Raymo111/i3lock-color)|
 |screensaver| [XScreenSaver](https://www.jwz.org/xscreensaver)|
+|audio| [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) |
+
 
 > i3wm 推荐编译源码版本，通常自带版本比较低，有些新功能不支持.
 > 
@@ -66,11 +69,61 @@ chmod +x i3config
 - [x] 配置 rofi 主题(包含启动器、小插件和powermenu)
 - [x] 锁屏工具选择`i3lock-color`版本替换原有的i3lock
 - [ ] rofi主题优化，自适应分辨率(字体大小、布局)
+- [ ] 实现锁屏切换选择，可选 xscreensaver /i3lock / betterlockscreen 等等可用锁屏软件
+- [ ] 支持 Arch / Manjaro /Gento 发行版的软件编译安装及配置
+- [x] i3wm 浮动视频小窗口的位置动态根据屏幕分辨率调整
+- [ ] 支持选择 lightdm/sddm/gdm等不同的显示管理器安装与切换
+- [ ] 支持根据不同显示管理器的主题切换功能
+- [x] 支持定制`firefox`页面主题`userChrome.css`
+
 
 
 ## 关于配置快捷键
 
 如果你喜欢使用bindcode 或者不知道某个键对应的名称，可以执行 `xmodmap -pke`命令查看。
+
+## 安装说明
+对于每个人的配置使用方式无法做到统一，你喜欢这样，他喜欢那样，一个项目无法满足所有人都喜好。
+
+- 安装软件: 对于一些有必要(`需要最新版`)源码编译方式安装的软件，本项目会实现自动编译安装方法。
+- 配置文件: 一种方式是`copy模式`(复制项目配置文件到目标目录),另一种方式是`link模式`(通过软链接)方式使用配置。
+- 分辨率适配: 识别`主屏幕分辨率`后自动修改与本项目相关的配置信息(如 dpi/font_size等等)，达到最佳适配效果。
+
+配置文件的两种使用模式的差异:
+- `copy模式`源配置文件与目标目录解耦，不受源配置文件的变化影响，但缺点是无法进行变更跟踪和维护。
+- `link模式`通过git版本管理，可以跟踪配置变更，本项目采用这种`link模式`。
+
+## i3wm需要dm么？
+
+使用`i3wm`是否还需要加一个显示管理器(比如 `lightdm`、`sddm`或`gdm`)呢？
+
+答案是这不是必要的，但有了`DM`时使用桌面会很方便，比如登录管理(greetings)或`用户自动登录`等。
+
+有的用户对此作出评论为:
+> 如果在犹豫是否安装DM,那就试一试没有DM时的情况(`If in doubt, try without`).
+
+
+`i3config`工具会提供`显示管理器DM`的安装选择功能，并自动根据选择配置使用`i3wm`作为默认的窗口管理器。
+
+如果你希望可以使用最精简的`Linux`桌面系统，那可以通过这种方式安装`显示管理器DM`吧。
+
+流行的几款DM:
+- lightdm :轻量级，以Debian12为例，安装后占用空间 100MB左右。
+- sddm : 现代、直观的用户界面、良好的可定制性、支持多个桌面环境。以Debian12为例，安装后占用空间2GB左右，安装包690左右。
+- gdm : 优点：与GNOME桌面紧密集成、功能丰富、支持GNOME的高级特性、可扩展性好。缺点：相对较高的系统资源占用、对于非GNOME桌面的兼容性可能较差。以Debian12为例，安装后占用空间900MB左右，安装包400+左右。
+
+
+### 切换显示管理器说明
+
+如果我们使用`lightdm`时，我们需要做到操作如下:
+```sh
+# 自启动lightdm
+sudo systemctl enable lightdm.service
+
+# 禁止gettty服务
+sudo systemctl disable getty@.service
+
+```
 
 ## 鸣谢
 

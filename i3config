@@ -141,10 +141,10 @@ function create_symlink() {
 }
 
 function install_build_deps() {
-    command -v apt-get && sudo apt-get install   -y build-essential git meson ninja-build cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
-    command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
-    command -v zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
-    command -v pacman  && sudo pacman -S --needed --noconfirm gcc git meson ninja pkg-config cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf automake bison && return 0
+    command -v apt-get && sudo apt-get install   -y build-essential git meson ninja-build make cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
+    command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config make cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
+    command -v zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config make cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
+    command -v pacman  && sudo pacman -S --needed --noconfirm gcc git meson ninja pkg-config make cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf automake bison && return 0
 }
 
 function install_polybar_deps() {
@@ -637,7 +637,7 @@ function install_xscreensaver_deps() {
                         libXrandr-devel libXxf86vm-devel Mesa-libGL-devel libgtk-2_0-0 gtk2-devel gdk-pixbuf-devel gdk-pixbuf-xlib-devel \
                         libxml2-devel pam pam-devel dbus-1 systemd-devel
     command -v pacman  && sudo pacman -S --needed --noconfirm perl intltool libxext libxi libxft libxinerama \
-                        libXrandr libXxf86vm Mesa gtk2 gdk-pixbuf2 gdk-pixbuf-xlib libxml2 pam dbus systemd
+                        libxrandr libxxf86vm mesa glu gtk2 gdk-pixbuf2 gdk-pixbuf-xlib libxml2 pam dbus systemd intltool
 }
 function compile_xscreensaver() {
     str_version="6.06"
