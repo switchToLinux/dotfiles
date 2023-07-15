@@ -649,6 +649,7 @@ function select_polybar_themes() {
     prompt "开始设置 polybar 主题" || return 1
     tmp_path="$HOME/.config/polybar_themes"
     [[ ! -r $tmp_path ]] && return 1
+    prompt "更新 polybar 主题到最新版" && cd $tmp_path && git pull && cd -
     menu_head "选择 polybar_themes 主题(默认zioer)"
     selected_theme=""
     common_select "$tmp_path/themes"
@@ -665,7 +666,7 @@ function select_polybar_themes() {
     menu_tail
     selected_theme=""
     common_select "$tmp_path/colors"
-    color_name="${selected_theme}"
+    color_name="`echo ${selected_theme} | sed 's/.ini$//g'`"
     [[ "$color_name" == "" ]] && color_name="zioer"
     
     sed -i "s|^exec.*config/polybar_themes.*|exec_always --no-startup-id  ~/.config/polybar_themes/launch.sh ${theme_name} ${prompt_style} ${color_name} > /dev/null 2>\&1|g" ~/.config/i3/config ~/.config/i3/config.d/*
