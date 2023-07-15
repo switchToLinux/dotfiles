@@ -142,7 +142,7 @@ function create_symlink() {
 
 function install_build_deps() {
     command -v apt-get && sudo apt-get install   -y build-essential git meson ninja-build make cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
-    command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config make cmake @development-tools python3-sphinx python3-packaging dh-autoreconf && return 0
+    command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config make cmake @development-tools python3-sphinx python3-sphinx_rtd_theme python3-packaging dh-autoreconf && return 0
     command -v zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config make cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
     command -v pacman  && sudo pacman -S --needed --noconfirm gcc git meson ninja pkg-config make cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf automake bison && return 0
 }
@@ -341,8 +341,24 @@ function install_mpd_deps() {
         libpulse-dev libshout3-dev libsndio-dev libmpdclient-dev \
         libnfs-dev libupnp-dev libavahi-client-dev libsqlite3-dev libsystemd-dev \
         libgtest-dev libboost-dev libicu-dev libchromaprint-dev libgcrypt20-dev
-    command -v dnf    && sudo dnf      install -y 
-    command -v zypper && sudo zypper     install -y 
+    command -v dnf    && sudo dnf      install -y fmt-devel pcre2-devel libmad-devel mpg123-devel libid3tag-devel \
+        flac-devel libvorbis-devel libopusenc-devel libogg-devel adplug-devel audiofile-devel libsndfile-devel faad2-devel \
+        fluidsynth-devel libmikmod-devel libmodplug-devel libmpcdec-devel wavpack-devel wildmidi-devel \
+        libsidplayfp-devel ffmpeg ffmpeg-libs lame-devel twolame-devel libsamplerate-devel soxr-devel \
+        bzip2-devel libcdio-paranoia-devel libisofs-devel libmms-devel zziplib-devel libcurl-devel \
+        yajl-devel expat-devel SAASound-devel libao-devel openal-soft-devel \
+        pulseaudio-libs-devel libshout-devel libmpdclient-devel libnfs-devel libupnp-devel avahi-devel \
+        libsqlite3x-devel systemd-devel gtest-devel boost-devel libicu-devel libchromaprint-devel libgcrypt-devel
+        # no install: libgme libsidutils libresid-builder-dev libshine libjack-jackd2-dev libsndio-dev
+    command -v zypper && sudo zypper     install -y fmt-devel pcre2-devel libmad-devel mpg123-devel libid3tag-devel \
+        flac-devel libvorbis-devel libopus-devel libogg-devel audiofile-devel libsndfile-devel libfaad-devel \
+        fluidsynth-devel libgme-devel  libmikmod-devel libmodplug-devel libmpcdec-devel wavpack-devel wildmidi-devel \
+        libsidplayfp-devel ffmpeg libavcodec-devel libavformat-devel libmp3lame-devel libtwolame-devel libshine-devel libsamplerate-devel soxr-devel \
+        libbz2-devel libcdio-paranoia-devel libisofs-devel libmms-devel zziplib-devel libcurl-devel \
+        libyajl-devel libexpat-devel libasound2 libsoundio-devel libao-devel libjack-devel openal-soft-devel \
+        libpulse-devel libshout-devel sndio-devel libmpdclient-devel libnfs-devel libupnp-devel libavahi-client3 \
+        sqlite3-devel systemd-devel gtest libboost_headers-devel libicu-devel libchromaprint-devel libgcrypt-devel
+        # no install: adplug libsidutils libresid-builder-dev 
     command -v pacman && sudo pacman -S --needed --noconfirm fmt pcre2 libmad mpg123 libid3tag flac libvorbis opus libogg \
         audiofile libsndfile faad2 fluidsynth libgme libmikmod libmodplug \
         libmpcdec wavpack wildmidi libsidplayfp ffmpeg lame twolame libsamplerate libsoxr bzip2 \
@@ -351,10 +367,11 @@ function install_mpd_deps() {
         gtest boost-libs icu chromaprint chromaprint
 
         # adplug shine \
-
+        # https://github.com/adplug/adplug
+        # https://github.com/mcfiredrill/libgme
 }
 function compile_mpd() {
-    prompt "编译安装 mpd" || return 1
+    prompt "编译安装 mpd(libavcodec等库需要第三方源)" || return 1
     url="https://github.com/MusicPlayerDaemon/MPD.git"
     tmp_path=$tmp_dir/mpd
     [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
@@ -379,7 +396,7 @@ function install_others() {
     command -v dnf     && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     command -v dnf     && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
     command -v dnf     && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar pamixer
-    command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer
+    command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer
     command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer
 }
 
