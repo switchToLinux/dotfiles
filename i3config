@@ -326,15 +326,61 @@ function compile_rofi() {
     cd $tmp_path && git checkout $str_branch && meson setup build --prefix=${str_dst} &&  ninja -C build && sudo ninja -C build install
 }
 
+function install_mpd_deps() {
+    command -v apt-get && sudo apt-get install -y meson g++ \
+        libfmt-dev libpcre2-dev libmad0-dev libmpg123-dev libid3tag0-dev \
+        libflac-dev libvorbis-dev libopus-dev libogg-dev \
+        libadplug-dev libaudiofile-dev libsndfile1-dev libfaad-dev \
+        libfluidsynth-dev libgme-dev libmikmod-dev libmodplug-dev \
+        libmpcdec-dev libwavpack-dev libwildmidi-dev \
+        libsidplay2-dev libsidutils-dev libresid-builder-dev libavcodec-dev libavformat-dev \
+        libmp3lame-dev libtwolame-dev libshine-dev libsamplerate0-dev libsoxr-dev \
+        libbz2-dev libcdio-paranoia-dev libiso9660-dev libmms-dev \
+        libzzip-dev libcurl4-gnutls-dev libyajl-dev libexpat-dev \
+        libasound2-dev libao-dev libjack-jackd2-dev libopenal-dev \
+        libpulse-dev libshout3-dev libsndio-dev libmpdclient-dev \
+        libnfs-dev libupnp-dev libavahi-client-dev libsqlite3-dev libsystemd-dev \
+        libgtest-dev libboost-dev libicu-dev libchromaprint-dev libgcrypt20-dev
+    command -v dnf    && sudo dnf      install -y 
+    command -v zypper && sudo zypper     install -y 
+    command -v pacman && sudo pacman -S --needed --noconfirm fmt pcre2 libmad mpg123 libid3tag flac libvorbis opus libogg \
+        audiofile libsndfile faad2 fluidsynth libgme libmikmod libmodplug \
+        libmpcdec wavpack wildmidi libsidplayfp ffmpeg lame twolame libsamplerate libsoxr bzip2 \
+        libcdio-paranoia libisofs libmms zziplib libcurl-compat yajl expat alsa-lib libao jack2 \
+        openal libpulse libshout sndio libmpdclient libnfs libupnp avahi sqlite systemd-libs \
+        gtest boost-libs icu chromaprint chromaprint
+
+        # adplug shine \
+
+}
+function compile_mpd() {
+    prompt "编译安装 mpd" || return 1
+    url="https://github.com/MusicPlayerDaemon/MPD.git"
+    tmp_path=$tmp_dir/mpd
+    [[ -d "$tmp_path" ]] && prompt "已经克隆过代码，是否重新克隆?" && rm -rf "$tmp_path"
+    [[ -d "$tmp_path" ]] || git clone --recursive $url $tmp_path
+    [[ ! -d "$tmp_path" ]] && echo "克隆代码失败!稍后再重试!" && return 0
+
+    read -t $READ_TIMEOUT -p "`echo_green '输入安装目录,默认 /usr/local :'`" str_dst
+    [[ "$str_dst" == "" ]] && str_dst="/usr/local"
+    [[ ! -d "$str_dst" ]] && echo "设置的安装目录前缀不存在! [$str_dst]" && return 2
+    # read -t $READ_TIMEOUT -p "`echo_green '选择代码分支 master/stable,默认master:'`" str_branch
+    [[ "$str_branch" == "" ]] && str_branch="master"
+
+    install_build_deps
+    install_mpd_deps
+    cd $tmp_path && git checkout $str_branch && meson setup build --prefix=${str_dst} &&  ninja -C build && sudo ninja -C build install
+}
+
 function install_others() {
     # 使用命令安装 psmisc(killall)
-    command -v apt-get >/dev/null 2>&1   && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpd mpc ncmpcpp firefox-esr psmisc pulseaudio thunar
+    command -v apt-get && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpc ncmpcpp firefox-esr psmisc pulseaudio thunar pamixer
     # fedora 没有提供mpd安装包(涉及到h264编解码器专利原因),需要替换ffmpeg相关库
-    command -v dnf >/dev/null 2>&1       && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    command -v dnf >/dev/null 2>&1       && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
-    command -v dnf >/dev/null 2>&1       && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar
-    command -v zypper >/dev/null 2>&1    && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar
-    command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpd mpc ncmpcpp firefox psmisc thunar noto-fonts jack2
+    command -v dnf     && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    command -v dnf     && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
+    command -v dnf     && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar pamixer
+    command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer
+    command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer
 }
 
 function install_urxvt_ext() {
@@ -638,6 +684,7 @@ function install_xscreensaver_deps() {
                         libxml2-devel pam pam-devel dbus-1 systemd-devel
     command -v pacman  && sudo pacman -S --needed --noconfirm perl intltool libxext libxi libxft libxinerama \
                         libxrandr libxxf86vm mesa glu gtk2 gdk-pixbuf2 gdk-pixbuf-xlib libxml2 pam dbus systemd intltool
+    install_urxvt_ext
 }
 function compile_xscreensaver() {
     str_version="6.06"
@@ -767,7 +814,7 @@ function show_menu_install() {
     menu_item 5 clipmenu
     menu_item 6 rofi
     menu_item 7 xscreensaver
-    menu_item 8 urxvt_extension
+    menu_item 8 compile_mpd
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
@@ -796,7 +843,7 @@ function start_main() { # 安装菜单选择
             5) install_clipmenu         ;;
             6) compile_rofi             ;;
             7) compile_xscreensaver     ;;
-            8) install_urxvt_ext        ;;
+            8) compile_mpd              ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
             p) select_polybar_themes    ;;
