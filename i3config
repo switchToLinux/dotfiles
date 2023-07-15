@@ -13,7 +13,7 @@
 # 环境变量参数:
 #   OUTPUTLOG - no 表示只输出日志信息到文件中,不在终端显示，默认为 yes(终端显示)
 #
-I3CONFIG_VERSION="v0.1.2"
+I3CONFIG_VERSION="v0.1.3"
 dotfiles_path=$HOME/.config/dotfiles
 
 source ~/.bashrc
