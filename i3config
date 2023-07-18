@@ -149,9 +149,9 @@ function install_build_deps() {
 
 function install_polybar_deps() {
     command -v apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev lm-sensors x11-utils xdotool && return 0
-    command -v dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors xprop xdotool xev && return 0
-    command -v zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors xprop xdotool xev && return 0
-    command -v pacman  && sudo pacman -S --needed --noconfirm libuv cairo xcb-util libxcb xcb-proto-devel xcb-util-image xcb-util-wm lm_sensors xorg-xprop xdotool xorg-xev && return 0
+    command -v dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors xprop xdotool xev xwininfo && return 0
+    command -v zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors xprop xdotool xev xwininfo && return 0
+    command -v pacman  && sudo pacman -S --needed --noconfirm libuv cairo xcb-util libxcb xcb-proto-devel xcb-util-image xcb-util-wm lm_sensors xorg-xprop xdotool xorg-xev xorg-xwininfo && return 0
 }
 
 function install_polybar_deps_opt() {
