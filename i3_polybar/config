@@ -45,8 +45,8 @@ smart_gaps off
 gaps inner 0
 gaps outer 0
 # 设置窗口垂直间距(给bar留出悬浮空间)
-gaps vertical 0
-gaps horizontal 0
+gaps vertical 4
+gaps horizontal 4
 
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
@@ -249,11 +249,11 @@ for_window [title="Preferences$"]  floating enable
 # set $focused_color  #F0F000
 set_from_resource $focused_color    background  #00303030
 set_from_resource $bgcolor          background  #9696960f
-set_from_resource $unfocus_color    #9696960f   #9696960f
+set_from_resource $unfocus_color    foreground  #9696960f
 set_from_resource $text             foreground  #ffffff0f
 set_from_resource $u_bgcolor        color1      #ff00000f
 set_from_resource $indicator        color1      #ff00000f
-set_from_resource $unfocus_text     #9696960f   #9696960f
+set_from_resource $unfocus_text     color2      #9696960f
 
 # class                     border          background      text            indicator       child_border
 client.focused              $focused_color  $bgcolor        $text           $indicator      $focused_color
