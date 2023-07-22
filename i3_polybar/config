@@ -180,7 +180,6 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r exec xrdb -I$HOME ~/.Xresources , restart
 
 # 设置 锁屏、退出、重启、关机操作功能
-bindsym $mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/type-4/powermenu.sh
 bindsym $mod+l exec  $Locker
 
 # resize window (you can also use the mouse for that)
@@ -208,11 +207,11 @@ bindsym $mod+r mode "resize"
 # 调整所有窗口(内/外)边距快捷键
 bindsym $mod+BackSpace          exec i3-msg gaps inner all plus  5
 bindsym $mod+shift+BackSpace    exec i3-msg gaps inner all minus 5
-bindsym $mod+equal              exec i3-msg gaps outer all plus  10
-bindsym $mod+shift+equal        exec i3-msg gaps outer all minus 10
+bindsym $mod+equal              exec i3-msg gaps outer all plus  5
+bindsym $mod+shift+equal        exec i3-msg gaps outer all minus 5
 # 调整picom合成器的窗口透明度(0-100)
-bindsym $mod+bracketleft        exec picom-trans -c -o -10
-bindsym $mod+bracketright       exec picom-trans -c -o +10
+bindsym $mod+bracketleft        exec picom-trans -c -o -5
+bindsym $mod+bracketright       exec picom-trans -c -o +5
 
 ######################################################
 # 针对窗口进行特殊参数配置

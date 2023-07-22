@@ -571,7 +571,7 @@ function select_rofi_themes() {
         style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
         [[ "$style_name" == "" ]] && style_name="style-1"
 
-        sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+        #sed -i "s|^bindsym \$mod+d exec.*|bindsym \$mod+d exec --no-startup-id  ~/.config/rofi/launchers/${theme_name}/launcher.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
         sed -i "s|^theme='style.*'|theme='${style_name}'|g" ~/.config/rofi/launchers/${theme_name}/launcher.sh
         cd ~/.config/rofi/scripts && ln -sf ../launchers/${theme_name}/launcher.sh launcher
     fi
@@ -637,7 +637,7 @@ function select_rofi_themes() {
         style_name=`echo "$selected_theme" | sed 's/.rasi//g'`
         [[ "$style_name" == "" ]] && style_name="style-1"
 
-        sed -i "s|^bindsym \$mod+shift+l exec.*|bindsym \$mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/${theme_name}/powermenu.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
+        #sed -i "s|^bindsym \$mod+shift+l exec.*|bindsym \$mod+shift+l exec --no-startup-id  ~/.config/rofi/powermenu/${theme_name}/powermenu.sh|g" ~/.config/i3/config ~/.config/i3/config.d/*
         sed -E -i "s|='style-[0-9]+'|='${style_name}'|g" ~/.config/rofi/powermenu/${theme_name}/powermenu.sh
         cd ~/.config/rofi/scripts && ln -sf ../powermenu/${theme_name}/powermenu.sh powermenu
         menu_iteml "切换 powermenu 为 $theme_name 主题, 应用 ${style_name} 类型"

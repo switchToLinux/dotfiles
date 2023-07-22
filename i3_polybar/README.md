@@ -2,34 +2,38 @@
 
 ## 快捷键列表
 
-- 打开 vscode : $mod+c
-- 打开 terminal : $mod+Enter
-- 打开 google-chrome :  $mod+g
-- 隐藏/显示 顶部bar ： $mod + n
-- 隐藏/显示 底部bar ： $mod + m
-- 工作区双屏切换: $mod+x
-- 系统退出: $mod+l
-- 显示菜单: $mod+d
-- 显示窗口列表菜单: $mod+Tab
-- 切换窗口布局类型(split/stacking/tabbed): $mod+e/w/s
-- 切换垂直/水平方向布局窗口: $mod+v
-- 焦点窗口的焦点切换到父节点: $mod+a
-- 焦点窗口的焦点切换到子节点: $mod+shift+a
-- 全屏显示当前焦点窗口: $mod+f
-- 关闭焦点窗口: $mod+q
-- 暂存工作区-暂存当前窗口: $mod+shift+minus(减号)
-- 暂存工作区-显示暂存窗口: $mod+minus (多个暂存窗口会逐个切换)
-- 浮动窗口-切换焦点窗口悬浮/普通 : $mod+shift+space
-- 浮动窗口-移动浮动窗口上下左右: $mod + 方向键
-- 浮动窗口Sticky-焦点窗口切换: $mod+Shift+s
-- 浮动窗口Sticky-切换为置顶悬浮小窗口: $mod+shifqt+p (512x512 => position 854,300 )
-- 浮动窗口Sticky-切换为置顶悬浮小窗口: $mod+shift+o (512x256 => position 800,500 )
-- 配置-重新加载: $mod+Shift+c
-- 配置-i3wm重启: $mod+Shift+r
-- 锁屏操作: $mod+l
-- 重启系统: $mod+Shift+l
-- 窗口resize模式: $mod+r
-- 窗口resize模式: `方向键`调整，确认按`Enter`,取消按`Esc`
+- 打开 vscode : `$mod+c`
+- 打开 terminal : `$mod+Enter`
+- 打开 google-chrome :  `$mod+g`
+- 打开 firefox :  `$mod+b`
+- 隐藏/显示 顶部bar ： `$mod + n`
+- 隐藏/显示 底部bar ： `$mod + m`
+- 工作区双屏切换: `$mod+x`
+- 系统退出: `$mod+l`
+- 显示菜单: `$mod+d`
+- 显示窗口列表菜单: `$mod+Tab`
+- 切换窗口布局类型(split/stacking/tabbed): `$mod+e`
+- 切换垂直/水平方向布局窗口: `$mod+v`
+- 焦点窗口的焦点切换到父节点: `$mod+a`
+- 焦点窗口的焦点切换到子节点: `$mod+shift+a`
+- 全屏显示当前焦点窗口: `$mod+f`
+- 关闭焦点窗口: `$mod+q`
+- 移动焦点窗口: `$mod+Shift+方向键`
+- 暂存工作区-暂存当前窗口: `$mod+shift+minus`(减号)
+- 暂存工作区-显示暂存窗口: `$mod+minus` (多个暂存窗口会逐个切换)
+- 浮动窗口-切换焦点窗口悬浮/普通 : `$mod+shift+space`
+- 浮动窗口-移动浮动窗口上下左右: `$mod+Shift+方向键`
+- 浮动窗口Sticky-焦点窗口切换: `$mod+Shift+s`
+- 浮动窗口Sticky-切换为置顶悬浮小窗口: `$mod+shift+i` (45 ppt 45 ppt => position 30,30 px )
+- 配置变更-重新加载: `$mod+Shift+c`
+- 配置变更-i3wm重启: `$mod+Shift+r`
+- 锁屏操作-i3lock: `$mod+l`
+- 重启关机等电源管理操作: `$mod+Shift+l`
+- 开启resize模式： `$mod+r`， `方向键`调整，确认按`Enter`,取消按`Esc`
+- 窗口间边距: 增加`$mod+Backspace` ， 减小`$mod+Shift+Backspace`
+- 窗口外边距: 增加`$mod+=` ， 减小`$mod+Shift+=`
+- 焦点窗口透明度: 增加`$mod+[` ，减小`$mod+]`
+
 
 ## 4K等高分辨率配置
 > DPI（Dots Per Inch，每英寸点数）是指在显示器上每英寸的像素数量。它表示显示器的像素密度。
