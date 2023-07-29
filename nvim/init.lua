@@ -2,12 +2,12 @@
 require('options')        
 
 
--- load keymappings
-require('keymaps')
-
-
 -- load Packervim
 require('plugins')
+
+
+-- load keymappings
+require('keymaps')
 
 
 -- Set colorscheme

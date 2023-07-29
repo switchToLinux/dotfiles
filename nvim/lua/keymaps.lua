@@ -8,6 +8,11 @@ local opts = {
 -- Normal mode --
 -----------------
 
+-- tabs
+vim.keymap.set('n', '<C-t>', ':tabnew', opts)
+vim.keymap.set('n', '<C-n>', ':tabNext<CR>', opts)
+vim.keymap.set('n', '<C-w>', ':tabclose<CR>', opts)
+
 -- Hint: see `:h vim.keymap.set()`
 -- Better window navigation
 vim.keymap.set('n', '<C-h>', '<C-w>h', opts)
