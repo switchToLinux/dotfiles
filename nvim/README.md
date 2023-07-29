@@ -9,9 +9,8 @@
 1. 安装最新版 [neovim](https://github.com/neovim/neovim) ，如果你的Linux发行版是滚动版本，可能安装包已经是最新版了。
 2. 克隆本项目到本地，`git clone https://github.com/switchToLinux/dotfiles.git` 
 3. 软链接`dotfiles`下的`nvim`子目录到`~/.config/nvim`目录
-4. 使用`Packer.nvim`安装管理插件: `:PackerInstall all` 
 
-OK！ 再次打开`neovim`后就可以使用了。
+OK！ 再次打开`neovim`后就会自动安装插件，等插件安装完成后就可以使用了。
 
 如果提示错误信息类似`adding-parsers on how to add a new parser!` 的错误信息时，可以手工安装语言解析器`TSInstall all`解决这类问题。
 

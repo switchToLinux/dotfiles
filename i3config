@@ -269,6 +269,9 @@ function install_dotfiles() {
     desktop_data="W0Rlc2t0b3AgRW50cnldCkVuY29kaW5nPVVURi04ClR5cGU9QXBwbGljYXRpb24KTmFtZT1pMwpOb0Rpc3BsYXk9dHJ1ZQpHZW5lcmljTmFtZT1BIGR5bmFtaWMgdGlsaW5nIHdpbmRvdyBtYW5hZ2VyCkNvbW1lbnQ9aW1wcm92ZWQgZHluYW1pYyB0aWxpbmcgd2luZG93IG1hbmFnZXIKSWNvbj1pMwpFeGVjPWkzClgtR05PTUUtV01OYW1lPWkzClgtR05PTUUtQXV0b3N0YXJ0LVBoYXNlPVdpbmRvd01hbmFnZXIKWC1HTk9NRS1Qcm92aWRlcz13aW5kb3dtYW5hZ2VyClgtR05PTUUtQXV0b3N0YXJ0LU5vdGlmeT1mYWxzZQoK"
     sudo sh -c "echo $desktop_data | base64 -d > /usr/share/applications/i3.desktop"
 
+    echo "配置 neovim 环境"
+    create_symlink $tmp_path/nvim ~/.config/nvim
+
     # picom 使用gpu 时 ，设置 glx , 使用cpu时设置 xrender
     # 如果 nvidia-smi 命令 或 amdgpu-pro 命令存在 则使用 glx ， 否则使用 xrender
     if command -v nvidia-smi >/dev/null 2>&1 || command -v amdgpu-pro >/dev/null 2>&1; then
@@ -391,13 +394,13 @@ function compile_mpd() {
 
 function install_others() {
     # 使用命令安装 psmisc(killall)
-    command -v apt-get && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpc ncmpcpp firefox-esr psmisc pulseaudio thunar pamixer
+    command -v apt-get && sudo apt-get install -y feh variety dunst rxvt-unicode x11-xserver-utils mpc ncmpcpp firefox-esr psmisc pulseaudio thunar pamixer neovim
     # fedora 没有提供mpd安装包(涉及到h264编解码器专利原因),需要替换ffmpeg相关库
     command -v dnf     && sudo yum install --nogpgcheck https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
     command -v dnf     && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
-    command -v dnf     && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar pamixer
-    command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer
-    command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer
+    command -v dnf     && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar pamixer neovim
+    command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer neovim
+    command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer neovim
 }
 
 function install_urxvt_ext() {

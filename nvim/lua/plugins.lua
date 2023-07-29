@@ -120,6 +120,11 @@ return require('packer').startup(function(use)
         -- Markdown support
         use { 'preservim/vim-markdown', ft = { 'markdown' } }
 
+        -- fzf
+        use {
+            'junegunn/fzf.vim',
+            requires = { 'junegunn/fzf', run = ':call fzf#install()' }
+         }
         -- Markdown previewer
         -- It require nodejs and yarn. Use homebrew to install first
         use {
