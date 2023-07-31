@@ -20,7 +20,7 @@ chmod +x i3config
 - [debian 12](https://www.debian.org/)
 - [fedora 38](https://fedoraproject.org/)
 - [openSUSE leap 15.5](https://get.opensuse.org/leap/)
-
+- [Arch Linux](https://archlinux.org/)
 
 ## 系统信息
 

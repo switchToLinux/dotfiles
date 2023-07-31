@@ -272,6 +272,10 @@ function install_dotfiles() {
     echo "配置 neovim 环境"
     create_symlink $tmp_path/nvim ~/.config/nvim
 
+    echo "配置 xfce4-terminal 环境"
+    mkdir -p ~/.config/xfce4
+    create_symlink $tmp_path/xfce4_terminal ~/.config/xfce4/terminal
+    
     # picom 使用gpu 时 ，设置 glx , 使用cpu时设置 xrender
     # 如果 nvidia-smi 命令 或 amdgpu-pro 命令存在 则使用 glx ， 否则使用 xrender
     if command -v nvidia-smi >/dev/null 2>&1 || command -v amdgpu-pro >/dev/null 2>&1; then
