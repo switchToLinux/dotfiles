@@ -62,7 +62,7 @@ chmod +x i3config
 - [x] 配置 mpd 音乐播放器(编译源码安装mpd过程问题较多，暂自行安装 mpd/mpc/ncmpcpp)
 - [x] 配置 ncmpcpp 音乐播放器客户端
 - [x] 配置 ranger 文件浏览器
-- [ ] 集成 eww 配置
+- [ ] 集成 `Eww` 配置("平替"polybar_themes)，`Eww`支持`X11`和`Wayland`协议。
 - [x] 配置 dunst 通知管理
 - [x] 配置 rofi 启动器
 - [x] 配置 ~/.Xresources 主题
@@ -70,9 +70,9 @@ chmod +x i3config
 - [x] 锁屏工具选择`i3lock-color`版本替换原有的i3lock
 - [ ] rofi主题优化，自适应分辨率(字体大小、布局)
 - [ ] 实现锁屏切换选择，可选 xscreensaver /i3lock / betterlockscreen 等等可用锁屏软件
-- [ ] 支持 Arch / Manjaro /Gento 发行版的软件编译安装及配置
+- [x] 支持 `ArchLinux` / `Manjaro` 发行版的软件编译安装及配置
 - [x] i3wm 浮动视频小窗口的位置动态根据屏幕分辨率调整
-- [ ] 支持选择 lightdm/sddm/gdm等不同的显示管理器安装与切换
+- [x] 支持选择 lightdm/sddm/gdm等不同的显示管理器安装与切换
 - [ ] 支持根据不同显示管理器的主题切换功能
 - [x] 支持定制`firefox`页面主题`userChrome.css`
 - [ ] 增加[polybar-scripts](https://github.com/polybar/polybar-scripts)的支持
