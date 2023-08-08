@@ -246,9 +246,9 @@ for_window [title="Preferences$"]  floating enable
 # set_from_resource $black i3wm.color0 #000000
 
 # set $focused_color  #F0F000
-set_from_resource $focused_color    background  #00303030
+set_from_resource $focused_color    foreground  #00303030
 set_from_resource $bgcolor          background  #9696960f
-set_from_resource $unfocus_color    foreground  #9696960f
+set_from_resource $unfocus_color    background  #9696960f
 set_from_resource $text             foreground  #ffffff0f
 set_from_resource $u_bgcolor        color1      #ff00000f
 set_from_resource $indicator        color1      #ff00000f
