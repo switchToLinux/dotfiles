@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+########################################################################
+# File Name: i3wall
+# Author: Awkee
+# mail: next4nextjob@gmail.com
+# Created Time: 2023年 08月 08日 星期二 20:15:18 CST
+#
+# 非强制性约束: 网络下载使用curl命令而不用wget，没有任何歧视含义，仅处于统一要求
+#
+# 功能简述:  个人Linux桌面环境配置工具-动态桌面背景配置工具
+# 依赖命令:
+#    - curl 下载依赖代码或文件工具
+#    - fzf  提供多选择菜单
+########################################################################
+# set -e              # 命令执行失败就中止继续执行
+I3WALL_VERSION="v0.0.1"     # i3wall版本信息
+
+# Define Colors
+RED='\e[41m'
+BRB='\e[1;7;31;47m' # Blink Red bold
+NC='\e[0m' # No color
+BG='\e[7m' # Highlighting Background color
+TC='\e[1m' # Highlighting Text color
+
+########### 文字显示颜色输出函数 ######
+function echo_white()  { printf "\033[0;37m$@\033[0m"     ; }
+function echo_whiter() { printf "\033[0;37;7m$@\033[0m"   ; }
+function echo_red()    { printf "\033[0;31m$@\033[0m"     ; }
+function echo_redr()   { printf "\033[0;31;7m$@\033[0m"   ; }
+function echo_green()  { printf "\033[0;32m$@\033[0m"     ; }
+function echo_greenr() { printf "\033[0;32;7m$@\033[0m"   ; }
+function white_line()  { printf "\033[0;37m$@\033[0m\n"   ; }
+function whiter_line() { printf "\033[0;37;7m$@\033[0m\n" ; }
+function red_line()    { printf "\033[0;31;1m$@\033[0m\n" ; }
+function redr_line()   { printf "\033[0;31;7m$@\033[0m\n" ; }
+function green_line()  { printf "\033[0;32;1m$@\033[0m\n" ; }
+function greenr_line() { printf "\033[0;32;7m$@\033[0m\n" ; }
+
+line_feed="+--------------------------------------------------------------------------------+"
+PMT=">>>"
+
+# 临时存储代码、下载文件目录
+tmp_dir=/tmp
+item_index=0   # 记录菜单选项序号
+item_line_count=2   # 每行显示菜单数量
+ILEN=40   # 单个选项长度
+MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
+# 欢迎和再见提示信息
+WELCOME="^_^你笑起来真好看!像春天的花一样!"
+SEE_YOU="^_^出去晒晒太阳吧!多运动才更健康!"
+
+READ_TIMEOUT=30   # read timeout seconds
+
+
+function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|${BRB} $@ $NC" ; tput hpa $rlen ; echo "|" ; }
+function menu_head() { echo $line_feed ;   menu_line "$@" ; echo $line_feed ; }
+# 一行可以有 item_line_count 个菜单选项
+function menu_item() { let item_index=$item_index+1 ; n=$1 ; shift ; let rlen="$item_index * $ILEN + 1" ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; [[ "$item_index" == "$item_line_count" ]] && echo "|" && item_index=0 ; }
+# 输出单行长菜单选项,长度有限制
+function menu_iteml() { let rlen="$item_line_count * $ILEN + 1" ; n=$1 ; shift ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; echo "|" ; }
+# 用于输入长信息(非菜单选项),不限制结尾长度
+function menu_info() { n=$1 ; shift ; echo -e "|  $BG ${n} $NC $@" ; }
+function menu_tail() { [[ "$item_index" != "0" ]] && echo "|" ; echo $line_feed ; item_index=0 ; }
+
+function check_cmd() {
+    cmd="$1"
+    ! command -v $cmd >/dev/null 2>&1 && echo "${RED}缺失 $cmd 命令！${NC}" && exit 1
+    # echo -e "命令${NC}${cmd}${NC}已安装."
+}
+
+function check_deps() {
+    # 检查必备依赖工具
+    check_cmd curl
+    check_cmd fzf
+}
+
+opacity=0.85
+
+action="${1:-status}"
+shift
+video_dir="$HOME/.wallpapers_4k"
+video_file="${1:-anime_agatsumazenitsu_1080p.webm}"
+
+stop() {
+	ps -ef | grep xwinwrap |grep -v grep | awk '{ print $2 }' | xargs kill
+}
+
+start() {
+    stop
+	# 上下双屏设置（双4K屏幕）
+    wall_cmd="mpv -wid WID --loop --no-audio --really-quiet --framedrop=vo --panscan=1.0 "${video_dir}/${video_file}""
+	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160          -o ${opacity} -- $wall_cmd
+	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160+0+2160   -o ${opacity} -- $wall_cmd
+}
+
+# 切换视频背景
+select_video() {
+    # bumps cubicgrid
+    # 彩色: epicycle(线环) goop(多彩的形状) kumppa（多彩旋转线条） surfaces vermiculate xrayswarm
+    # 游戏: pacman maze pipes scooter wormhole
+    # 系统: phosphor
+    # 风景: atlantis(鲨鱼群) glschool(小鱼群) fiberlamp(纤维束灯) fireworks(烟花) flurry(极光) 
+	video_file=`ls ${video_dir} | fzf`
+    [[ ! -f ${video_dir}/${video_file} ]] && echo "选择的视频文件 [$video_file] 不存在！" && return 0
+    start
+}
+
+
+start_xsaver() {
+    stop
+	# 上下双屏设置（双4K屏幕）
+    wall_cmd="$1 --window-id WID"
+	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160          -o ${opacity} -- $wall_cmd
+	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160+0+2160   -o ${opacity} -- $wall_cmd
+}
+
+# 切换 xscreensaver 动态背景
+select_effect() {
+    xsaver_dir=/usr/libexec/xscreensaver
+    video_file=`ls ${xsaver_dir} | fzf`
+    [[ ! -f ${xsaver_dir}/${video_file} ]] && echo "选择的视频文件 [$video_file] 不存在！" && return 0
+    start_xsaver ${xsaver_dir}/${video_file}
+}
+usage() {
+    echo "Usage:"
+    echo "  `basename $0` [OPTIONS]"
+    echo
+    echo "OPTIONS:"
+    echo "  start: 启动动态背景"
+    echo "  stop : 停止动态背景"
+    echo "  status: 查看进程状态"
+    echo
+}
+
+## main function
+
+
+function show_menu_install() {
+    menu_head "i3wall ${I3WALL_VERSION} 安装选项菜单"
+    menu_item 1 启动动态背景
+    menu_item 2 停止动态背景
+    menu_item 3 切换视频动态背景
+    menu_item 4 切换特效动态背景
+    menu_tail
+    menu_item u update_i3wall
+    menu_item q 返回上级菜单
+    menu_tail
+}
+function start_main() { # 安装菜单选择
+    while true
+    do
+        show_menu_install
+        read -t $READ_TIMEOUT -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
+        case "$str_answer" in
+            1) start                    ;;
+            2) stop                     ;;
+            3) select_video             ;;
+            4) select_effect            ;;
+            q|"") return 0              ;;  # 返回上级菜单
+            *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
+        esac
+    done
+}
+
+####### Main process #################################
+menu_head "$WELCOME"
+check_deps     # 基础依赖命令检测与安装
+
+if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
+    start_main
+else  # 命令执行模式(执行后退出)
+    action="$1"
+    case "$action" in
+        start|stop|status)
+            $action
+        ;;
+        *)
+            usage
+        ;;
+    esac
+fi
+
+menu_head "${SEE_YOU}"
