@@ -11,6 +11,7 @@
 # 依赖命令:
 #    - curl 下载依赖代码或文件工具
 #    - fzf  提供多选择菜单
+#    - xrandr 分辨率检测
 ########################################################################
 # set -e              # 命令执行失败就中止继续执行
 I3WALL_VERSION="v0.0.1"     # i3wall版本信息
@@ -72,6 +73,7 @@ function check_deps() {
     # 检查必备依赖工具
     check_cmd curl
     check_cmd fzf
+    check_cmd xrandr
 }
 
 opacity=0.85
@@ -88,9 +90,12 @@ stop() {
 start() {
     stop
 	# 上下双屏设置（双4K屏幕）
-    wall_cmd="mpv -wid WID --loop --no-audio --really-quiet --framedrop=vo --panscan=1.0 "${video_dir}/${video_file}""
-	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160          -o ${opacity} -- $wall_cmd
-	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160+0+2160   -o ${opacity} -- $wall_cmd
+    wall_cmd="mpv -wid WID --loop --no-audio --really-quiet --framedrop=vo --panscan=1.0 ${video_dir}/${video_file}"
+    # 获取显示器及分辨率信息
+    for resolution in `xrandr | awk '/ connected/{ if($3~/primary/) print $4 ; else print $3 }'`
+    do
+        xwinwrap -d -ni -b -s -st -sp -nf -ov -g $resolution -o ${opacity} -- $wall_cmd
+    done
 }
 
 # 切换视频背景
@@ -110,8 +115,11 @@ start_xsaver() {
     stop
 	# 上下双屏设置（双4K屏幕）
     wall_cmd="$1 --window-id WID"
-	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160          -o ${opacity} -- $wall_cmd
-	xwinwrap -d -ni -b -s -st -sp -nf -ov -g 3840x2160+0+2160   -o ${opacity} -- $wall_cmd
+    # 获取显示器及分辨率信息
+    for resolution in `xrandr | awk '/ connected/{ if($3~/primary/) print $4 ; else print $3 }'`
+    do
+        xwinwrap -d -ni -b -s -st -sp -nf -ov -g $resolution -o ${opacity} -- $wall_cmd
+    done
 }
 
 # 切换 xscreensaver 动态背景
@@ -132,9 +140,16 @@ usage() {
     echo
 }
 
+function update_i3wall() {
+    # 更新 i3config 到最新版本
+    tmp_path="$tmp_dir/i3wall"
+    install_path="$0"
+    curl -L -o $tmp_path https://raw.githubusercontent.com/switchToLinux/dotfiles/main/i3wall
+    [[ "$?" == "0" ]] && mv ${install_path} ${install_path}.old && mv $tmp_path ${install_path}
+    chmod +x ${install_path}
+    echo "已更新 i3wall 到最新版本 ${I3WALL_VERSION}"
+}
 ## main function
-
-
 function show_menu_install() {
     menu_head "i3wall ${I3WALL_VERSION} 安装选项菜单"
     menu_item 1 启动动态背景
@@ -156,6 +171,7 @@ function start_main() { # 安装菜单选择
             2) stop                     ;;
             3) select_video             ;;
             4) select_effect            ;;
+            u) update_i3wall            ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
         esac
