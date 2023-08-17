@@ -120,7 +120,7 @@ function check_basic() { # 基础依赖命令检测与安装
     command -v apt-get >/dev/null 2>&1 && sudo apt-get install   -y curl git
     command -v dnf     >/dev/null 2>&1 && sudo dnf install       -y curl git
     command -v zypper  >/dev/null 2>&1 && sudo zypper install    -y curl git
-    command -v pacman  && sudo pacman -S --noconfirm curl git
+    command -v pacman  && sudo pacman -S --noconfirm --needed curl git
 
     # Anaconda3 环境可能导致编译失败.
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
@@ -144,21 +144,21 @@ function install_build_deps() {
     command -v apt-get && sudo apt-get install   -y build-essential git meson ninja-build make cmake cmake-data pkg-config python3-sphinx python3-packaging dh-autoreconf && return 0
     command -v dnf     && sudo dnf install       -y gcc gcc-c++ git meson ninja-build pkg-config make cmake @development-tools python3-sphinx python3-sphinx_rtd_theme python3-packaging dh-autoreconf && return 0
     command -v zypper  && sudo zypper install    -y gcc gcc-c++ git meson ninja pkg-config make cmake python3 python3-Sphinx python3-packaging python3-sphinx_rtd_theme dh-autoreconf && return 0
-    command -v pacman  && sudo pacman -S --needed --noconfirm gcc git meson ninja pkg-config make cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf automake bison && return 0
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed gcc git meson ninja pkg-config make cmake python3 python-sphinx python-packaging python-sphinx_rtd_theme autoconf automake bison && return 0
 }
 
 function install_polybar_deps() {
     command -v apt-get   && sudo apt-get install -y libuv1-dev libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev lm-sensors x11-utils xdotool pulseaudio pulseaudio-utils && return 0
     command -v dnf       && sudo dnf install     -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto xcb-util-image-devel xcb-util-wm-devel lm_sensors xprop xdotool xev xwininfo pulseaudio pulseaudio-utils && return 0
     command -v zypper    && sudo zypper install  -y libuv-devel cairo-devel xcb-util-devel libxcb-devel xcb-proto-devel xcb-util-image-devel xcb-util-wm-devel lm-sensors xprop xdotool xev xwininfo pulseaudio pulseaudio-utils && return 0
-    command -v pacman  && sudo pacman -S --needed --noconfirm libuv cairo xcb-util libxcb xcb-proto-devel xcb-util-image xcb-util-wm lm_sensors xorg-xprop xdotool xorg-xev xorg-xwininfo pulseaudio && return 0
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed libuv cairo xcb-util libxcb xcb-proto-devel xcb-util-image xcb-util-wm lm_sensors xorg-xprop xdotool xorg-xev xorg-xwininfo pulseaudio && return 0
 }
 
 function install_polybar_deps_opt() {
     command -v apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev && return 0
     command -v dnf       && sudo dnf install     -y xcb-util-xrm-devel xcb-util-cursor-devel alsa-lib-devel pulseaudio-libs-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
     command -v zypper    && sudo zypper install  -y libxcb-xkb1 xcb-util-xrm-devel xcb-util-cursor-devel alsa-devel libpulse-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
-    command -v pacman  && sudo pacman -S --needed --noconfirm libxcb xcb-util-xrm xcb-util-cursor alsa-lib libpulse jsoncpp libmpdclient libcurl-compat libnl && return 0
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed libxcb xcb-util-xrm xcb-util-cursor alsa-lib libpulse jsoncpp libmpdclient libcurl-compat libnl && return 0
 }
 
 function compile_polybar() {
@@ -187,7 +187,7 @@ function install_i3wm_deps() {
     command -v zypper  && sudo zypper install    -y pkg-config libxcb-devel xcb-util-devel libxkbcommon-devel libxkbcommon-x11-devel xcb-util-cursor-devel \
             xcb-util-wm-devel xcb-util-keysyms-devel xcb-util-xrm-devel libev-devel libyajl-devel asciidoc \
             xmlto pcre2-devel startup-notification-devel pango-devel cairo-devel libiconv_hook-devel 
-    command -v pacman  && sudo pacman -S --needed --noconfirm pkg-config libxcb xcb-util libxkbcommon libxkbcommon-x11 xcb-util-cursor \
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed pkg-config libxcb xcb-util libxkbcommon libxkbcommon-x11 xcb-util-cursor \
             xcb-util-wm xcb-util-keysyms xcb-util-xrm libev yajl asciidoc \
             xmlto pcre2 startup-notification pango cairo libiconv
 }
@@ -215,7 +215,7 @@ function install_picom_deps() {
                 libxcb-devel libpixman-1-0-devel Mesa-libGL-devel Mesa-libEGL-devel pcre2-devel libev-devel uthash-devel \
                 libconfig-devel libxcb-composite0 libxcb-damage0 libxcb-dpms0 libxcb-glx0 libxcb-image0 libxcb-present0 \
                 libxcb-randr0 libxcb-render0 libxcb-shape0 libxcb-xfixes0
-    command -v pacman  && sudo pacman -S --needed --noconfirm dbus libx11 libxext \
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed dbus libx11 libxext \
                 libxcb pixman mesa pcre2 libev uthash libconfig
 }
 function compile_picom() {
@@ -294,7 +294,7 @@ function install_i3lock_deps() {
     command -v apt-get >/dev/null 2>&1 && sudo apt-get   install -y libjpeg-dev libpam0g-dev
     command -v dnf      >/dev/null 2>&1 && sudo dnf      install -y libjpeg-turbo-devel pam pam-devel
     command -v zypper >/dev/null 2>&1 && sudo zypper     install -y libjpeg8-devel pam pam-devel
-    command -v pacman  && sudo pacman -S --needed --noconfirm libjpeg-turbo pam
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed libjpeg-turbo pam
 }
 function compile_i3lock_color() {
     prompt "编译安装 i3lock-color" || return 1
@@ -312,7 +312,7 @@ function install_rofi_deps(){
     command -v apt-get >/dev/null 2>&1 && sudo apt-get   install -y libgdk-pixbuf-2.0-dev bison flex flex-doc
     command -v dnf      >/dev/null 2>&1 && sudo dnf      install -y ghc-gi-gdkpixbuf-devel
     command -v zypper >/dev/null 2>&1 && sudo zypper     install -y gdk-pixbuf-devel flex
-    command -v pacman  && sudo pacman -S --needed --noconfirm gdk-pixbuf2 flex
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed gdk-pixbuf2 flex
 }
 function compile_rofi() {
     prompt "编译安装 rofi" || return 1
@@ -366,7 +366,7 @@ function install_mpd_deps() {
         libpulse-devel libshout-devel sndio-devel libmpdclient-devel libnfs-devel libupnp-devel libavahi-client3 \
         sqlite3-devel systemd-devel gtest libboost_headers-devel libicu-devel libchromaprint-devel libgcrypt-devel
         # no install: adplug libsidutils libresid-builder-dev 
-    command -v pacman && sudo pacman -S --needed --noconfirm fmt pcre2 libmad mpg123 libid3tag flac libvorbis opus libogg \
+    command -v pacman && sudo pacman -S --needed --noconfirm --needed fmt pcre2 libmad mpg123 libid3tag flac libvorbis opus libogg \
         audiofile libsndfile faad2 fluidsynth libgme libmikmod libmodplug \
         libmpcdec wavpack wildmidi libsidplayfp ffmpeg lame twolame libsamplerate libsoxr bzip2 \
         libcdio-paranoia libisofs libmms zziplib libcurl-compat yajl expat alsa-lib libao jack2 \
@@ -404,7 +404,7 @@ function install_others() {
     command -v dnf     && sudo sed -i 's|^metalink=|#metalink=|g;s|^#baseurl=http://download1.rpmfusion.org/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/rpmfusion/|g' /etc/yum.repos.d/rpmfusion*.repo && sudo dnf install --allowerasing -y mpd
     command -v dnf     && sudo dnf     install -y feh variety dunst rxvt-unicode xrandr mpc ncmpcpp firefox psmisc thunar pamixer neovim
     command -v zypper  && sudo zypper  install -y feh variety dunst rxvt-unicode xrandr mpd mpclient ncmpcpp MozillaFirefox psmisc thunar pamixer neovim
-    command -v pacman  && sudo pacman -S --needed --noconfirm feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer neovim
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed feh variety dunst rxvt-unicode xorg-xrandr mpc ncmpcpp firefox psmisc thunar noto-fonts jack2 pamixer neovim
 }
 
 function install_urxvt_ext() {
@@ -687,7 +687,7 @@ function install_clipmenu_deps() {
     command -v apt-get && sudo apt-get install   -y xsel libxfixes-dev
     command -v dnf     && sudo dnf install       -y xsel libXfixes-devel
     command -v zypper  && sudo zypper install    -y xsel libXfixes-devel
-    command -v pacman  && sudo pacman -S --needed --noconfirm xsel libxfixes
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed xsel libxfixes
 }
 function install_clipmenu() {
     prompt "安装 clipmenu 剪切板菜单"
@@ -710,7 +710,7 @@ function install_xscreensaver_deps() {
     command -v zypper  && sudo zypper install    -y perl intltool libXext-devel libXi-devel libXft-devel libXinerama-devel \
                         libXrandr-devel libXxf86vm-devel Mesa-libGL-devel libgtk-2_0-0 gtk2-devel gdk-pixbuf-devel gdk-pixbuf-xlib-devel \
                         libxml2-devel pam pam-devel dbus-1 systemd-devel
-    command -v pacman  && sudo pacman -S --needed --noconfirm perl intltool libxext libxi libxft libxinerama \
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed perl intltool libxext libxi libxft libxinerama \
                         libxrandr libxxf86vm mesa glu gtk2 gdk-pixbuf2 gdk-pixbuf-xlib libxml2 pam dbus systemd intltool
     install_urxvt_ext
 }
@@ -795,17 +795,17 @@ function install_xinit() {
         command -v apt-get && sudo apt-get install   -y xinit lightdm lightdm-gtk-greeter
         command -v dnf     && sudo dnf install       -y xinit lightdm lightdm-gtk
         command -v zypper  && sudo zypper install    -y xinit lightdm lightdm-gtk-greeter
-        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit lightdm lightdm-gtk-greeter
+        command -v pacman  && sudo pacman -S --needed --noconfirm --needed xorg-xinit lightdm lightdm-gtk-greeter
     elif [[ "$selected_theme" == "sddm" ]] ; then
         command -v apt-get && sudo apt-get install   -y xinit sddm
         command -v dnf     && sudo dnf install       -y xinit sddm
         command -v zypper  && sudo zypper install    -y xinit sddm
-        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit sddm
+        command -v pacman  && sudo pacman -S --needed --noconfirm --needed xorg-xinit sddm
     elif [[ "$selected_theme" == "gdm" ]] ; then
         command -v apt-get && sudo apt-get install   -y xinit gdm3
         command -v dnf     && sudo dnf install       -y xinit gdm
         command -v zypper  && sudo zypper install    -y xinit gdm
-        command -v pacman  && sudo pacman -S --needed --noconfirm xorg-xinit gdm
+        command -v pacman  && sudo pacman -S --needed --noconfirm --needed xorg-xinit gdm
     fi
     # 自启动lightdm
     sudo systemctl enable --now $selected_theme.service
