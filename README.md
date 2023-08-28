@@ -76,6 +76,7 @@ chmod +x i3config
 - [ ] 支持根据不同显示管理器的主题切换功能
 - [x] 支持定制`firefox`页面主题`userChrome.css`
 - [ ] 增加[polybar-scripts](https://github.com/polybar/polybar-scripts)的支持
+- [x] 动态背景(视频或屏保效果)设置实现(`i3wall`)
 
 
 ## 关于配置快捷键

@@ -12,6 +12,7 @@
 #    - curl 下载依赖代码或文件工具
 #    - fzf  提供多选择菜单
 #    - xrandr 分辨率检测
+#    - mpv  视频文件播放
 ########################################################################
 # set -e              # 命令执行失败就中止继续执行
 I3WALL_VERSION="v0.0.1"     # i3wall版本信息
@@ -76,22 +77,85 @@ function check_deps() {
     check_cmd xrandr
 }
 
-opacity=0.85
-
-action="${1:-status}"
-shift
+# 透明度默认值
+default_opacity=0.9
+# 背景视频存放路径
 video_dir="$HOME/.wallpapers_4k"
-video_file="${1:-anime_agatsumazenitsu_1080p.webm}"
+# 背景视频的当前使用文件名
+video_file="anime_agatsumazenitsu_1080p.webm"
 
-stop() {
+# xscreensaver 路径
+xsaver_dir=/usr/libexec/xscreensaver
+
+# 动态背景类型 video/xsaver
+bg_type="video"
+
+# config file for your parameters
+CFG_FILE="$HOME/.i3wallrc"
+
+function generate_config() {
+    # 用于生成 $CFG_FILE 配置参数信息
+    if [[ -f "$CFG_FILE" ]] ; then
+        menu_head "当前配置信息如下"
+        cat $CFG_FILE
+        menu_tail
+    fi
+
+    # 开始生成配置信息
+    # 设置 透明度(default_opacity, 默认 0.9)
+    read -t $READ_TIMEOUT -r -e  -p "请设置动态背景透明度(0-1之间,默认:${default_opacity}) ${PMT} " str_answer
+    # check str_answer variable is float value
+    decimal_regex="^[0-9]+(\.[0-9]+)?$"
+    if [[ "$str_answer" == "" ]] ; then
+        echo "使用默认的 $default_opacity 数值"
+        echo "opacity=$default_opacity"  >  $CFG_FILE
+    elif awk -v num="$str_answer" 'BEGIN { exit !(num >0 && num <= 1) }'; then
+        echo "opacity=$str_answer"  >  $CFG_FILE
+    else
+        echo "无效的透明度数值[$str_answer],使用默认的 $default_opacity 数值"
+        echo "opacity=$default_opacity"  >  $CFG_FILE
+    fi
+
+    # 设置视频背景路径 video_background_files_path
+    read -t $READ_TIMEOUT -r -e  -p "请设置视频背景文件的路径(默认:${video_dir}) ${PMT} " str_answer
+    if [[ -d "$str_answer" ]] ; then
+        echo "video_dir=$str_answer" >> $CFG_FILE
+    else
+        echo "无效的视频路径 [$str_answer],使用默认的目录 $video_dir "
+        echo video_dir="$video_dir"  >>  $CFG_FILE
+    fi
+
+    # 设置 xsaver_dir
+    echo "安装 xscreensaver后的 xsaver_dir 路径通常为如下:"
+    echo "    /usr/libexec/xscreensaver"
+    echo "    /usr/lib/xscreensaver"
+    echo
+    for _dir in /usr/libexec/xscreensaver /usr/lib/xscreensaver
+    do
+        [[ -d "$_dir" ]] && echo "$_dir 路径存在，可以使用"
+    done
+
+    read -t $READ_TIMEOUT -r -e  -p "请设置xscreensaver动态效果程序存放路径(默认:${xsaver_dir}) ${PMT} " str_answer
+    if [[ -d "$str_answer" ]] ; then
+        echo "xsaver_dir=$str_answer" >> $CFG_FILE
+    else
+        echo "无效的视频路径 [$str_answer],使用默认的目录 $xsaver_dir "
+        echo xsaver_dir="$xsaver_dir"  >>  $CFG_FILE
+        echo "xsaver_file=goop" >> $CFG_FILE
+    fi
+    echo "bg_type=video" >> $CFG_FILE
+}
+
+function stop() {
 	ps -ef | grep xwinwrap |grep -v grep | awk '{ print $2 }' | xargs kill
 }
 
-start() {
+function start_video() {
     stop
-	# 上下双屏设置（双4K屏幕）
+    # mpv 视频播放参数信息
     wall_cmd="mpv -wid WID --loop --no-audio --really-quiet --framedrop=vo --panscan=1.0 ${video_dir}/${video_file}"
-    # 获取显示器及分辨率信息
+    
+    # 获取显示器及分辨率信息（自动适应屏幕布局分辨率)
     for resolution in `xrandr | awk '/ connected/{ if($3~/primary/) print $4 ; else print $3 }'`
     do
         xwinwrap -d -ni -b -s -st -sp -nf -ov -g $resolution -o ${opacity} -- $wall_cmd
@@ -99,21 +163,24 @@ start() {
 }
 
 # 切换视频背景
-select_video() {
-    # bumps cubicgrid
-    # 彩色: epicycle(线环) goop(多彩的形状) kumppa（多彩旋转线条） surfaces vermiculate xrayswarm
-    # 游戏: pacman maze pipes scooter wormhole
-    # 系统: phosphor
-    # 风景: atlantis(鲨鱼群) glschool(小鱼群) fiberlamp(纤维束灯) fireworks(烟花) flurry(极光) 
-	video_file=`ls ${video_dir} | fzf`
+function select_video() {
+    video_file=`ls ${video_dir} | fzf`
+    if grep "^video_file=" $CFG_FILE >/dev/null 2>&1 ; then
+        sed -i "s/^video_file=.*/video_file=$video_file/" $CFG_FILE
+    else
+        sed -i "$ a\video_file=$video_file" $CFG_FILE
+    fi
     [[ ! -f ${video_dir}/${video_file} ]] && echo "选择的视频文件 [$video_file] 不存在！" && return 0
-    start
+    bg_type=video
+    sed -i 's/^bg_type=.*/bg_type=video/' $CFG_FILE
+    start_video
 }
 
 
-start_xsaver() {
+# 启动xsaver命令: start_xsaver  $xsaver_dir/goop
+function start_xsaver() {
     stop
-	# 上下双屏设置（双4K屏幕）
+    # xsaver程序作为输入参数
     wall_cmd="$1 --window-id WID"
     # 获取显示器及分辨率信息
     for resolution in `xrandr | awk '/ connected/{ if($3~/primary/) print $4 ; else print $3 }'`
@@ -123,12 +190,32 @@ start_xsaver() {
 }
 
 # 切换 xscreensaver 动态背景
-select_effect() {
-    xsaver_dir=/usr/libexec/xscreensaver
-    video_file=`ls ${xsaver_dir} | fzf`
-    [[ ! -f ${xsaver_dir}/${video_file} ]] && echo "选择的视频文件 [$video_file] 不存在！" && return 0
-    start_xsaver ${xsaver_dir}/${video_file}
+function select_xsaver() {
+    # bumps cubicgrid
+    # 彩色: epicycle(线环) goop(多彩的形状) kumppa（多彩旋转线条） surfaces vermiculate xrayswarm
+    # 游戏: pacman maze pipes scooter wormhole
+    # 系统: phosphor
+    # 风景: atlantis(鲨鱼群) glschool(小鱼群) fiberlamp(纤维束灯) fireworks(烟花) flurry(极光) 
+	xsaver_file=`ls ${xsaver_dir} | fzf`
+    [[ ! -f ${xsaver_dir}/${xsaver_file} ]] && echo "选择的屏保程序文件 [$xsaver_file] 不存在！" && return 0
+    bg_type=xsaver
+    sed -i 's/^bg_type=.*/bg_type=xsaver/' $CFG_FILE
+    start_xsaver ${xsaver_dir}/${xsaver_file}
 }
+
+
+start() {
+    case "$bg_type" in
+        video)
+            start_video
+        ;;
+        xsaver)
+            start_xsaver ${xsaver_dir}/${xsaver_file}
+            ;;
+    esac
+}
+
+
 usage() {
     echo "Usage:"
     echo "  `basename $0` [OPTIONS]"
@@ -156,6 +243,7 @@ function show_menu_install() {
     menu_item 2 停止动态背景
     menu_item 3 切换视频动态背景
     menu_item 4 切换特效动态背景
+    menu_item c 设置配置参数
     menu_tail
     menu_item u update_i3wall
     menu_item q 返回上级菜单
@@ -164,13 +252,15 @@ function show_menu_install() {
 function start_main() { # 安装菜单选择
     while true
     do
+        # source $CFG_FILE   # 每次都重新加载一次环境变量
         show_menu_install
         read -t $READ_TIMEOUT -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
         case "$str_answer" in
             1) start                    ;;
             2) stop                     ;;
             3) select_video             ;;
-            4) select_effect            ;;
+            4) select_xsaver            ;;
+            c) generate_config          ;;
             u) update_i3wall            ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
@@ -182,18 +272,12 @@ function start_main() { # 安装菜单选择
 menu_head "$WELCOME"
 check_deps     # 基础依赖命令检测与安装
 
-if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
-    start_main
-else  # 命令执行模式(执行后退出)
-    action="$1"
-    case "$action" in
-        start|stop|status)
-            $action
-        ;;
-        *)
-            usage
-        ;;
-    esac
+if [[ ! -f $CFG_FILE ]] ; then
+    # 文件不存在,开始生成配置
+    generate_config
 fi
+source $CFG_FILE
+
+start_main
 
 menu_head "${SEE_YOU}"
