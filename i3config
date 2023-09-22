@@ -812,6 +812,27 @@ function install_xinit() {
     # 禁止gettty服务
     sudo systemctl disable getty@.service
 }
+function install_tmux() {  # Terminal终端会话管理工具,类似Screen
+    echo "正在执行 install_tmux"
+    prompt "开始安装 tmux" || return 1
+    command -v tmux >/dev/null && ! prompt "已经安装过 tmux ，继续安装?" && return 0
+    # basic config with plugin
+    echo "配置tmux"
+    create_symlink $dotfiles_path/tmux/tmux.conf ~/.tmux.conf
+
+    echo "开始安装tmux插件"
+    # 配置 tmux
+    command -v apt-get && sudo apt-get install   -y tmux
+    command -v dnf     && sudo dnf install       -y tmux
+    command -v zypper  && sudo zypper install    -y tmux
+    command -v pacman  && sudo pacman -S --needed --noconfirm --needed tmux
+    mkdir -p $HOME/.tmux/plugins/
+    cd $HOME/.tmux/plugins/
+    git clone https://github.com/tmux-plugins/tpm.git
+    git clone https://github.com/tmux-plugins/tmux-resurrect.git
+    git clone https://github.com/tmux-plugins/tmux-continuum.git
+    echo "成功执行 install_tmux"
+}
 
 function usage_shortcuts() {
     echo $line_feed
@@ -868,6 +889,7 @@ function auto_install_all() {
     select_rofi_themes       
     select_xresources_themes 
     config_resolution        
+    install_tmux
 }
 function show_menu_install() {
     menu_head "i3config ${I3CONFIG_VERSION} 安装选项菜单"
@@ -875,7 +897,7 @@ function show_menu_install() {
     menu_item 2 polybar
     menu_item 3 picom
     menu_item 4 i3lock_color
-    menu_item 5 clipmenu
+    menu_item 5 tmux
     menu_item 6 rofi
     menu_item 7 xscreensaver
     menu_item 8 compile_mpd
@@ -905,7 +927,7 @@ function start_main() { # 安装菜单选择
             2) compile_polybar          ;;
             3) compile_picom            ;;
             4) compile_i3lock_color     ;;
-            5) install_clipmenu         ;;
+            5) install_tmux             ;;
             6) compile_rofi             ;;
             7) compile_xscreensaver     ;;
             8) compile_mpd              ;;
