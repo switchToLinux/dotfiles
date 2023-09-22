@@ -32,7 +32,7 @@
 - 开启resize模式： `$mod+r`， `方向键`调整，确认按`Enter`,取消按`Esc`
 - 窗口间边距: 增加`$mod+Backspace` ， 减小`$mod+Shift+Backspace`
 - 窗口外边距: 增加`$mod+=` ， 减小`$mod+Shift+=`
-- 焦点窗口透明度: 增加`$mod+[` ，减小`$mod+]`
+- 焦点窗口透明度修改: 增加5%`$mod+[` ，减小5%`$mod+]`
 
 
 ## 4K等高分辨率配置

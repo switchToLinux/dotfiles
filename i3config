@@ -813,6 +813,42 @@ function install_xinit() {
     sudo systemctl disable getty@.service
 }
 
+function usage_shortcuts() {
+    echo $line_feed
+    echo "i3wm常用快捷键列表:"
+    echo "  打开 vscode : \$mod+c"
+    echo "  打开 terminal : \$mod+Enter"
+    echo "  打开 google-chrome :  \$mod+g"
+    echo "  打开 firefox :  \$mod+b"
+    echo "  隐藏/显示 顶部bar ： \$mod+ + n"
+    echo "  隐藏/显示 底部bar ： \$mod+ + m"
+    echo "  工作区双屏切换: \$mod+x"
+    echo "  系统退出: \$mod+l"
+    echo "  显示菜单: \$mod+d"
+    echo "  显示窗口列表菜单: \$mod+Tab"
+    echo "  切换窗口布局类型(split/stacking/tabbed): \$mod+e"
+    echo "  切换垂直/水平方向布局窗口: \$mod+v"
+    echo "  焦点窗口的焦点切换到父节点: \$mod+a"
+    echo "  焦点窗口的焦点切换到子节点: \$mod+shift+a"
+    echo "  全屏显示当前焦点窗口: \$mod+f"
+    echo "  关闭焦点窗口: \$mod+q"
+    echo "  移动焦点窗口: \$mod+Shift+方向键"
+    echo "  暂存工作区-暂存当前窗口: \$mod+shift+minus(减号)"
+    echo "  暂存工作区-显示暂存窗口: \$mod+minus (多个暂存窗口会逐个切换)"
+    echo "  浮动窗口-切换焦点窗口悬浮/普通 : \$mod+shift+space"
+    echo "  浮动窗口-移动浮动窗口上下左右: \$mod+Shift+方向键"
+    echo "  浮动窗口Sticky-焦点窗口切换: \$mod+Shift+s"
+    echo "  浮动窗口Sticky-切换为置顶悬浮小窗口: \$mod+shift+i (45 ppt 45 ppt => position 30,30 px )"
+    echo "  配置变更-重新加载: \$mod+Shift+c"
+    echo "  配置变更-i3wm重启: \$mod+Shift+r"
+    echo "  锁屏操作-i3lock: \$mod+l"
+    echo "  重启关机等电源管理操作: \$mod+Shift+l"
+    echo "  开启resize模式： \$mod+r， 方向键调整，确认按Enter,取消按Esc"
+    echo "  窗口间边距: 增加\$mod+Backspace ， 减小\$mod+Shift+Backspace"
+    echo "  窗口外边距: 增加\$mod+= ， 减小\$mod+Shift+="
+    echo "  焦点窗口透明度修改: 增加5%\$mod+[ ，减小5%\$mod+]"
+}
+
 function auto_install_all() {
     # 自动安装
     default_confirm="yes"
@@ -846,6 +882,7 @@ function show_menu_install() {
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
     menu_tail
+    menu_item h 查看常用快捷键列表
     menu_item p select_polybar_themes
     menu_item r select_rofi_themes
     menu_item s select_xresources_themes
@@ -882,6 +919,7 @@ function start_main() { # 安装菜单选择
             y) install_xinit            ;;
             z) auto_install_all         ;;
             u) update_i3config          ;;
+            h) usage_shortcuts          ;;
             q|"") return 0              ;;  # 返回上级菜单
             *) redr_line "没这个选择[$str_answer],搞错了再来." ;;
         esac
@@ -894,11 +932,13 @@ menu_head "$WELCOME"
 check_term      # 检测TERM终端信息
 check_basic     # 基础依赖命令检测与安装
 
-if [ "$#" -ge 0 ]; then  # 无参数情况:进入菜单选择
+if [ "$#" -eq 0 ]; then  # 无参数情况:进入菜单选择
     start_main
 else  # 命令执行模式(执行后退出)
     command="$1"
     case "$command" in
+        h|help|-h)
+            usage_shortcuts ;;
         i3)
             install_i3wm ;;
         polybar)
