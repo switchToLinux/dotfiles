@@ -245,22 +245,20 @@ for_window [title="Preferences$"]  floating enable
 # set_from_resource $<name> <resource_name> <fallback>
 # set_from_resource $black i3wm.color0 #000000
 
-# set $focused_color  #F0F000
-set_from_resource $focused_color    foreground  #00303030
 set_from_resource $bgcolor          background  #9696960f
-set_from_resource $unfocus_color    background  #9696960f
-set_from_resource $text             foreground  #ffffff0f
-set_from_resource $u_bgcolor        color1      #ff00000f
-set_from_resource $indicator        color1      #ff00000f
-set_from_resource $unfocus_text     color2      #9696960f
+set_from_resource $text             color3      #ffffffff
+set_from_resource $unfocus_text     fadeColor   #9696960f
+
+set $unfocus_color  $bgcolor
+set $focused_color  $text
+set $indicator      #EBCB8B
+set $urgent_color   $bgcolor
 
 # class                     border          background      text            indicator       child_border
-client.focused              $focused_color  $bgcolor        $text           $indicator      $focused_color
-client.unfocused            $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_color
-client.focused_inactive     $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_color
-client.urgent               $focused_color  $bgcolor        $text           $indicator      $u_bgcolor
-
-client.background           $bgcolor
+client.focused              $urgent_color   $bgcolor        $text           $indicator       $focused_color
+client.unfocused            $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_text
+client.focused_inactive     $unfocus_color  $bgcolor        $unfocus_text   $indicator      $unfocus_text
+client.urgent               $focused_color  $bgcolor        $text           $indicator      $urgent_color
 
 
 # 个性化配置(比如自己的自启动程序列表，自己的快捷启动设置)
