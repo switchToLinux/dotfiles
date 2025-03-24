@@ -147,7 +147,9 @@ function generate_config() {
 }
 
 function stop() {
-	ps -ef | grep xwinwrap |grep -v grep | awk '{ print $2 }' | xargs kill
+	#ps -ef | grep xwinwrap |grep -v grep | awk '{ print $2 }' | xargs kill
+    pkill xwinwrap
+    sleep 1  # 等待进程关闭
 }
 
 function start_video() {
