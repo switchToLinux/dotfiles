@@ -257,7 +257,7 @@ function install_dotfiles() {
     mkdir -p ~/.local/share/mpd
     create_symlink $tmp_path/mpd ~/.config/mpd
     create_symlink $tmp_path/dunst ~/.config/dunst
-    create_symlink $tmp_path/ranger ~/.config/ranger
+    create_symlink $tmp_path/ranger ~/.config/ranger && cd ~/.config/ranger && git clone https://github.com/ranger/colorschemes.git
     # replace by rofi_themes
     # create_symlink $tmp_path/rofi ~/.config/rofi
     create_symlink $tmp_path/ncmpcpp ~/.config/ncmpcpp
@@ -916,10 +916,10 @@ function config_neovim() {
     prompt "开始配置 neovim" || return 1
 
     echo "配置 neovim 环境"
+    rm -rf ~/.config/nvim.bak
     mv ~/.config/nvim ~/.config/nvim.bak
     git clone https://github.com/LazyVim/starter.git ~/.config/nvim
     echo "成功执行 config_neovim"
-
 }
 function auto_install_all() {
     # 自动安装

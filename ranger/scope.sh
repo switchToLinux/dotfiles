@@ -48,6 +48,7 @@ safepipe() { "$@"; test $? = 0 -o $? = 141; }
 
 # Image previews, if enabled in ranger.
 if [ "$preview_images" = "True" ]; then
+
     case "$mimetype" in
         # Image previews for SVG files, disabled by default.
         ###image/svg+xml)
