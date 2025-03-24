@@ -117,11 +117,14 @@ function prompt() { # 提示确认函数，如果使用 -y 参数默认为Y确�
 function check_root() { [[ "`uid -u`" = "0" ]]  && ! prompt "提示:确认在root用户下或者使用sudo运行?" && exit 0 ; }
 
 function check_basic() { # 基础依赖命令检测与安装
-    command -v apt-get >/dev/null 2>&1 && sudo apt-get install   -y curl git
-    command -v dnf     >/dev/null 2>&1 && sudo dnf install       -y curl git
-    command -v zypper  >/dev/null 2>&1 && sudo zypper install    -y curl git
-    command -v pacman  && sudo pacman -S --noconfirm --needed curl git
-
+    if command -v curl >/dev/null && command -v git >/dev/null  ; then
+        echo "curl and git command are available"
+    else
+        command -v apt-get >/dev/null 2>&1 && sudo apt-get install   -y curl git
+        command -v dnf     >/dev/null 2>&1 && sudo dnf install       -y curl git
+        command -v zypper  >/dev/null 2>&1 && sudo zypper install    -y curl git
+        command -v pacman  >/dev/null 2>&1 && sudo pacman -S --noconfirm --needed curl git
+    fi
     # Anaconda3 环境可能导致编译失败.
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
     anaconda -V >/dev/null 2>&1 && echo -e "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`command -v python3`${NC}" && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
@@ -155,7 +158,7 @@ function install_polybar_deps() {
 }
 
 function install_polybar_deps_opt() {
-    command -v apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev && return 0
+    command -v apt-get   && sudo apt-get install -y libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev network-manager-gnome && return 0
     command -v dnf       && sudo dnf install     -y xcb-util-xrm-devel xcb-util-cursor-devel alsa-lib-devel pulseaudio-libs-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
     command -v zypper    && sudo zypper install  -y libxcb-xkb1 xcb-util-xrm-devel xcb-util-cursor-devel alsa-devel libpulse-devel jsoncpp-devel libmpdclient-devel libcurl-devel libnl3-devel && return 0
     command -v pacman  && sudo pacman -S --needed --noconfirm --needed libxcb xcb-util-xrm xcb-util-cursor alsa-lib libpulse jsoncpp libmpdclient libcurl-compat libnl && return 0
@@ -270,7 +273,9 @@ function install_dotfiles() {
     sudo sh -c "echo $desktop_data | base64 -d > /usr/share/applications/i3.desktop"
 
     echo "配置 neovim 环境"
-    create_symlink $tmp_path/nvim ~/.config/nvim
+    mv ~/.config/nvim ~/.config/nvim.bak
+    # create_symlink $tmp_path/nvim ~/.config/nvim
+    git clone https://github.com/LazyVim/starter.git ~/.config/nvim
 
     echo "配置 xfce4-terminal 环境"
     mkdir -p ~/.config/xfce4
@@ -442,7 +447,7 @@ function common_select() {
         if [[ "${current_input}" == "random" ]] ; then  # 随机选择一个主题
             maxn=`ls "$theme_dir" | grep "$prefix"|wc -l`
             str_rand="$(($RANDOM%${maxn}))"
-            selected_theme=`ls "$theme_dir" | grep "$prefix" |sed -n "${str_rand}p"`
+            selected_theme=`ls "$theme_dir" | grep "$prefix"  2>/dev/null|sed -n "${str_rand}p"`
             break
         fi
         # 保存当前光标位置
@@ -450,7 +455,7 @@ function common_select() {
         # 将光标移动到最后一行
         echo -n "  >>"
         # 列出匹配的文件和目录,仅显示前10条
-        selected_theme=$(ls "$theme_dir" | grep "$prefix" | grep -m 1 "$current_input")
+        selected_theme=$(ls "$theme_dir" | grep "$prefix" 2>/dev/null | grep -m 1 "$current_input"  2>/dev/null)
         ls "$theme_dir" | grep "$prefix" | grep "$current_input" | head -10 | while read -r entry; do
             echo -n " $entry"
         done
@@ -541,23 +546,33 @@ function select_xresources_themes() {
     menu_iteml "成功切换为 $selected_theme 主题"
     menu_tail
 }
+function show_rofi_menu() {
+    menu_head "rofi 菜单"
+    menu_item p "rofi 主题预览"
+    menu_item s "rofi 主题选择"
+    menu_tail
+    menu_iteml "推荐: " "先预览查看主题效果图，再选择"
+    menu_iteml q "返回上级菜单"
+    menu_tail
+}
 
-function select_rofi_themes() {
-    echo "开始安装 rofi themes"
-    tmp_path=~/.config/rofi_themes
-    [[ -r $tmp_path ]] && prompt "已经拷贝过 rofi-themes 了，是否重新拷贝?" && rm -rf $tmp_path
-    if [[ ! -r $tmp_path ]] ; then
-        git clone --depth 1 https://github.com/switchToLinux/rofi_collection.git $tmp_path
-        cd $tmp_path && bash ./setup.sh && echo "安装 rofi themes 成功"
-    fi
+# 预览 rofi 主题
+function preview_rofi_themes() {
+    # 利用ranger 预览主题图片
+    tmp_path=~/.config/rofi/previews
+    ranger $tmp_path
+}
+
+# 切换 rofi 主题
+function change_rofi_themes() {
     tmp_path=~/.config/rofi
     #选择rofi主题(Applet/Launcher/Powermenus)
     menu_head "rofi-themes主题(大量主题集合):"
-    menu_iteml launchers   "启动器主题"
-    menu_iteml applets    "小插件主题"
-    menu_iteml "推荐: 根据官网 https://github.com/adi1090x/rofi 示例进行选择适合自己的主题"
-    menu_iteml "提示:将替换 \$mod+d 快捷键对应执行命令为启动器脚本"
-    menu_iteml "提示:将替换 \$mod+shift+l 快捷键对应执行命令为powermenu"
+    menu_iteml "Launchers:"   "启动器(程序启动菜单)主题"
+    menu_iteml "Applets  :"    "小插件(Applets)主题"
+    menu_iteml "推     荐:" "主题选择参考预览效果"
+    menu_iteml "提     示:" "\$mod+d 快捷键 => 启动器"
+    menu_iteml "提     示:" "\$mod+shift+l 快捷键 => powermenu"
     menu_tail
 
     if prompt "选择 启动器:" ; then
@@ -654,6 +669,32 @@ function select_rofi_themes() {
     fi
     i3-msg restart
     menu_tail
+}
+function select_rofi_themes() {
+    echo "开始安装 rofi themes"
+    tmp_path=~/.config/rofi_themes
+    [[ -r $tmp_path ]] && prompt "已经拷贝过 rofi-themes 了，是否重新拷贝?" && rm -rf $tmp_path
+    if [[ ! -r $tmp_path ]] ; then
+        git clone --depth 1 https://github.com/switchToLinux/rofi_collection.git $tmp_path
+        cd $tmp_path && bash ./setup.sh && cp -rp ./previews ~/.config/rofi/ && echo "安装 rofi themes 成功"
+    fi
+
+    while true
+    do
+        show_rofi_menu
+        read -t $READ_TIMEOUT -r -n 1 -e  -p "`echo_greenr 请选择:` ${PMT} " str_answer
+        case "$str_answer" in
+            p)
+                preview_rofi_themes
+                ;;
+            s)
+                change_rofi_themes
+                ;;
+            q|"")
+                return 0
+                ;;
+        esac
+    done
 }
 function select_polybar_themes() {
     prompt "开始设置 polybar 主题" || return 1
@@ -870,6 +911,16 @@ function usage_shortcuts() {
     echo "  焦点窗口透明度修改: 增加5%\$mod+[ ，减小5%\$mod+]"
 }
 
+function config_neovim() {
+    echo "正在执行 config_neovim"
+    prompt "开始配置 neovim" || return 1
+
+    echo "配置 neovim 环境"
+    mv ~/.config/nvim ~/.config/nvim.bak
+    git clone https://github.com/LazyVim/starter.git ~/.config/nvim
+    echo "成功执行 config_neovim"
+
+}
 function auto_install_all() {
     # 自动安装
     default_confirm="yes"
@@ -903,6 +954,7 @@ function show_menu_install() {
     menu_item 8 compile_mpd
     menu_item 9 other[feh/mpd/dunst.]
     menu_item 0 dotfiles
+    menu_item a Lazy.nvim
     menu_tail
     menu_item h 查看常用快捷键列表
     menu_item p select_polybar_themes
@@ -933,6 +985,7 @@ function start_main() { # 安装菜单选择
             8) compile_mpd              ;;
             9) install_others           ;;
             0) install_dotfiles         ;;
+            a) config_neovim            ;;
             p) select_polybar_themes    ;;
             r) select_rofi_themes       ;;
             s) select_xresources_themes ;;
