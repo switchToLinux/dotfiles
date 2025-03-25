@@ -1,0 +1,81 @@
+# A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
+# If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
+"$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
+
+[manager]
+sort_by        = "natural"
+sort_sensitive = false
+sort_reverse 	 = false
+sort_dir_first = true
+sort_translit  = false
+linemode       = "none"
+show_hidden    = false
+show_symlink   = true
+scrolloff      = 5
+mouse_events   = [ "click", "scroll" ]
+title_format   = "Yazi: {cwd}"
+
+[preview]
+wrap            = "yes"
+tab_size        = 2
+max_width       = 1080
+# max_height      = 900
+cache_dir       = ""
+image_delay     = 30
+image_filter    = "triangle"
+image_quality   = 75
+sixel_fraction  = 15
+ueberzug_scale  = 1
+ueberzug_offset = [ 0, 0, 0, 0 ]
+
+[opener]
+
+# 查看图片
+image = [
+	{ run = 'feh "$@"', orphan = true, desc = "View with feh" , for = "unix" },
+	{ run = 'xdg-open "$1"',                desc = "Open", for = "linux" },
+]
+# 打开 PDF
+pdf = [
+    { run = 'mupdf "$@"', orphan = true, desc = "Open with mupdf" },
+    { run = 'xpdf "$@"', orphan = true, desc = "Open with xpdf" },
+]
+
+edit = [
+	{ run = '${EDITOR:-vi} "$@"', desc = "$EDITOR", block = true, for = "unix" },
+	{ run = 'code %*',    orphan = true, desc = "code",           for = "windows" },
+	{ run = 'code -w %*', block = true,  desc = "code (block)",   for = "windows" },
+]
+open = [
+	{ run = 'xdg-open "$1"',                desc = "Open", for = "linux" },
+	{ run = 'open "$@"',                    desc = "Open", for = "macos" },
+	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
+	{ run = 'termux-open "$1"',             desc = "Open", for = "android" },
+]
+reveal = [
+	{ run = 'xdg-open "$(dirname "$1")"',           desc = "Reveal", for = "linux" },
+	{ run = 'open -R "$1"',                         desc = "Reveal", for = "macos" },
+	{ run = 'explorer /select,"%1"', orphan = true, desc = "Reveal", for = "windows" },
+	{ run = 'termux-open "$(dirname "$1")"',        desc = "Reveal", for = "android" },
+	{ run = '''exiftool "$1"; echo "Press enter to exit"; read _''', block = true, desc = "Show EXIF", for = "unix" },
+]
+extract = [
+	{ run = 'ya pub extract --list "$@"', desc = "Extract here", for = "unix" },
+	{ run = 'ya pub extract --list %*',   desc = "Extract here", for = "windows" },
+]
+play = [
+	{ run = 'mpv --force-window "$@"', orphan = true, for = "unix" },
+	{ run = 'mpv --force-window %*', orphan = true, for = "windows" },
+	{ run = '''mediainfo "$1"; echo "Press enter to exit"; read _''', block = true, desc = "Show media info", for = "unix" },
+]
+
+# 打开 aseprite 文件
+aseprite = [
+  { run = 'aseprite "$@"', orphan = true, desc = "Open with aseprite" },
+]
+
+[open]
+prepend_rules = [
+	{ mime = "application/pdf", use = "pdf" },
+	{ name = "*.aseprite", use = "aseprite" },
+]

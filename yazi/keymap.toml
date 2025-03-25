@@ -1,0 +1,17 @@
+# A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
+# If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
+"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+
+[manager]
+
+prepend_keymap= [
+	# Goto
+	{ on = [ "g", "h" ],       run = "cd ~",             desc = "Go home" },
+	{ on = [ "g", "c" ],       run = "cd /apps/config",     desc = "Go /apps/config" },
+	{ on = [ "g", "d" ],       run = "cd ~/Documents/",   desc = "Go ~/Documents/" },
+	{ on = [ "g", "D" ],       run = "cd ~/Downloads",   desc = "Go ~/Downloads" },
+	{ on = [ "g", "b" ],       run = "cd /docs/bt01/",   desc = "Go /docs/bt01" },
+	{ on = [ "g", "G" ],       run = "cd /apps/code/github/my/",   desc = "Go /apps/code/github/my/" },
+	{ on = [ "g", "f" ],       run = "cd /film01/", desc = "Go /film01/" },
+	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
+]

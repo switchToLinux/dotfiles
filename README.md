@@ -21,6 +21,8 @@ chmod +x i3config
 - [fedora 38](https://fedoraproject.org/)
 - [openSUSE leap 15.5](https://get.opensuse.org/leap/)
 - [Arch Linux](https://archlinux.org/)
+- [Ubuntu](https://www.ubuntu.com)
+
 
 ## 系统信息
 
@@ -31,10 +33,11 @@ chmod +x i3config
 |Bar|[Polybar](https://github.com/polybar/polybar)|
 |Menu|[Rofi](https://github.com/davatorium/rofi)-[rofi-themes](https://github.com/adi1090x/rofi)|
 |Compositor|[Picom](https://github.com/yshui/picom)|
-|Terminal|[konsole](https://konsole.kde.org)|
+|Terminal|[konsole](https://konsole.kde.org) / [kitty](https://sw.kovidgoyal.net/kitty/) / [xfce4-terminal](https://gitlab.xfce.org/apps/xfce4-terminal) |
 |Widgets|[eww,ElKowars wacky widgets](https://github.com/elkowar/eww)|
 |Music/Player|[mpd](https://github.com/MusicPlayerDaemon/MPD)-[ncmpcpp](https://github.com/ncmpcpp/ncmpcpp)|
 |File Manager|[Thunar](https://gitlab.xfce.org/xfce/thunar)|
+|Terminal File Manager|[ranger](https://github.com/ranger/ranger) written in Python/ [yazi](https://github.com/sxyazi/yazi) written in Rust.|
 |Shell|[Zsh](https://www.zsh.org/)-[oh-my-zsh](https://ohmyz.sh/)|
 |wallpaper| [feh](https://github.com/derf/feh)-[variety](https://github.com/varietywalls/variety)|
 |Xresources-themes| [Xresources-themes](https://github.com/janoamaral/Xresources-themes)|
