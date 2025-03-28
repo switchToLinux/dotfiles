@@ -4,7 +4,12 @@
 
 [manager]
 
-prepend_keymap= [
+# 覆盖默认快捷键
+prepend_keymap = [
+	{ on = [ "<C-q>" ],     run = "plugin confirm-quit",                 desc = "Quit the process" },
+	{ on = "q",                    run = "plugin confirm-close",	        desc = "Close the current tab, or quit if it's last" },
+	{ on = [ "<C-c>" ],     run = "plugin confirm-quit",               								desc = "Quit the process" },
+
 	# Goto
 	{ on = [ "g", "h" ],       run = "cd ~",             desc = "Go home" },
 	{ on = [ "g", "c" ],       run = "cd /apps/config",     desc = "Go /apps/config" },
@@ -15,3 +20,31 @@ prepend_keymap= [
 	{ on = [ "g", "f" ],       run = "cd /film01/", desc = "Go /film01/" },
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 ]
+[opener]
+# 播放音视频
+play = [
+	{ run = 'mpv "$@"', orphan = true, for = "unix" }
+]
+# 查看图片
+image = [
+  { run = 'feh "$@"', orphan = true, desc = "View with feh" , for = "unix" },
+]
+# 打开 PDF
+pdf = [
+    { run = 'mupdf "$@"', orphan = true, desc = "Open with mupdf" },
+    { run = 'xpdf "$@"', orphan = true, desc = "Open with xpdf" },
+]
+
+[open]
+prepend_rules = [
+	{ mime = "application/pdf", use = "pdf" },
+  { mime = "video/*", use = "play" },
+]
+
+
+
+[plugin]
+prepend_preloaders = [
+	{ mime = "application/pdf", run = "mupdf" },
+]
+
