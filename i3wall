@@ -155,7 +155,7 @@ function stop() {
 function start_video() {
     stop
     # mpv 视频播放参数信息
-    wall_cmd="mpv -wid WID --loop --no-audio --really-quiet --framedrop=vo --panscan=1.0 ${video_dir}/${video_file}"
+    wall_cmd="mpv -wid WID --loop --no-cache --no-audio --really-quiet --framedrop=vo --panscan=1.0 ${video_dir}/${video_file}"
     
     # 获取显示器及分辨率信息（自动适应屏幕布局分辨率)
     for resolution in `xrandr | awk '/ connected/{ if($3~/primary/) print $4 ; else print $3 }'`
