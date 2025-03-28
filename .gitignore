@@ -2,3 +2,4 @@ test/
 rofi/rofi
 nvim/lua/.luarc.json
 nvim/plugin/packer_compiled.lua
+__pycache__/
