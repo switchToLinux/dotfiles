@@ -49,8 +49,10 @@ class LocalOllamaSource(IQuoteSource):
         prompts = [
             "写简短的50字以内世界名人说过的箴言，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
             "写简短的50字以内世界名人说过的励志格言。这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
-            "写简短的50字以内克服拖延症的方法，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息"
-            "写简短的50字以内激励自我输出内容的技巧，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息"
+            "写简短的50字以内克服拖延症的方法，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
+            "写简短的50字以内激励自我输出内容的技巧，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
+            "写简短的50字以内成功的励志名言，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
+            "写简短的50字以内激励自我的励志名言，这些可能用于Linux的 fortune-mod应用程序。不需要Markdown格式，仅以纯中文文本形式输出信息",
         ]
 
         try:
