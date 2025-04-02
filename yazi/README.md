@@ -38,3 +38,10 @@ If you want more granular control over colors, specify two different flavors for
 
 - [Configuration documentation](https://yazi-rs.github.io/docs/configuration/overview)
 - [Flavors documentation](https://yazi-rs.github.io/docs/flavors/overview)
+
+
+## plugins
+
+- [awesome plugins](https://github.com/AnirudhG07/awesome-yazi) for more plugins
+
+you can add plugins to yazi by adding them to the `plugins` array in `yazi.toml`

@@ -66,4 +66,6 @@ aseprite = [
 prepend_rules = [
 	{ mime = "application/pdf", use = "pdf" },
 	{ name = "*.aseprite", use = "aseprite" },
+	{ name = "*.dts", use = "play" },
+	{ name = "application/octet-stream", use = "play" },
 ]
