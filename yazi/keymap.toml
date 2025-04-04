@@ -6,24 +6,17 @@
 
 # 覆盖默认快捷键
 prepend_keymap = [
-	{ on = [ "<C-q>" ],     run = "plugin confirm-quit",                 desc = "Quit the process" },
-	{ on = "q",                    run = "plugin confirm-close",	        desc = "Close the current tab, or quit if it's last" },
-	{ on = [ "<C-c>" ],     run = "plugin confirm-quit",               								desc = "Quit the process" },
-	#{ on = "r", run = ["escape --visual", "plugin --sync thunar-bulk-rename"], desc = "Rename selected file(s) (via thunar)" },
-	# if you use yazi >= v0.4
-	{ on = "r", run = ["escape --visual", "plugin thunar-bulk-rename"], desc = "Rename selected file(s) (via thunar)" },
-	{ on = "R", run = ['shell "for file in "$@"; do magick "$file" -rotate 0 "${file%}"; done" --confirm',"refresh"], desc = "Refresh selected images" },
-	{ on = ">", run = ['shell "for file in "$@"; do magick "$file" -rotate 90 "${file%}"; done" --confirm', "refresh"], desc = "Rotate selected images clockwis" },
-	{ on = "<", run = ['shell "for file in "$@"; do magick "$file" -rotate -90 "${file%}"; done" --confirm', "refresh"], desc = "Rotate selected images counterclockwis" },
-
-	# Goto
-	{ on = [ "g", "h" ],       run = "cd ~",             desc = "Go home" },
-	{ on = [ "g", "c" ],       run = "cd /apps/config",     desc = "Go /apps/config" },
-	{ on = [ "g", "d" ],       run = "cd ~/Documents/",   desc = "Go ~/Documents/" },
-	{ on = [ "g", "D" ],       run = "cd ~/Downloads",   desc = "Go ~/Downloads" },
-	{ on = [ "g", "b" ],       run = "cd /docs/bt01/",   desc = "Go /docs/bt01" },
-	{ on = [ "g", "G" ],       run = "cd /apps/code/github/my/",   desc = "Go /apps/code/github/my/" },
-	{ on = [ "g", "f" ],       run = "cd /film01/", desc = "Go /film01/" },
-	{ on = [ "g", "s" ],       run = "cd /video/movies/sources", desc = "Go /video/movies/sources" },
-	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
+  {on = ["<C-q>"], run = "plugin confirm-quit", desc = "Quit the process"},
+  {on = "q", run = "plugin confirm-close", desc = "Close the current tab, or quit if it's last"},
+  {on = ["<C-c>"], run = "plugin confirm-quit", desc = "Quit the process"},
+  #{ on = "r", run = ["escape --visual", "plugin --sync thunar-bulk-rename"], desc = "Rename selected file(s) (via thunar)" }, 
+  {on = "r", run = ["escape --visual", "plugin thunar-bulk-rename"], desc = "Rename selected file(s) (via thunar, yazi >= v0.4)"},
+  {on = "R", run = ['shell "for file in "$@"; do magick "$file" -rotate 0 "${file%}"; done" --confirm', "refresh"], desc = "Refresh selected images"},
+  {on = ">", run = ['shell "for file in "$@"; do magick "$file" -rotate 90 "${file%}"; done" --confirm', "refresh"], desc = "Rotate selected images clockwis"},
+  {on = "<", run = ['shell "for file in "$@"; do magick "$file" -rotate -90 "${file%}"; done" --confirm', "refresh"], desc = "Rotate selected images counterclockwis"}, # Goto
+  {on = ["g", "h"], run = "cd ~", desc = "Go home"},
+  {on = ["g", "c"], run = "cd /apps/config", desc = "Go /apps/config"},
+  {on = ["g", "d"], run = "cd ~/Documents/", desc = "Go ~/Documents/"},
+  {on = ["g", "D"], run = "cd ~/Downloads", desc = "Go ~/Downloads"},
+  {on = ["g", "<Space>"], run = "cd --interactive", desc = "Jump interactively"},
 ]
