@@ -1,0 +1,273 @@
+#!/bin/sh
+########################################################################
+# 说明： 设置双屏4K分辨率工具
+# 解决问题: 
+#     1. 双屏幕(4K+1080p两种分辨率屏幕)的分辨率不一致，屏幕衔接不丝滑
+#     2. 自动识别显示器
+#     3. 可配置到cron调度中每分钟检测一次 '* * * * * /path/to/dset'
+########################################################################
+
+export DISPLAY=:0
+
+logit() 
+{
+    echo -e "$(date +'%Y年%m月%d日%H:%M:%S'): $@"  | tee -a /tmp/hdmi_log.txt
+}
+logit  "display check at $(date)"
+
+source $HOME/.bashrc
+
+
+# 如果使用cron 调度执行就需要此参数
+# 对于不同DE环境的默认 XAUTHORITY 文件名称、存储位置也不同，有报错则记得修改此参数
+# 如果是在Terminal终端执行，此变量不会为空
+uid=`id -u`
+xauth_dir="/run/user/$uid"
+xauth_fileprefix="xauth_"
+if [ "$XAUTHORITY" = "" ] ; then
+    export XAUTHORITY=`ls ${auth_dir}/${xauth_fileprefix}*`
+else
+    logit "XAUTHORITY=$XAUTHORITY"
+    xtmp_dir=`dirname $XAUTHORITY`
+    xtmp_file=`basename $XAUTHORITY`
+    if [ "$xauth_dir" != "$xtmp_dir" ] ; then
+        logit "提示: 使用cron前修改 xauth_dir 为 $xtmp_dir"
+    fi
+    if [ "$xauth_fileprefix" != "${xtmp_file:0:6}" ] ; then
+        logit "提示: 使用cron前修改 xauth_fileprefix 为 ${xtmp_file:0:6} "
+    fi
+fi
+
+
+# 通过配置文件自动更新
+primary_screen=
+extern_screen=
+
+# 根据尺寸及拼接方向计算整个屏幕大小
+width=    # 单屏幕最大宽度
+height=   # 单屏幕最大高度
+
+# 默认双4K分辨率
+primary_scale=
+extern_scale=
+direction=
+# XAUTHORITY=   # X认证文件
+config_file="$HOME/.dset.conf"
+current_file=/tmp/.dset.current
+
+function get_activate_monitor() {
+    # 获取活跃的显示器列表名称
+    # xrandr --listactivemonitors
+    echo | awk '{printf("%-10s    %s\n","Name", "max-screen-size")}'
+    echo "--------------------------------"
+    xrandr -d :0 -q |awk '{if(flag==1)printf("%-10s %s\n",name,$0); flag=0}/ connected/{ flag=1 ; name=$1 }'
+}
+
+function get_monitor_size() {
+    monitor_name="$1"
+    xrandr -d :0 -q | awk -v name=$monitor_name '{if(flag==1){printf("%s\n",$1); flag=0; }}/ connected/{ if($1 == name) flag=1; }'
+}
+
+function get_monitor_width() {
+    monitor_name="$1"
+    xrandr -d :0 -q | awk -v name=$monitor_name '{if(flag==1){n=split($1,arr,"x"); if(n > 1){printf("%s\n",arr[1]);} flag=0; }}/ connected/{ if($1 == name) flag=1; }'
+}
+
+function get_monitor_height() {
+    monitor_name="$1"
+    xrandr -d :0 -q | awk -v name=$monitor_name '{if(flag==1){n=split($1,arr,"x"); if(n > 1){printf("%s\n",arr[2]);} flag=0; }}/ connected/{ if($1 == name) flag=1; }'
+}
+
+function get_count() {
+    xrandr -d :0 -q | grep ' connected' | wc -l
+}
+
+# 设置单屏幕尺寸
+function set_screen_size() {
+    name=$1
+    height=`get_monitor_height ${name}`
+    width=`get_monitor_width ${name}`
+}
+# 获取分辨率scale参数
+function set_scale() {
+    p_size=`get_monitor_width $primary_screen`
+    e_size=`get_monitor_width $extern_screen`
+    if [ "$p_size" = "" -o "$e_size" = "" ] ; then
+        logit "获取屏幕分辨率失败了! p_size=$p_size,e_size=$e_size"
+        return 1
+    fi
+    if [ "$p_size" != "$e_size" ] ; then
+        # 屏幕分辨率不一致
+        if [ "$p_size" -gt "$e_size" ] ; then
+            set_screen_size $primary_screen
+            primary_scale="1x1"
+            s=`echo $p_size $e_size| awk '{printf("%.0f", $1/$2)}'`
+            extern_scale="${s}x${s}"
+        else
+            set_screen_size $extern_screen
+            extern_scale="1x1"
+            s=`echo $p_size $e_size| awk '{printf("%.0f", $2/$1)}'`
+            primary_scale="${s}x${s}"
+        fi
+    fi
+}
+
+function read_config() {
+    if [ -f $config_file ] ; then
+        primary_screen=`awk -F= '/^primary_screen/{print $2}' $config_file`
+        extern_screen=`awk -F= '/^extern_screen/{print $2}' $config_file`
+        primary_scale=`awk -F= '/^primary_scale/{print $2}' $config_file`
+        extern_scale=`awk -F= '/^extern_scale/{print $2}' $config_file`
+        width=`awk -F= '/^width/{print $2}' $config_file`
+        height=`awk -F= '/^height/{print $2}' $config_file`
+        direction=`awk -F= '/^direction/{print $2}' $config_file`
+    else
+        # 文件不存在，创建新文件并设置主、副屏幕
+        echo "当前激活的屏幕如下:"
+        get_activate_monitor
+        read -p "请选择主屏幕(如HDMI-0或DP-0等名称):" str_answer
+        if get_activate_monitor | grep $str_answer > /dev/null ; then
+            echo "您已选择主屏幕: $str_answer"
+            primary_screen=$str_answer
+        else
+            echo "输入了无效的主屏幕: $str_answer"
+            exit 0
+        fi
+        read -p "请选择 副屏幕(如HDMI-0或DP-0等名称):" str_answer
+        if get_activate_monitor | grep $str_answer > /dev/null ; then
+            echo "您已选择副屏幕: $str_answer"
+            extern_screen=$str_answer
+        else
+            echo "输入了无效的副屏幕: $str_answer"
+            exit 0
+        fi
+
+        set_scale
+        echo "primary_screen=$primary_screen" > $config_file
+        echo "extern_screen=$extern_screen" >> $config_file
+        echo "primary_scale=$primary_scale" >> $config_file
+        echo "extern_scale=$extern_scale" >> $config_file
+        echo "width=$width" >> $config_file
+        echo "height=$height" >> $config_file
+        if [ "$direction" = "" ] ; then
+            direction="up"
+        fi
+        echo "direction=$direction" >> $config_file
+    fi
+}
+
+function set_display() {
+    # 当活跃显示器数量大于一个时使用此设置
+    monitor_count=`get_count`
+    monitor_last_count=`awk '{printf("%s", $0)}' $current_file`
+    echo -n "$monitor_count" > $current_file      # 更新当前活跃显示器数量
+    read_config
+
+    if [ "$monitor_count" -le "1" ] ; then
+        logit "没有额外显示器，恢复单个主屏幕 $primary_screen"
+        xrandr --output "$primary_screen" --primary  --auto
+        return 0
+    fi
+    [[ "$monitor_last_count" == "" ]]  && monitor_last_count="1"
+
+    if [ "$monitor_last_count" -gt "1" ] ; then
+        logit "已经设置好了就不用再执行了, 强制执行请删除下面文件再执行\nrm -f $current_file"
+        return 0
+    fi
+
+    if [ "$XAUTHORITY" = "" ] ; then
+        logit "没找到 XAUTHORITY 环境变量"
+        exit 0
+    fi
+
+    if [ ! -f "$XAUTHORITY" ] ; then
+        logit "XAUTHORITY文件不存在: $XAUTHORITY"
+        exit 0
+    fi
+
+    if [ "$1" != "" ] ; then
+        direction="$1"  # 设置祝福屏幕的方向
+    fi
+
+    if [ "$direction" = "" ] ; then
+        direction="up"
+    fi
+
+    if [ "$direction" = "up" -o "$direction" = "left" ] ; then
+        logit "屏幕设置方向: $direction, [有效参数:up/left]"
+    else
+        logit "无效屏幕方向设置参数: $direction, [有效参数:up/left,默认up]"
+        return 0
+    fi
+    
+    if xrandr | grep "$extern_screen disconnected" >/dev/null ; then
+        xrandr --output "$extern_screen" --off --output "$primary_screen" --auto
+    else
+        sleep 1   # 等待新接入显示器
+        xrandr --output "$extern_screen" --primary   # 作用先更新一下桌面尺寸(壁纸同步调整)
+        sleep 0.5 # 等待上一个设置生效
+        if [ "$direction" = "left" ] ; then # 左右显示，在右侧宽度连接
+            if [ "$width" != "" ] ; then
+                twidth=`echo $width | awk '{ printf("%d", $1*2)}'`
+                xrandr --size "${twidth}x$height" --output "$primary_screen" --pos "0x0" --primary --auto --scale $primary_scale --output "$extern_screen" --scale $extern_scale --pos "${width}x0" --auto
+            else
+                logit "屏幕宽度参数没设置"
+            fi
+        else #上下显示 #
+            if [ "$height" != "" ] ; then
+                theight=`echo $height | awk '{ printf("%d", $1*2)}'`
+                xrandr --size "${width}x$theight" --output "$primary_screen" --pos "0x0" --primary --auto --scale $primary_scale --output "$extern_screen" --scale $extern_scale --pos "0x${height}" --auto 
+            else
+                logit "屏幕高度参数没设置"
+            fi
+        fi
+    fi
+}
+
+# 守护进程
+function run_daemon() {
+    while true ; do
+        set_display
+        sleep 5
+    done
+}
+function usage() {
+    echo "使用方法: "
+    echo "    `basename $0` [参数]   双显示器设置布局及分辨率更新脚本"
+    echo
+    echo "参数:"
+    echo "  daemon  : 轮询调度检测显示器变化，快速响应新接入显示器"
+    echo "  set     : 设置显示器布局及分辨率,可选方向参数 up/left"
+    echo "  fset    : 强制设置显示器布局分辨率,效果同set,无论显示器数量是否变化都会执行。"
+    echo "  reset   : 重新设置主副屏幕布局"
+    echo
+    echo -e "说明: \e[7m设置只在第一次时需要选择主、副屏幕,之后会保存设置信息,以后不需要重复设置\e[1m"
+    echo
+}
+
+action="${1:-set}"
+
+case $action in
+    daemon) # 轮询查询显示器数量，响应速度比crontab 调度快
+        run_daemon      ;;
+    set)
+        set_display $2 ;;
+    fset)
+        echo -n 1 > $current_file
+        monitor_last_count=1
+        set_display $2
+        i3 restart
+        ;;
+    reset)
+        echo -n 1 > $current_file
+        rm -f $config_file
+        monitor_last_count=1
+        set_display $2
+        ;;
+    cat)
+        cat $config_file  ;;
+    help|-h)
+        usage ;;
+    *)
+        logit "invalid action: $action" ; usage ;;
+esac

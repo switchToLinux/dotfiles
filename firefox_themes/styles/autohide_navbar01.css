@@ -1,0 +1,53 @@
+/*
+* 功能说明: 
+* 1. 隐藏顶部的tabs标签
+* 2. 使用插件Sidebery实现左侧Tabs标签功能
+*
+* 代码参考: https: //github.com/MrOtherGuy/firefox-csshacks/tree/master
+* @author: Awkee
+* @date: 2023/11/07
+* @links https: //mrotherguy.github.io/firefox-csshacks
+*
+*/
+
+
+:root {
+    --sidebar-hover-width: 25pt;
+    --sidebar-visible-width: 200pt;
+    --navbar-hover-height: 2pt;
+    --navbar-visible-height: 40pt;
+}
+#TabsToolbar {
+    padding: 0 0 !important;
+    visibility: collapse !important;
+}
+
+#sidebar-header {
+    visibility: collapse !important;
+}
+
+#sidebar-box {
+
+    position: relative !important;
+    overflow: hidden;
+    max-width: var(--sidebar-hover-width) !important;
+    min-width: var(--sidebar-hover-width) !important;
+}
+
+#sidebar-box:hover {
+    transition: all 200ms !important;
+    max-width: var(--sidebar-visible-width) !important;
+    min-width: var(--sidebar-visible-width) !important;
+}
+
+#navigator-toolbox {
+    position: relative !important;
+    max-height: var(--navbar-hover-height) !important;
+    min-height: var(--navbar-hover-height) !important;
+}
+
+#navigator-toolbox:hover {
+    transition: all 400ms !important;
+    max-height: var(--navbar-visible-height) !important;
+    min-height: var(--navbar-visible-height) !important;
+}
