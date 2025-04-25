@@ -1,0 +1,71 @@
+{
+    "group/hardwares": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "hardwares-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/expand",
+            "cpu",
+            "memory",
+            "temperature",
+            "load",
+            "battery"
+        ]
+    },
+    "group/media": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "media-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/media",
+            "custom/music",
+            "custom/sep",
+            "pulseaudio/slider",
+            "pulseaudio"
+        ]
+    },
+    "group/date": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "date-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "clock#time",
+            "clock#date"
+        ]
+    },
+    "group/tools": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "tools-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/tools",
+            "custom/cliphist",
+            "custom/sep",
+            "custom/recoder",
+            "custom/sep",
+            "bluetooth",
+            "custom/sep",
+            "battery",
+            "custom/sep",
+            "custom/hyprshade",
+            "custom/sep",
+            "tray"
+        ]
+    }
+}

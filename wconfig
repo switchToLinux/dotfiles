@@ -1,0 +1,273 @@
+#!/usr/bin/env bash
+#############################
+# wconfig  :  wayland  config tools
+# 
+#     wayland 界面配置工具:  默认使用 hyprland 窗口管理器
+#
+#
+# Author :  Awkee
+# Github: https://github.com/switchToLinux/dotfiles-wayland
+#
+# License : GPLv3
+
+# 菜单显示命令： 可选 fzf / wofi 
+# MENU_CMD="wofi --dmenu --width 400 --height 400"
+MENU_CMD="fzf"
+need_confirm="yes"
+pkg_cmd=""
+pkg_update_cmd=""
+ERR_FILE="/tmp/wconfig.err.log"
+
+git_url="https://github.com/switchToLinux/dotfiles"
+
+
+notify() {
+    local title="${1}"
+    local message="${2}"
+    local urgency="${3:-normal}"   # low, normal, critical
+    # notify-send "${title}" "${message}" -u "${urgency}"
+    # 检查是否安装了 notify-send
+    if command -v notify-send &>/dev/null; then
+        notify-send "${title}" "${message}" -u "${urgency}"
+    else
+        echo "${title}: ${message}"
+    fi
+}
+
+LOG() { 
+    printf "\033[0;32m INFO: %s - %s \033[0m\n" "$(date +'%Y-%m-%d %H:%M:%S')" "$@"
+}
+
+ERR() {
+    printf "\033[0;31;7m ERROR: %s - %s \033[0m\n" "$(date +'%Y-%m-%d %H:%M:%S')" "$@"
+    notify "Error" "$@" "critical"
+}
+
+LOG "Start wconfig , log file: ${ERR_FILE}"
+
+# 检查依赖软件是否安装
+check_depends() {
+    local depends=(
+        "fzf"
+        "git"
+    )
+    for depend in "${depends[@]}"; do
+        if ! command -v "${depend}" &>/dev/null; then
+            notify "Error: ${depend} is not installed. Please install it first."
+            exit 1
+        fi
+    done
+}
+
+# 安装软件集合 ， 可以个根据不同发行版选择不同的变量
+# 格式：  软件名称: 软件包名称列表
+# 默认支持的发行版： arch 系列
+declare -A package_set=(
+    ["display_manager"]="sddm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg"
+    ["compositor"]="hyprland hyprutils hyprlock hyprcursor hyprpaper hypridle xdg-desktop-portal-hyprland"
+    ["bar"]="waybar"
+    ["launcher_menu"]="wofi"
+    ["notification"]="mako dunst"
+    ["file_manager"]="thunar"
+    ["wallpaper"]="swww zenity"
+    ["cliphist"]="cliphist wl-clipboard"
+    ["terminal"]="xfce4-terminal kitty zsh tmux"
+    ["bluetooth"]="blueman"
+    ["browser"]="firefox"
+    ["input_method"]="fcitx5 fcitx5-chinese-addons fcitx5-gtk fcitx5-configtool fcitx5-qt"
+    ["media_player"]="mpv mpv-mpris ffmpeg"
+    ["password_manager"]="keepassxc"
+    ["screen_shot"]="flameshot grim slurp"
+    ["video_recorder"]="wf-recorder"
+    ["audio_processor"]="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber qpwgraph playerctl"
+    ["fonts"]="ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk powerline"
+    ["utils"]="jq yq yt-dlp network-manager-applet"
+)
+
+get_pack_cmd() {
+    local pack_cmd=$(command -v apt || command -v yay || command -v paru || command -v pacman || command -v yum || command -v dnf || command -v zypper)
+    cmd_name="$(basename ${pack_cmd})"
+    if [[ "${need_confirm}" != "yes" ]]; then
+        # 增加不需要确认参数
+        case "${cmd_name}" in
+            apt)
+                pack_cmd="apt install -y"
+                pkg_update_cmd="apt update -y"
+                ;;
+            pacman|yay|paru)
+                pack_cmd="${cmd_name} -Sy --noconfirm --needed"
+                pkg_update_cmd="${cmd_name} -Sy --noconfirm --needed"
+                ;;
+            yum)
+                pack_cmd="yum install -y"
+                pkg_update_cmd="yum update -y"
+                ;;
+            dnf)
+                pack_cmd="dnf install -y"
+                pkg_update_cmd="dnf update -y"
+                ;;
+            zypper)
+                pack_cmd="zypper install -y"
+                pkg_update_cmd="zypper update -y"
+                ;;
+        esac
+    else
+        case "${cmd_name}" in
+            apt)
+                pack_cmd="apt install "
+                pkg_update_cmd="apt update -y"
+                ;;
+            pacman|yay|paru)
+                pack_cmd="${cmd_name} -Sy --noconfirm --needed"
+                pkg_update_cmd="${cmd_name} -Sy --noconfirm --needed"
+                ;;
+            yum)
+                pack_cmd="yum install "
+                pkg_update_cmd="yum update -y"
+                ;;
+            dnf)
+                pack_cmd="dnf install "
+                pkg_update_cmd="dnf update -y"
+                ;;
+            zypper)
+                pack_cmd="zypper install "
+                pkg_update_cmd="zypper update -y"
+                ;;
+        esac
+    fi
+    if [[ "$(id -u)" -ne "0" && ! "$cmd_name" =~ ^(yay|paru) ]]; then
+        echo "sudo ${pack_cmd}"
+    else
+        echo "${pack_cmd}"
+    fi
+}
+
+install_hyprland() {
+    need_confirm=${1:-"yes"}
+    # 获取软件包安装命令
+    pkg_cmd=$(get_pack_cmd)
+    # 更新软件包列表
+    $pkg_update_cmd
+
+    # 检查依赖软件是否安装
+    for pack_name in "${!package_set[@]}"; do
+        LOG "DEBUG: installing module_name: [${pack_name}] ,packages: ${package_set[${pack_name}]}"
+        ${pkg_cmd} ${package_set[${pack_name}]} >> ${ERR_FILE} 2>&1
+        # 安装错误退出
+        [[ "$?" -ne "0" ]] && ERR "Install ${pack_name} failed" && return 1
+        LOG "Install ${pack_name} success"
+    done
+}
+
+auto_install() {
+    install_hyprland "no"
+}
+
+config_hyprpaper() {
+    dest_dir="~/.config/dotfiles-wayland"
+    [[ -d "${dest_dir}" ]] && read -p "dest_dir ${dest_dir} already exists, do you want to continue? (y/n) " choice && [[  ! "${choice}" =~ ^[Yy]$ ]] && return 0
+    [[ -d "${dest_dir}" ]] && rm -rf ${dest_dir}
+
+    git clone ${git_url}  ${dest_dir}  >> ${ERR_FILE} 2>&1
+    [[ "$?" -ne "0" ]] && ERR "git clone ${git_url} failed" && return 1
+    cd ${dest_dir}
+    [[ "$?" -ne "0" ]] && ERR "cd ${dest_dir} failed" && return 1
+
+    cp -rp hypr mako waybar wofi  xfce4 mpd yazi Thunar ~/.config/
+    [[ "$?" -ne "0" ]] && ERR "config failed" && return 1
+}
+
+config_sddm() {
+    LOG "config sddm"
+    sudo git clone -b master --depth 1 https://github.com/keyitdev/sddm-astronaut-theme.git /usr/share/sddm/themes/sddm-astronaut-theme
+    [[ "$?" -ne "0" ]] && ERR "git clone sddm-astronaut-theme failed" && return 1
+
+    sudo cp -r /usr/share/sddm/themes/sddm-astronaut-theme/Fonts/* /usr/share/fonts/
+    sudo cp -r /usr/share/sddm/themes/sddm-astronaut-theme/Fonts/* /usr/share/fonts/
+    echo -e "[Theme]\nCurrent=sddm-astronaut-theme" | sudo tee /etc/sddm.conf
+    [[ -d "/etc/sddm.conf.d" ]] || sudo mkdir -p /etc/sddm.conf.d
+    echo -e "[General]\nInputMethod=qtvirtualkeyboard" | sudo tee /etc/sddm.conf.d/virtualkbd.conf
+    
+    [[ "$?" -ne "0" ]] && ERR "config sddm failed" && return 1
+    notify "config sddm success"
+}
+
+config_grub() {
+    LOG "config grub"
+    grub_url="https://github.com/vinceliuice/grub2-themes"
+    dest_dir="/tmp/grub2-themes"
+    [[ -d "${dest_dir}" ]] && read -p "dest_dir ${dest_dir} already exists, do you want to continue? (y/n) " choice && [[  ! "${choice}" =~ ^[Yy]$ ]] && return 0
+    [[ -d "${dest_dir}" ]] && rm -rf ${dest_dir}
+    git clone --depth=1 ${grub_url}  ${dest_dir}  >> ${ERR_FILE} 2>&1
+    [[ "$?" -ne "0" ]] && ERR "git clone ${grub_url} failed" && return 1
+    cd ${dest_dir}
+    [[ "$?" -ne "0" ]] && ERR "cd ${dest_dir} failed" && return 1
+    sudo ./install.sh -t whitesur -c 1366x768
+}
+
+config_wallpaper() {
+    wallpaper_dir="~/wallpapers"
+    wall_url=https://github.com/D3Ext/aesthetic-wallpapers
+    [[ -d "${wallpaper_dir}" ]] && read -p "wallpaper_dir ${wallpaper_dir} already exists, do you want to continue? (y/n) " choice && [[ ! "${choice}" =~ ^[Yy]$ ]] && return 0
+    [[ -d "${wallpaper_dir}" ]] && rm -rf ${wallpaper_dir}
+    git clone --depth=1 ${wall_url}  ${wallpaper_dir}  >> ${ERR_FILE} 2>&1
+    [[ "$?" -ne "0" ]] && ERR "git clone ${wall_url} failed" && return 1
+    LOG "config wallpaper success"
+    notify "config wallpaper success"
+}
+
+# 主菜单
+main_menu() {
+    echo "1. 安装 hyprland"
+    echo "2. 配置 hyprpaper"
+    echo "3. 配置 sddm主题"
+    echo "4. 配置 grub主题"
+    echo "0. 全自动安装"
+    echo "s. 启动桌面环境"
+    echo "w. 配置桌面壁纸"
+    echo "q. 退出"
+}
+
+show_main_menu() {
+    main_menu | ${MENU_CMD} | awk -F'.' '{printf $1}'
+}
+
+do_main_menu() {
+    local choice
+    choice=$(show_main_menu)
+    case "${choice}" in
+        1)
+            install_hyprland
+            ;;
+        2)
+            config_hyprpaper
+            ;;
+        3)
+            config_sddm
+            ;;
+        4)
+            config_grub
+            ;;
+        0)
+            auto_install
+            ;;
+        s)
+            sudo systemctl set-default graphical.target
+            sudo systemctl enable --now sddm
+            ;;
+        q|"")
+            return 0
+            ;;
+        w)
+            config_wallpaper
+            ;;
+        *)
+            echo "Invalid choice. Please try again."
+            ;;
+    esac
+}
+
+
+check_depends  || exit 1
+
+do_main_menu

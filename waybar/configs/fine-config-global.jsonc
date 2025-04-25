@@ -1,0 +1,329 @@
+// vim: foldmethod=marker
+// fineman's config
+
+// for all options check out: 
+// https://github.com/Alexays/Waybar/tree/master/man
+// https://github.com/Alexays/Waybar/wiki/
+
+{
+"reload_style_on_change": true,
+"layer": "top", 
+"spacing": 0,
+"width": 36,
+
+"fixed-center": false,
+
+// Backlight {{{
+"backlight": {
+	"format":		"{icon}",
+	"format-icons":		["󰛩",
+				"󱩎",
+				"󱩏",
+				"󱩐",
+				"󱩑",
+				"󱩒",
+				"󱩓",
+				"󱩔",
+				"󱩕",
+				"󱩖",
+				"󰛨"],
+	"on-scroll-down":	"brightnessctl set 1%- && $HOME/.scripts/progressbar.sh --brightness 'eDP-1'",
+	"on-scroll-up":		"brightnessctl set +1% && $HOME/.scripts/progressbar.sh --brightness 'eDP-1'",
+	"tooltip": 		false,
+},
+// }}}
+
+// Battery {{{
+"battery": {
+	"states": {
+		"warning": 30,
+		"critical": 15
+	},
+	"bat": "BAT1",
+	"adapter": "ACAD",
+
+	"format": "{capacity}\n{icon}",
+	"format-charging": "{capacity}\n󰂄", 
+	// NOTE  you can add additional format-{power-status}, just check /sys/class/power_supply/<bat>/status and replace {power-status} with given output
+
+	"format-full": "{capacity}\n󰂄",
+	"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+
+	"tooltip": true,
+	"tooltip-format": "{timeTo}\nPower: {power} Watt",
+},
+// }}}
+
+//  TODO  test with at least two bluetooth devices connected
+"bluetooth": {
+	"format": "󰂯",
+	"format-connected": "󰂱",
+	"format-disabled": "󰂲",
+	"format-icons":	["󰤾","󰤿","󰥀","󰥁","󰥂","󰥃","󰥄","󰥅","󰥆","󰥈"],
+	"format-off": "󰂲",  
+	"format-on": "󰂯",
+
+	"tooltip": "true", 
+	"tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+	"tooltip-format-disabled": "", 
+	"tooltip-format-off": "", 
+	"tooltip-format-on": "",
+	"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+
+	"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+	"tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+	
+	"on-click-right": "rfkill toggle bluetooth"
+},
+
+// Clock {{{
+"clock": {
+	"format": "{:%H\n%M}",
+	"tooltip": true,
+	"tooltip-format": "<small>{calendar}</small>",
+
+	"calendar": {
+        	"mode"          : "month",
+        	"weeks-pos"     : "left",
+        	"on-scroll"     : 1,
+                "format": {
+                            "months":     "<span color='#d4be98'><b>{}</b></span>",
+                            "weeks":      "<span color='#7daea3'><b>W{}</b></span>",
+                            "weekdays":   "<span color='#d8a657'><b>{}</b></span>",
+                            "days":       "<span color='#d4be98'><b>{}</b></span>",
+                            "today":      "<span color='#e78a4e'><b><u>{}</u></b></span>"
+                },
+        },
+	"actions":  {
+        	"on-scroll-up": "shift_up",
+        	"on-scroll-down": "shift_down"
+	},
+},	
+// }}}
+
+// CPU {{{
+"cpu": {
+	"interval": 10,
+        "format": "{usage}\n󰍛",
+        "tooltip": true,
+	"on-click": "alacritty -T 'Floating Term btop' -e btop"
+},
+// }}} 
+
+// Idle inhibitor {{{
+"idle_inhibitor": {
+	"format": "{icon}",
+	"format-icons": {
+		"activated": "󰛊",
+        	"deactivated": "󰾫",
+	},
+	"tooltip": false,
+},
+// }}} 
+
+// Keyboard language {{{
+"hyprland/language": {
+    "format": "{short}",
+    "tooltip": false,
+    "on-click": "hyprlandmsg input type:keyboard xkb_switch_layout next",
+},
+// }}}
+
+// Keyboard state {{{
+"keyboard-state": {
+    "numlock": true,
+    "capslock": true,
+    "format": {
+        "numlock": "N {icon}",
+        "capslock": "C {icon}"                                                                                                                                                       
+    },
+    "format-icons": {
+        "locked": "",
+        "unlocked": ""
+    }
+},
+// }}}
+
+// Mako {{{
+"custom/mako": {
+	"exec": "echo \"{\\\"alt\\\": \\\"$(makoctl mode)\\\"}\"",
+	"on-click": "~/.scripts/waybar_mako_cycle.sh",
+	"signal": 11,
+	"format": "{icon}",
+	"format-icons": {
+			"default": "󰂚",
+			"dnd": "󰂛",
+			"unmuted": "󰂞",
+	},
+	"return-type": "json",
+	"tooltip": "false",
+},
+// }}}
+
+// Memory {{{
+"memory": {
+	"interval": 10,
+
+	"format": "{percentage}\n{swapPercentage}\n󰧑",
+
+	"tooltip": true,
+	"tooltip-format": "RAM:\nUsed: {used} GiB\nAvailable: {avail} GiB\n\nSwap:\nUsed: {swapUsed} GiB\nAvailable: {swapAvail} GiB",	
+},
+// }}} 
+
+//  TODO  change names
+"network": {
+	"format-wifi": "󰤯",
+	"format-disconnected":"󰤫",
+	"format-linked":"test",
+	"format-ethernet":"󰈀",
+	"format-disabled":"󰤮",
+
+	"tooltip-format":"subject name to change when on ethernet {ifname} via {gwaddr} 󰈀",
+	"tooltip-format-wifi":"ESSID: {essid}\nFrequency: {frequency} GHz\nStrength: {signalStrength}%\nIP: {ipaddr}",
+	"tooltip-format-disconnected":  "Disconnected",
+
+	"on-click":"alacritty -T 'Floating Term nmtui' -e nmtui connect",
+	"on-click-right": "rfkill toggle wifi",
+},
+
+// Privacy {{{
+"privacy#screenshare": {
+	"icon-spacing": 0,
+	"icon-size": 18,
+	"transition-duration": 0,
+	"modules": [
+		{
+			"type": "screenshare",
+			"tooltip": true,
+			"tooltip-icon-size": 14,
+		},
+	]
+},
+
+"privacy#audio-in": {
+	"icon-spacing": 0,
+	"icon-size": 18,
+	"transition-duration": 0,
+	"modules": [
+		{
+			"type": "audio-in",
+			"tooltip": true,
+			"tooltip-icon-size": 14,
+		},
+	]
+},
+
+"group/privacygroup": {
+	"orientation": "vertical",
+	"modules": [
+		"privacy#screenshare",
+		"privacy#audio-in",
+	],
+},
+// }}}
+
+// PulseAudio {{{
+"pulseaudio": {
+        "format": "{icon}",
+        "format-muted": "󰖁",
+        "format-bluetooth": "󰗾name subjecto to check",
+        "format-bluetooth-muted": "󰗿 name subject to check",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"],
+            "headphone": "󱡬",
+	    "speaker": ["󰕿", "󰖀", "󰕾"],
+	    "hdmi": "󰡁",
+            "headset": "󱇰",
+	    "hands-free": "noname3",
+	    "portable": "noname4",
+	    "car": "noname5",
+	    "hifi": "noname6",
+	    "phone": "noname7",
+        },
+
+        "on-click": "flatpak run com.saivert.pwvucontrol &>/dev/null",
+        //"on-click": "alacritty -T 'Floating Term pulsemixer' -e ~/.local/bin/pulsemixer",
+	"on-click-right": "pactl set-sink-mute 0 toggle && $HOME/.scripts/progressbar.sh --volume-mute",
+
+	"on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +1% && $HOME/.scripts/progressbar.sh --volume",
+	"on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -1% && $HOME/.scripts/progressbar.sh --volume",
+
+	"tooltip": true,
+	"tooltip-format": "Volume: {volume}%\n{desc}",
+},
+
+"pulseaudio#source": {
+	"format": "{format_source}",
+	"format-source": "",
+	"format-source-muted": "",
+
+        "on-click": "flatpak run com.saivert.pwvucontrol &>/dev/null",
+        //"on-click": "alacritty -T 'Floating Term pulsemixer' -e ~/.local/bin/pulsemixer",
+	"on-click-right": "pactl set-source-mute 0 1 && $HOME/.scripts/progressbar.sh --mic-mute",
+
+	"on-scroll-up": "pactl set-source-volume @DEFAULT_SOURCE@ +1% && $HOME/.scripts/progressbar.sh --mic-volume",
+	"on-scroll-down": "pactl set-source-volume @DEFAULT_SOURCE@ -1% && $HOME/.scripts/progressbar.sh --mic-volume",
+
+	"tooltip": false,
+},
+// }}}
+
+// hyprland {{{
+"hyprland/mode": {
+	"rotate": 90,
+	"tooltip": false,
+
+	"on-click": "hyprlandmsg mode 'default'",
+},
+
+"hyprland/scratchpad": {
+    "format": "{icon}",
+    "format-icons": ["", "", ""],
+    "show-empty": true,
+
+    "tooltip": true,
+    "tooltip-format": "{app}: {title}",
+
+    "on-click": "hyprctl dispatch togglespecialworkspace scratchpad",
+},
+
+"hyprland/window": {
+	"format": "{app_id}\t{title}",
+	"icon": false,
+	"max-length": 300,
+	"rotate": 90,
+	"tooltip": false,
+},
+
+"hyprland/workspaces": {
+	"disable-scroll": true,
+	"disable-click": false,
+},
+// }}}
+
+// Temperature {{{
+"temperature": { 
+	"thermal-zone": 5, // zone no. 5 is the closest to what btop shows me
+	"critical-threshold": 80,
+
+	"format": "{temperatureC}\n{icon}",
+	"format-icons": ["","","","",""],
+
+	"interval": 10,
+
+	"tooltip": false,
+
+	"on-click": "alacritty -T 'Floating Term btop' -e btop"
+}, 
+// }}}
+
+// Tray {{{
+"tray": {
+	"icon-size": 20,
+	"show-pasive-items": true,
+	"smooth-scrolling-threshold": 1,
+	"spacing": 3,
+},
+// }}}
+}

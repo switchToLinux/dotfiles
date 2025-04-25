@@ -1,0 +1,37 @@
+/* Keyframes */
+
+@keyframes blink-critical {
+    to {
+        /*color: @white;*/
+        background-color: @critical;
+    }
+}
+
+/* Reset all styles */
+* {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    font-size: 12pt;
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-weight: bold;
+}
+
+/*自动根据配置引入正确的颜色搭配方案*/
+@import "../waybar/color.css";
+
+/* 引入 通用的样式 */
+@import "./styles/com_style.css";
+
+/* 自动生成的颜色配置方案 */
+@import "../waybar/styles/autogen_color.css";
+
+/* The whole bar */
+#waybar {
+    background-color: transparent;
+}

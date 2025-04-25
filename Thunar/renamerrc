@@ -1,0 +1,10 @@
+[Configuration]
+LastActiveMode=THUNAR_RENAMER_MODE_BOTH
+LastActiveRenamer=ThunarSbrReplaceRenamer
+
+[ThunarSbrReplaceRenamer]
+CaseSensitive=FALSE
+Replacement=
+Pattern=【零基础新手自学】
+Regexp=TRUE
+

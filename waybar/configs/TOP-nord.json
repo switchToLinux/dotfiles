@@ -1,0 +1,33 @@
+{
+    "include": [
+        "$HOME/.config/waybar/modules/modules.json",
+        "$HOME/.config/waybar/modules/modules-custom.json",
+        "$HOME/.config/waybar/modules/modules-autogen.json"
+    ],
+    "layer": "top",
+    "position": "top",
+    "height": 12,
+    "modules-left": [
+        "hyprland/workspaces",
+        "custom/arrow11",
+        "hyprland/window",
+        "custom/arrow12"
+    ],
+    "modules-center": [
+        "custom/music",
+        "custom/arrow13"
+    ],
+    "modules-right": [
+        "custom/arrow9",
+        "pulseaudio",
+        "custom/arrow4",
+        "tray",
+        "custom/arrow3",
+        "temperature",
+        "custom/arrow2",
+        "clock#date",
+        "custom/arrow1",
+        "custom/power"
+    ],
+    "reload_style_on_change": true
+}

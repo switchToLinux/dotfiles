@@ -1,0 +1,7 @@
+[[plugin.deps]]
+use = "boydaihungst/thunar-bulk-rename"
+rev = "02cce93"
+hash = "d7bd470835d7092310edb5b6635f45e2"
+
+[flavor]
+deps = []

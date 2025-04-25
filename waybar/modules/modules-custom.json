@@ -1,0 +1,97 @@
+{
+    "custom/power": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "~/.config/hypr/scripts/show_power_menu.sh"
+    },
+    "custom/powermenu": {
+        "format": "⏻ ",
+        "tooltip": false,
+        "menu": "on-click",
+        "menu-file": "$HOME/.config/waybar/power_menu.xml",
+        "menu-actions": {
+            "shutdown": "shutdown",
+            "reboot": "reboot",
+            "suspend": "systemctl suspend",
+            "hibernate": "systemctl hibernate"
+        }
+    },
+    "custom/logo": {
+        "format": "",
+        "format-alt": "󰍲",
+        "tooltip": false,
+        "on-click": "wofi"
+    },
+    "custom/music": {
+        "format": " {} ",
+        "escape": true,
+        "interval": 5,
+        "tooltip": true,
+        "exec": "playerctl --player=mpv metadata --format='󰎇 {{ title }} - {{ artist }} {{ album }} ' || echo '  󰎊  ' ",
+        "on-click": "playerctl --player=mpv play-pause",
+        "on-click-middle": "playerctl --player=mpv play-pause",
+        "on-scroll-down": "playerctl --player=mpv next",
+        "on-scroll-up": "playerctl --player=mpv previous",
+        "on-click-right": "nohup ~/.config/hypr/userscripts/play_music.sh >/dev/null 2>&1 &",
+        "max-length": 30
+    },
+    "custom/wifi": {
+        "exec": "~/.config/waybar/userscripts/wifi-status.sh",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "~/.config/waybar/userscripts/wifi-menu.sh",
+        "interval": 1,
+        "min-length": 1,
+        "max-length": 1
+    },
+    "custom/cliphist": {
+        "format": "󰆐",
+        "on-click": "sleep 0.1 && cliphist list | wofi --dmenu -p Copy | cliphist decode | wl-copy",
+        "on-click-right": "sleep 0.1 && cliphist list | wofi --dmenu -p 'Delete' | cliphist  delete",
+        "on-click-middle": "sleep 0.1 && cliphist wipe && notify-send 'Clipboard cleared' ",
+        "tooltip-format": "Left: Open clipboard Manager\nRight: Delete an entry\nMiddle: Clear list"
+    },
+    "custom/system": {
+        "format": "",
+        "tooltip": false
+    },
+    "custom/hyprshade": {
+        "format": "󰇄",
+        "format-alt": "󰽧",
+        "tooltip-format": "Toggle Screen Shader",
+        "on-click": "hyprshade toggle blue-light-filter-75",
+        "on-click-right": "sleep 0.5; ~/.config/hypr/scripts/hyprshade.sh rofi"
+    },
+    "custom/recoder": {
+        "format": "󰍫",
+        "format-alt":"󰃾",
+        "tooltip-format": "Left Click: Start Recording\nRight Click: Stop Recording",
+        "on-click": "notify-send 'Recording Started' && wf-recorder -g \"$(slurp)\" -f ~/Videos/area_$(date +%Y%m%d_%H%M%S).mp4 ",
+        "on-click-right": "pidof wf-recorder && pkill wf-recorder && notify-send 'Recording Stopped'"
+    },
+
+
+    "custom/expand": {
+        "format": "󰮸",
+        "tooltip": false
+    },
+    "custom/tools": {
+        "format": "󱌣",
+        "tooltip-format": "Tools"
+    },
+    "custom/media": {
+        "format": "󰽰",
+        "tooltip": false
+    },
+    "custom/drawer": {
+        "format": "󰶢",
+        "tooltip": false
+    },
+    "custom/sep": {
+        "format": "󰨕",
+        "tooltip": false
+    },
+    "custom/nope": {
+        "format": "    "
+    }
+}

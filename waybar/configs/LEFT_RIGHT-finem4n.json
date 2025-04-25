@@ -1,0 +1,27 @@
+{
+    "include": [
+        "$HOME/.config/waybar/modules/modules.json",
+        "$HOME/.config/waybar/modules/modules-custom.json",
+        "$HOME/.config/waybar/modules/modules-autogen.json"
+    ],
+    "position": "left",
+    "modules-left": [
+        "idle_inhibitor",
+        "hyprland/scratchpad",
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        "hyprland/window",
+        "hyprland/mode"
+    ],
+    "modules-right": [
+        "tray",
+        "pulseaudio",
+        "network",
+        "bluetooth",
+        "cpu",
+        "memory",
+        "temperature",
+        "clock"
+    ]
+}

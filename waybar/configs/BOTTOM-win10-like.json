@@ -1,0 +1,33 @@
+{
+    "include": [
+        "$HOME/.config/waybar/modules/modules.json",
+        "$HOME/.config/waybar/modules/modules-custom.json"
+    ],
+    "layer": "bottom",
+    "position": "bottom",
+    "mod": "dock",
+    "exclusive": true,
+    "gtk-layer-shell": true,
+    "margin-bottom": -1,
+    "passthrough": false,
+    "height": 32,
+    "modules-left": [
+        "custom/logo",
+        "hyprland/workspaces",
+        "wlr/taskbar"
+    ],
+    "modules-center": [],
+    "modules-right": [
+        "custom/music",
+        "cpu",
+        "temperature",
+        "memory",
+        "disk",
+        "tray",
+        "pulseaudio",
+        "network",
+        "battery",
+        "hyprland/language",
+        "clock"
+    ]
+}

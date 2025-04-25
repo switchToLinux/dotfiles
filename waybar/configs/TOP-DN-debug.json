@@ -1,0 +1,34 @@
+{
+    "include": [
+        "$HOME/.config/waybar/modules/modules.json",
+        "$HOME/.config/waybar/modules/modules-custom.json",
+        "$HOME/.config/waybar/modules/modules-group.json",
+        "$HOME/.config/waybar/modules/modules-autogen.json"
+    ],
+    "layer": "top",
+    "position": "TOP",
+    "height": 35,
+    "spacing": 4,
+    "margin-top": 5,
+    "margin-bottom": 10,
+    "modules-center": [
+        "custom/logo",
+        "hyprland/workspaces",
+        "custom/media",
+        "idle_inhibitor",
+        "custom/updater",
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "keyboard-state",
+        "hyprland/language",
+        "battery",
+        "battery#bat2",
+        "tray",
+        "clock",
+        "custom/power"
+    ]
+}

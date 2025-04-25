@@ -1,0 +1,302 @@
+{
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "on-click-right": "fullscreen",
+        "icon-theme": "WhiteSur",
+        "icon-size": 20,
+        "spacing": 5,
+        "ignore-list": [
+            "Alacritty"
+        ],
+        "tooltip-format": "{title}"
+    },
+    "hyprland/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "hyprland/workspaces": {
+        "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1.",
+            "2": "2.",
+            "3": "3.",
+            "4": "4.",
+            "5": "5.",
+            "6": "6.",
+            "7": "7.",
+            "8": "8.",
+            "9": "9.",
+            "10": "10.",
+            "default": "",
+            "urgent": "󱓻"
+        }
+    },
+    "hyprland/submap": {
+        "format": "✌️ {}",
+        "max-length": 8,
+        "tooltip": false
+    },
+    "hyprland/window": {
+    "format": "{}",
+    "tooltip": true,
+    "min-length": 5,
+    "max-length": 40,
+
+    "rewrite": {
+        // Desktop
+        "": 
+        "<span foreground='#89b4fa'> </span> Hyprland",
+
+        // Terminal
+        "Terminal - (.*)": " 󰮯- $1",
+
+        "tmux(.*)": 
+        "<span foreground='#a6e3a1'> </span> Tmux",
+
+        // Browser
+
+        "(.*)Google Chrome": 
+        "<span foreground='#f38ba8'> 󰊯 </span> Chrome",
+        "(.*) - Google Chrome": 
+        "<span foreground='#f38ba8'> 󰊯 </span> $1",
+
+        "(.*)Mozilla Firefox": 
+        "<span foreground='#f38ba8'> 󰈹 </span> Firefox",
+        "(.*) — Mozilla Firefox": 
+        "<span foreground='#f38ba8'> 󰈹 </span> $1",
+
+        "(.*)Zen Browser": 
+        "<span foreground='#fab387'> 󰺕 </span> Zen Browser",
+        "(.*) — Zen Browser": 
+        "<span foreground='#fab387'> 󰺕 </span> $1",
+
+        // Development
+
+        "(.*) - Visual Studio Code": 
+        "<span foreground='#89b4fa'> 󰨞 </span> $1",
+        "(.*)Visual Studio Code": 
+        "<span foreground='#89b4fa'> 󰨞 </span> Visual Studio Code",
+
+        "nvim": 
+        "<span foreground='#a6e3a1'>  </span> Neovim",
+        "nvim (.*)": 
+        "<span foreground='#a6e3a1'>  </span> $1",
+
+        "vim": 
+        "<span foreground='#a6e3a1'>  </span> Vim",
+        "vim (.*)": 
+        "<span foreground='#a6e3a1'>  </span> $1",
+
+        // Media
+
+        "(.*)Spotify": 
+        "<span foreground='#a6e3a1'>  </span> Spotify",
+        "(.*)Spotify Premium": 
+        "<span foreground='#a6e3a1'>  </span> Spotify Premium",
+
+        "OBS(.*)": 
+        "<span foreground='#a6adc8'>  </span> OBS Studio",
+
+        "VLC media player": 
+        "<span foreground='#fab387'> 󰕼 </span> VLC Media Player",
+        "(.*) - VLC media player": 
+        "<span foreground='#fab387'> 󰕼 </span> $1",
+
+        "(.*) - mpv": 
+        "<span foreground='#cba6f7'>  </span> $1"
+    }
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": " idle ON",
+            "deactivated": " idle OFF"
+        }
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "  muted",
+        "format-icons": {
+            "headphone": "",
+            "default": [
+                " ",
+                " ",
+                " "
+            ]
+        },
+        "on-click": "pavucontrol"
+    },
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "",
+        "format-connected": " {num_connections} connected",
+        "tooltip-format": "{controller_alias}\t{controller_address}",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "on-click": "blueman-manager"
+    },
+    "cpu": {
+        "format": "{usage}% "
+    },
+    "memory": {
+        "interval": 5,
+        "format": "󰍛 {}%",
+        "max-length": 10
+    },
+    "load": {
+        "interval": 1,
+        "format": "load: {load1} {load5} {load15}"
+    },
+    "temperature": {
+        "critical-threshold": 80,
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": {
+            "charging": ["󰢜","󰂆","󰂇","󰂈","󰢝","󰂉","󰢞","󰂊","󰂋","󰂅" ],
+            "default": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"]
+        },
+        "format-full": "Charged ",
+        "interval": 5,
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+    "battery#bat2": {
+        "bat": "BAT2"
+    },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
+        }
+    },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "󰨴 {:%Y%m%d %H:%M}",
+        "format": "   {:%H:%M}"
+    },
+    "clock#time": {
+        "format": "{:%H:%M}",
+        "tooltip": false,
+        "min-length": 6,
+        "max-length": 6
+    },
+    "clock#date": {
+        "format": "󰨳 {:%m-%d}",
+        "tooltip-format": "<tt>{calendar}</tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 6,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<span color='#b4befe'><b>{}</b></span>",
+                "weekdays": "<span color='#a6adc8' font='7'>{}</span>",
+                "today": "<span color='#f38ba8'><b>{}</b></span>"
+            }
+        },
+        "actions": {
+            "on-click": "mode",
+            "on-click-right": "mode"
+        },
+        "min-length": 8,
+        "max-length": 8
+    },
+    "wireplumber": {
+        "format": "{icon}",
+        "format-bluetooth": "󰂰",
+        "nospacing": 1,
+        "tooltip-format": "Volume : {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "",
+            "default": [
+                "󰖀",
+                "󰕾",
+                ""
+            ]
+        },
+        "on-click": "pamixer -t",
+        "on-click-right": "pavucontrol",
+        "scroll-step": 1
+    },
+    "mpris": {
+        "format": "🎵 {player_icon} {dynamic}",
+        "format-paused": "🎵 {status_icon} <i>{dynamic}</i>",
+        "player-icons": {
+            "default": "▶",
+            "mpv": "🎵"
+        },
+        "status-icons": {
+            "paused": "⏸"
+        }
+    },
+    "mpd": {
+        // "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+        "format": "{stateIcon} {consumeIcon} {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 10,
+        "max-length": 20,
+        "on-click": "playerctl --player=cmus,musicfox,spotify,rhythmbox play-pause",
+        "on-scroll-down": "playerctl --player=cmus,musicfox,spotify,rhythmbox next",
+        "on-scroll-up": "playerctl --player=cmus,musicfox,spotify,rhythmbox previous",
+        "on-click-right": "playerctl --player=cmus,musicfox,spotify,rhythmbox stop",
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
+        }
+    },
+    "user": {
+        "format": "{user} (up {work_d} days ↑)",
+        "interval": 60,
+        "height": 30,
+        "width": 30,
+        "icon": true
+    }
+}

@@ -1,0 +1,41 @@
+/* Nord */
+@define-color nord0 #24283b;
+@define-color nord1 #3b4252;
+@define-color nord2 #434c5e;
+@define-color nord3 #4c566a;
+@define-color nord4 #d8dee9;
+@define-color nord5 #e5e9f0;
+@define-color nord6 #eceff4;
+@define-color nord7 #8fbcbb;
+@define-color nord8 #88c0d0;
+@define-color nord9 #81a1c1;
+@define-color nord10 #5e81ac;
+@define-color nord11 #bf616a;
+@define-color nord12 #d08770;
+@define-color nord13 #FF8000;
+@define-color nord14 #A3BE8C;
+@define-color nord15 #B48EAD;
+
+
+/* background color schema */
+@define-color color0 @nord10;
+@define-color color1 @nord11;
+@define-color color2 @nord12;
+@define-color color3 @nord13;
+@define-color color4 @nord14;
+@define-color color5 @nord15;
+@define-color color6 @nord6;
+@define-color color7 @nord7;
+@define-color color8 @nord8;
+@define-color color9 @nord9;
+
+
+@define-color foreground @nord4;
+@define-color background @nord0;
+@define-color cursor @nord5;
+@define-color focused @nord15;
+@define-color urgent @nord13;
+@define-color critical @nord11;
+@define-color warning @nord13;
+
+/* End of file nord.xresources */

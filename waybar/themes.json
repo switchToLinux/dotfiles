@@ -1,0 +1,83 @@
+[
+    {
+        "name": "TOP defo",
+        "config": "TOP-defo.json",
+        "style": "style_defo.css",
+        "color": "auto_defo.css",
+        "scripts": [
+            "auto_color.sh"
+        ]
+    },
+    {
+        "name": "TOP default",
+        "config": "TOP-default.json",
+        "style": "style_default.css"
+    },
+    {
+        "name": "TOP nord",
+        "config": "TOP-nord.json",
+        "style": "style_nord.css",
+        "color": "auto_nord.css",
+        "scripts": [
+            "auto_color.sh"
+        ]
+    },
+    {
+        "name": "TOP sejjy's mechabar",
+        "config": "TOP-sejjy-mechabar.json",
+        "style": "style_sejjy-mechabar.css",
+        "desc":"modified from https://github.com/sejjy/mechabar"
+    },
+    {
+        "name": "TOP Anik's super waybar",
+        "config": "TOP-anik-super-waybar.json",
+        "style": "style_anik-super-waybar.css",
+        "desc":"modified from https://github.com/Anik200/dotfiles"
+    },
+    {
+        "name": "TOP cxOrz's waybar",
+        "config": "TOP-cxOrz.json",
+        "style": "style_cxOrz.css",
+        "desc":"modified from https://github.com/cxOrz/dotfiles-hyprland"
+    },
+    {
+        "name": "TOP Mubin's Gruvboxed",
+        "config": "TOP-gruvboxed.json",
+        "style": "style_gruvboxed.css",
+        "desc": "modified from https://github.com/MubinMuhammad/MinimalSwayFX/tree/main/waybar"
+    },
+    {
+        "name": "TOP Whiteshadow's elifouts",
+        "config": "TOP-elifouts.json",
+        "style": "style_elifouts.css",
+        "desc": "modified from https://github.com/elifouts/Dotfiles"
+    },
+    {
+        "name": "DN-debug's waybar",
+        "config": "TOP-DN-debug.json",
+        "style": "style_DN-debug.css",
+        "desc": "modified from URL_ADDRESS"
+    },
+    {
+        "name": "win10-like",
+        "config": "BOTTOM-win10-like.json",
+        "style": "style_win10-like.css",
+        "desc": "modified from https://github.com/TheFrankyDoll/win10-style-waybar"
+    },
+    {
+        "name": "Right-niksingh710's waybar",
+        "config": "Right-niksingh710.json",
+        "style": "style_niksingh710.css",
+        "color": "auto_niksingh710.css",
+        "scripts": [
+            "auto_color.sh"
+        ],
+        "desc":"modified from https://github.com/niksingh710/gdots"
+    },
+    {
+        "name": "LEFT_RIGHT-finem4n's waybar",
+        "config": "LEFT_RIGHT-finem4n.json",
+        "style": "style_finem4n.css",
+        "desc":"modified from https://github.com/finem4n/dotfiles/"
+    }
+]

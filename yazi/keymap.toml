@@ -19,4 +19,8 @@ prepend_keymap = [
   {on = ["g", "d"], run = "cd ~/Documents/", desc = "Go ~/Documents/"},
   {on = ["g", "D"], run = "cd ~/Downloads", desc = "Go ~/Downloads"},
   {on = ["g", "<Space>"], run = "cd --interactive", desc = "Jump interactively"},
+  {on = ["g", "b"], run = "cd /docs/bt01/", desc = "Go /docs/bt01"},
+  {on = ["g", "G"], run = "cd /apps/code/github/my/", desc = "Go /apps/code/github/my/"},
+  {on = ["g", "f"], run = "cd /film01/", desc = "Go /film01/"},
+  {on = ["g", "s"], run = "cd /video/movies/sources", desc = "Go /video/movies/sources"},
 ]

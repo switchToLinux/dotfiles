@@ -1,0 +1,269 @@
+/*fineman's styling*/
+
+/*IN CASE YOU FORGOR*/
+/*padding/margin: up right down left*/
+
+/*Colors*/
+
+/*Gruvbox Material*/
+@define-color bg_dim		#1b1b1b;
+@define-color bg0 		#282828;
+@define-color bg1 		#32302f;
+@define-color bg3 		#45403d;
+@define-color bg_diff_red	#402120;
+@define-color bg_visual_red 	#4c3432;
+@define-color bg_diff_blue 	#0e363e;
+@define-color fg0		#d4be98;
+@define-color red		#ea6962;
+@define-color orange		#e78a4e;
+@define-color green		#a9b665;
+@define-color blue		#7daea3;
+@define-color gray2		#a89984;
+
+/*kanagawa.nvim*/
+@define-color fujiWhite		#DCD7BA;
+@define-color sumiInk1		#1F1F28;
+@define-color boatYellow2	#C0A36E;
+@define-color surimiOrange	#FFA066;
+
+
+* {
+	all: unset;
+	font-family: "Symbols Nerd Font Mono", "JetBrains Mono";
+	font-size: 14px;
+}
+
+tooltip {
+	background: @bg0;
+	border: 2px solid @orange;
+}
+
+tooltip label {
+	color: @fg0;
+}
+
+window#waybar {
+	background-color: @sumiInk1;
+}
+
+#idle_inhibitor { 
+	padding: 3px 0px; 
+	color: @fg0;
+	/*box-shadow: inset -3px 0px;*/
+}
+
+#idle_inhibitor.activated { 
+	background-color: @fg0;
+	color: @bg0;
+	/*box-shadow: inset -3px 0px;*/
+}
+
+#custom-mako {
+	padding: 3px 0px; 
+	/*margin: 4px 0px; */
+	background-color: @surimiOrange;
+	/*box-shadow: inset -3px 0px;*/
+}
+
+#privacy {
+	background-color: @red;
+	color: @bg0;
+	padding: 3px 8px;
+}
+
+#privacy.tooltip {
+	padding: 20px 8px;
+}
+
+/* sway/scratchpad */
+#scratchpad {
+	padding: 3px 0px; 
+	background-color: @gray2;
+	color: @bg0;
+}
+
+/* sway/workspaces */
+#workspaces button {
+	color: @fg0;
+	padding: 0px 0px 2px 0px;
+}
+
+#workspaces button:hover, #workspaces button:hover.focused, #workspaces button:hover.visible, #workspaces button:hover.urgent, #workspaces button:hover.urgent.visible {
+	color: @fg0;
+	background: @bg_diff_blue;
+}
+
+#workspaces button.visible {
+	background-color: @bg3;
+}
+
+#workspaces button.focused {
+	background: @blue;
+	color: @bg0;
+}
+
+#workspaces button.urgent {
+	background-color: @red;
+	color: @bg0;
+}
+
+#workspaces button.visible.urgent{
+	background-color: @bg_diff_red;
+	color: @fg0;
+}
+
+#workspaces button.urgent.focused {
+	background: @blue;
+	color: @bg0;
+}
+
+/* sway/mode */
+#mode {
+	padding: 3px 0px;
+	margin: 3px 0px;
+	background-color: @orange;
+	color: @bg0;
+}
+
+/* sway/window */
+#window {
+	padding: 10px 8px;
+	margin: 10px 0px;
+	color: @fg0;
+}
+
+#tray {
+	padding: 4px 0px;
+	color: @fg0;
+}
+
+#tray menu {
+	background-color: @bg0;
+	border: 1px solid @bg_dim;
+}
+
+#tray menuitem, #tray menuitem:hover {
+	margin: 1px 2px;
+	padding: 1px 2px;
+}
+
+#tray menuitem:hover {
+	background-color: @bg3;
+}
+
+#tray menuitem.inactive {
+	
+	background-color: @bg3;
+}
+
+#tray > .needs-attention {
+	background-color: @red;
+}
+
+/* pulseaudio */
+#pulseaudio{
+	padding: 1px 0px;
+	margin: 1px 0px;
+	color: @fg0;
+}
+
+#pulseaudio.bluetooth {
+	background-color: @blue;
+}
+
+/* pulseaudio#source */
+#pulseaudio.source { 
+	padding: 2px 0px;
+	background-color: @red;
+	color: @bg_dim;
+}
+
+#pulseaudio.source.source-muted {
+	background-color: @bg_dim;
+	color: @fg0;
+}
+
+#network {
+	padding: 2px 0px;
+	color: @fg0;
+}
+
+#network.disconnected {
+	background-color: @red;
+	color: @bg_dim;
+}
+
+#network.disabled {
+	background-color: @fg0;
+	color: @bg_dim;
+}
+
+#bluetooth {
+	padding: 1px 0px;
+	color: @fg0;
+}
+
+#bluetooth.connected {
+	color: @blue;
+}
+
+#cpu {
+	padding: 1px 0px;
+	color: @fg0;
+}
+
+#memory {
+	padding: 1px 0px;
+	color: @fg0;
+}
+
+#temperature{
+	padding: 2px 0px;
+	margin: 2px 0px;
+	color: @fg0;
+}
+
+#temperature.critical {
+	background-color: @red;
+	color: @bg_dim;
+}
+
+#backlight {
+	padding: 1px 0px;
+	font-size: 18px;
+	color: @fg0;
+}
+
+#language {
+	color: @fujiWhite;
+}
+
+#keyboard-state {
+	color: @fujiWhite;
+}
+
+#keyboard-state label.locked {
+	background-color: @fg0;
+}
+
+#battery {
+	padding: 2px 0px 4px 0px;
+	color: @fg0;
+}
+
+#battery.warning:not(.charging) {
+	background-color: @orange;
+	color: @bg_dim;
+}
+
+#battery.critical:not(.charging) {
+	background-color: @red;
+	color: @bg_dim;
+}
+
+#clock { 
+	background-color: @fg0;
+	color: @bg_dim;
+	padding: 2px 0px 0px 0px;
+	font-size: 16px;
+}

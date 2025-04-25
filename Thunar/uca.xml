@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+	<action>
+		<icon>utilities-terminal</icon>
+		<name>在此打开终端</name>
+		<submenu></submenu>
+		<unique-id>1692607255035401-1</unique-id>
+		<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+		<description>在当前目录下打开Terminal终端</description>
+		<range></range>
+		<patterns>*</patterns>
+			<startup-notify />
+			<directories />
+	</action>
+	<action>
+		<icon>utilities-ranger</icon>
+		<name>在此打开Ranger</name>
+		<submenu></submenu>
+		<unique-id>1692607255035401-2</unique-id>
+		<command>exo-open --working-directory %f --launch TerminalEmulator /usr/bin/ranger</command>
+		<description>在当前目录下打开Ranger浏览</description>
+		<range></range>
+		<patterns>*</patterns>
+		<startup-notify />
+		<directories />
+	</action>
+</actions>

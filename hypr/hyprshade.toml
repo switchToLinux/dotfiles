@@ -1,0 +1,8 @@
+[[shades]]
+name = "blue-light-filter-50"  # blue-light-filter-50 /vibrance
+default = true  # will be activated when no other shader is scheduled
+
+[[shades]]
+name = "blue-light-filter-75"
+start_time = 19:00:00
+end_time = 06:00:00   # optional if more than one shader has start_time

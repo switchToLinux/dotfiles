@@ -1,0 +1,35 @@
+{
+    "include": [
+        "$HOME/.config/waybar/modules/modules.json",
+        "$HOME/.config/waybar/modules/modules-custom.json",
+        "$HOME/.config/waybar/modules/modules-group.json",
+        "$HOME/.config/waybar/modules/modules-autogen.json"
+    ],
+    "layer": "top",
+    "position": "top",
+    "height": 14,
+    "modules-left": [
+        "custom/logo",
+        "custom/arrow14",
+        "hyprland/workspaces",
+        "custom/arrow10",
+        "hyprland/window",
+        "custom/arrow11"
+    ],
+    "modules-center": [
+        "custom/arrow5",
+        "wlr/taskbar",
+        "custom/arrow13"
+    ],
+    "modules-right": [
+        "custom/arrow9",
+        "group/media",
+        "custom/arrow4",
+        "group/tools",
+        "custom/arrow8",
+        "group/date",
+        "custom/arrow1",
+        "custom/power"
+    ],
+    "reload_style_on_change": true
+}
