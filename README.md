@@ -128,7 +128,9 @@ chmod +x wconfig
 
 <details>
 <summary>hyprland-点击展开</summary>
+
 ![hyprland](previews/hyprland_demo1.jpeg)
+
 </details>
 
 
