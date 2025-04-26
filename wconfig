@@ -73,15 +73,18 @@ declare -A package_set=(
     ["cliphist"]="cliphist wl-clipboard"
     ["terminal"]="xfce4-terminal kitty zsh tmux"
     ["bluetooth"]="blueman"
+    ["brightnessctl"]="brightnessctl"
     ["browser"]="firefox"
     ["input_method"]="fcitx5 fcitx5-chinese-addons fcitx5-gtk fcitx5-configtool fcitx5-qt"
     ["media_player"]="mpv mpv-mpris ffmpeg"
     ["password_manager"]="keepassxc"
     ["screen_shot"]="flameshot grim slurp"
+    ["devel_tools"]="base-devel code"
     ["video_recorder"]="wf-recorder"
-    ["audio_processor"]="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber qpwgraph playerctl"
-    ["fonts"]="ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk powerline"
-    ["utils"]="jq yq yt-dlp network-manager-applet"
+    ["network_manager"]="networkmanager network-manager-applet"
+    ["audio_processor"]="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber qpwgraph playerctl pavucontrol"
+    ["fonts"]="ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk powerline noto-fonts-emoji"
+    ["utils"]="jq yq yt-dlp unzip unarchiver"
 )
 
 get_pack_cmd() {
@@ -152,7 +155,7 @@ install_hyprland() {
     # 检查依赖软件是否安装
     for pack_name in "${!package_set[@]}"; do
         LOG "DEBUG: installing module_name: [${pack_name}] ,packages: ${package_set[${pack_name}]}"
-        ${pkg_cmd} ${package_set[${pack_name}]} >> ${ERR_FILE} 2>&1
+        ${pkg_cmd} ${package_set[${pack_name}]}
         # 安装错误退出
         [[ "$?" -ne "0" ]] && ERR "Install ${pack_name} failed" && return 1
         LOG "Install ${pack_name} success"
@@ -216,15 +219,124 @@ config_wallpaper() {
     notify "config wallpaper success"
 }
 
+install_video_driver() {
+    LOG "install video driver"
+    nvidia_driver="nvidia-dkms nvidia-utils lib32-nvidia-utils"
+    # 检查是否安装了 nvidia 显卡设备
+    if lspci|grep -i nvidia|grep -i vga ; then
+        LOG "Detected NVIDIA GPU, installing drivers..."
+        ${pkg_cmd} ${nvidia_driver} >> ${ERR_FILE} 2>&1
+        [[ "$?" -ne "0" ]] && ERR "Install nvidia driver failed" && return 1
+
+        # 配置 nvidia 到 grub
+        if [ -f /etc/default/grub ]; then
+            sudo sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT=/ s/"$/ nvidia-drm.modeset=1 nvidia_drm.fbdev=1"/' /etc/default/grub
+            sudo grub-mkconfig -o /boot/grub/grub.cfg
+            LOG "Config nvidia to grub success"
+        fi
+        LOG "Install nvidia driver success"
+        notify "Install nvidia driver success"
+        return 0
+    fi
+    LOG "No NVIDIA GPU detected, skipping driver installation."
+}
+
+install_paru() {
+    LOG "install paru"
+    LOG "install paru"
+    paru_url="https://aur.archlinux.org/paru.git"
+    paru_dir="/tmp/paru"
+    [[ -d "${paru_dir}" ]] && rm -rf ${paru_dir}
+    git clone --depth=1 ${paru_url}  ${paru_dir}  >> ${ERR_FILE} 2>&1
+    [[ "$?" -ne "0" ]] && ERR "git clone ${paru_url} failed" && return 1
+    cd ${paru_dir}
+    [[ "$?" -ne "0" ]] && ERR "cd ${paru_dir} failed" && return 1
+    makepkg -si
+    [[ "$?" -ne "0" ]] && ERR "makepkg -si failed" && return 1
+    LOG "Install paru success"
+    notify "Install paru success"
+}
+
+install_yay() {
+    LOG "install yay"
+    aur_url="https://aur.archlinux.org/yay.git"
+    aur_dir="/tmp/yay"
+    [[ -d "${aur_dir}" ]] && rm -rf ${aur_dir}
+    git clone --depth=1 ${aur_url}  ${aur_dir}  >> ${ERR_FILE} 2>&1
+    [[ "$?" -ne "0" ]] && ERR "git clone ${aur_url} failed" && return 1
+    cd ${aur_dir}
+    [[ "$?" -ne "0" ]] && ERR "cd ${aur_dir} failed" && return 1
+    makepkg -si
+    [[ "$?" -ne "0" ]] && ERR "makepkg -si failed" && return 1
+    LOG "Install aur success"
+    notify "Install aur success"
+}
+
+install_aur() {
+    LOG "install aur"
+    # 选择 install_paru 或者 install_yay
+    {
+        echo "1. install_paru"
+        echo "2. install_yay"
+    } | ${MENU_CMD} | awk -F'.' '{printf $1}' | \
+    case "${choice}" in
+        1)
+            install_paru
+            ;;
+        2)
+            install_yay
+            ;;
+        *)
+            echo "Invalid choice. Please try again."
+            ;;
+    esac
+    [[ "$?" -ne "0" ]] && ERR "Install aur failed" && return 1
+    LOG "Install aur success"
+    notify "Install aur success"
+}
+
+install_fonts() {
+    # Download JetBrainsMonoNerdFonts
+    LOG "install fonts"
+    fonts_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.tar.xz"
+    download_folder="/tmp/JetBrainsMono"
+    [[ ! -d "${download_folder}" ]] && mkdir ${download_folder}
+    curl -o $download_folder/JetBrainsMono.tar.xz -L "$fonts_url"
+
+    [[ "$?" -ne "0" ]] && ERR "Download fonts failed" && return 1
+    mkdir -p ~/.local/share/fonts/JetBrainsMonoNerd
+    tar -Jxf $download_folder/JetBrainsMono.tar.xz -C ~/.local/share/fonts/JetBrainsMonoNerd
+    [[ "$?" -ne "0" ]] && ERR "Extract fonts failed" && return 1
+    LOG "Install fonts success"
+    notify "Install fonts success"
+}
+
+enable_de() {
+    LOG "enable sddm"
+    sudo systemctl set-default graphical.target 
+    sudo systemctl enable --now sddm
+    sudo systemctl enable --now bluetooth.service
+    sudo systemctl enable --now NetworkManager.service
+
+    [[ "$?" -ne "0" ]] && ERR "Enable sddm failed" && return 1
+    LOG "Enable sddm success"
+    notify "Enable sddm success"
+}
 # 主菜单
 main_menu() {
+    echo "0. 全自动安装"
+    echo "-------------------------"
     echo "1. 安装 hyprland"
     echo "2. 配置 hyprpaper"
     echo "3. 配置 sddm主题"
     echo "4. 配置 grub主题"
-    echo "0. 全自动安装"
-    echo "s. 启动桌面环境"
+    echo "-------------------------"
+    echo "a. 安装 aur"
+    echo "d. 安装显卡驱动"
+    echo "f. 安装字体"
+    echo "s. 启动SDDM桌面环境"
     echo "w. 配置桌面壁纸"
+    echo "-------------------------"
     echo "q. 退出"
 }
 
@@ -236,34 +348,18 @@ do_main_menu() {
     local choice
     choice=$(show_main_menu)
     case "${choice}" in
-        1)
-            install_hyprland
-            ;;
-        2)
-            config_hyprpaper
-            ;;
-        3)
-            config_sddm
-            ;;
-        4)
-            config_grub
-            ;;
-        0)
-            auto_install
-            ;;
-        s)
-            sudo systemctl set-default graphical.target
-            sudo systemctl enable --now sddm
-            ;;
-        q|"")
-            return 0
-            ;;
-        w)
-            config_wallpaper
-            ;;
-        *)
-            echo "Invalid choice. Please try again."
-            ;;
+        1)      install_hyprland  ;;
+        2)      config_hyprpaper  ;;
+        3)      config_sddm           ;;
+        4)      config_grub          ;;
+        0)      auto_install        ;;
+        d)      install_video_driver  ;;
+        f)       install_fonts      ;;
+        s)      enable_de     ;;
+        q|"") return 0  ;;
+        w)      config_wallpaper    ;;
+        a)      install_aur     ;;
+        *)      echo "Invalid choice. Please try again."    ;;
     esac
 }
 

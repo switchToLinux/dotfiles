@@ -65,9 +65,8 @@
     "custom/recoder": {
         "format": "󰍫",
         "format-alt":"󰃾",
-        "tooltip-format": "Left Click: Start Recording\nRight Click: Stop Recording",
-        "on-click": "notify-send 'Recording Started' && wf-recorder -g \"$(slurp)\" -f ~/Videos/area_$(date +%Y%m%d_%H%M%S).mp4 ",
-        "on-click-right": "pidof wf-recorder && pkill wf-recorder && notify-send 'Recording Stopped'"
+        "tooltip-format": "Left Click: Start/Stop Recording",
+        "on-click": "~/.config/waybar/scripts/toggle_video_recorder.sh"
     },
 
 

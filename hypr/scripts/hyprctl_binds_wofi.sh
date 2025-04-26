@@ -8,6 +8,8 @@ show_binds() {
             modifier = "MOD+"
         } else if ($2 == 65) {
             modifier = "MOD+SHIFT+"
+        } else {
+            modifier = ""
         }
     }
     
@@ -34,7 +36,7 @@ show_binds() {
         printf("%-30s %-s\n", hotkey, cmd)
     }' | grep -vE 'XF86|mouse|MOD\+[0-9]|MOD\+SHIFT\+[0-9]' | \
     # 使用 wofi 进行显示，支持排序、搜索
-    wofi --dmenu --prompt "Hyprland 快捷键绑定" --sort-order alphabetical
+    wofi -W 60% --location "center" --dmenu --prompt "Hyprland 快捷键绑定" --sort-order alphabetical
 }
 
 show_binds
