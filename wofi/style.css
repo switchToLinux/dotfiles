@@ -1,6 +1,9 @@
 /* The name of the window itself */
+* {
+    font-family: "JetBrains Mono", monospace;
+}
 #window {
-    background-color: rgba(24, 24, 24, 0.6);
+    background-color: rgba(24, 24, 24, 0.95);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     border-radius: 1rem;
     font-size: 1.2rem;
@@ -13,10 +16,10 @@
 }
 
 #window #outer-box #input {
-    background-color: rgba(24, 24, 24, 0.6);
+    background-color: rgba(24, 24, 24, 0.95);
     color: #f2f2f2;
     border: none;
-    border-bottom: 1px solid rgba(24, 24, 24, 0.2);
+    border-bottom: 1px solid rgba(24, 24, 24, 0.8);
     padding: 0.8rem 1rem;
     font-size: 1.5rem;
     border-radius: 1rem 1rem 0 0;
@@ -41,11 +44,11 @@
 }
 
 #window #outer-box #scroll #inner-box #entry {
-    color: #fff;
-    background-color: rgba(24, 24, 24, 0.1);
-    padding: 0.6rem 1rem;
     /* The name of all images in entries displayed in image mode */
     /* The name of all the text in entries */
+    color: #fff;
+    padding: 0.6rem 1rem;
+    background-color: rgba(24, 24, 24, 0.1);
 }
 
 #window #outer-box #scroll #inner-box #entry #img {

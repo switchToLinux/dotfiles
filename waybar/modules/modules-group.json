@@ -28,7 +28,7 @@
             "custom/media",
             "custom/music",
             "custom/sep",
-            "pulseaudio/slider",
+            // "pulseaudio/slider",
             "pulseaudio"
         ]
     },

@@ -1,6 +1,6 @@
 {
     "custom/power": {
-        "format": "",
+        "format": "⏻",
         "tooltip": false,
         "on-click": "~/.config/hypr/scripts/show_power_menu.sh"
     },
@@ -17,8 +17,7 @@
         }
     },
     "custom/logo": {
-        "format": "",
-        "format-alt": "󰍲",
+        "format": "󰍲",
         "tooltip": false,
         "on-click": "wofi"
     },

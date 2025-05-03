@@ -7,8 +7,8 @@
 #     1. 增加 env_file 记录本地文件目录
 # Variables
 mDIR="$HOME/音乐"
-env_file="/tmp/local_music.list"
-online_music_file="/tmp/online_music.list"
+env_file="$HOME/.music_local.list"
+online_music_file="$HOME/.music_online.list"
 SEP="|"  # title与 url 的分隔符
 
 declare -A online_music
@@ -46,6 +46,8 @@ start_play_music() {
 get_music_dir() {
   if [ -f "$env_file" ]; then
       selected_dir=$( (cat "$env_file" && echo "..." ) | wofi -dmenu -p "Select Music Directory" --sort-order alphabetical)
+  else
+    selected_dir="..."
   fi
   if [[ "$selected_dir" == "..." ]] ; then 
     if command -v zenity &>/dev/null; then   # 通过对话框设置选择新目录
@@ -68,7 +70,9 @@ populate_local_music() {
   while IFS= read -r file; do
     local_music+=("$file")
     filenames+=("$(basename "$file")")
-  done < <(find -L "$selected_dir" -type f \( -iname "*.mp3" -o -iname "*.flac" -o -iname "*.wav" -o -iname "*.ogg" -o -iname "*.mp4" \))
+  done < <(find -L "$selected_dir" -type f \( -iname "*.mp3" -o -iname "*.flac" -o -iname "*.ape" \
+      -o -iname "*.wma" -o -iname "*.wav" -o -iname "*.ogg" -o -iname "*.mp4" -o -iname "*.dts" \
+      -o -iname "*.mkv" -o -iname "*.mov" \))
 }
 
 # Function for displaying notifications
@@ -116,18 +120,26 @@ play_online_music() {
   if [[ -f "$online_music_file" ]] ; then
     # 读取文件并恢复数组
     while IFS="${SEP}" read -r key value; do
+      [[ "$key" =~ ^#.*$ ]] && continue # 跳过注释行
+      [[ "$key" =~ ^\s*$ ]] && continue # 跳过空行
       [[ -z "$key" || -z "$value" ]] && continue
+
       online_music["$key"]="$value"
     done <  $online_music_file
   else
     online_music=$online_music_list
     for key in "${!online_music_list[@]}"; do
+      # 过滤掉空行和注释行
+      [[ "$key" =~ ^#.*$ ]] && continue # 跳过注释行
+      [[ "$key" =~ ^\s*$ ]] && continue # 跳过空行
+      [[ -z "$key" || -z "${online_music_list["$key"]}" ]] && continue
+
       online_music["$key"]=${online_music_list["$key"]}
       echo ${key}${SEP}${online_music_list["$key"]} >> $online_music_file
     done
   fi
 
-  choice=$( for online in "${!online_music[@]}"; do  echo "$online" ; done | wofi --dmenu --sort-order alphabetical -p "add playlist format: title|link ")
+  choice=$(for online in "${!online_music[@]}"; do  echo "$online" ; done | wofi --dmenu --sort-order alphabetical -p "add playlist: title|link ")
   if [ -z "$choice" ]; then
     exit 1
   fi
