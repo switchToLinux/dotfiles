@@ -27,8 +27,6 @@
         "modules": [
             "custom/media",
             "custom/music",
-            "custom/sep",
-            // "pulseaudio/slider",
             "pulseaudio"
         ]
     },
@@ -56,15 +54,11 @@
         "modules": [
             "custom/tools",
             "custom/cliphist",
-            "custom/sep",
             "custom/recoder",
-            "custom/sep",
             "bluetooth",
-            "custom/sep",
             "battery",
-            "custom/sep",
             "custom/hyprshade",
-            "custom/sep",
+            "custom/showmethekey",
             "tray"
         ]
     }

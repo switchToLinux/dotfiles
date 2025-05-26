@@ -1,41 +1,6 @@
-/* Each module */
-#battery,
-#clock,
-#cpu,
-#language,
-#memory,
-#mode,
-#network,
-#pulseaudio,
-#temperature,
-#tray,
-#backlight,
-#idle_inhibitor,
-#disk,
-#user,
-#workspaces button,
-#mpd,
-#mpris,
-#taskbar,
-#taskbar button,
-#custom-power,
-#custom-logo,
-#custom-cliphist,
-#custom-tools,
-#custom-media,
-#custom-drawer,
-#custom-recoder,
-#custom-hyprshade,
-#custom-nope,
-#custom-expand {
-    padding-left: 6pt;
-    padding-right: 6pt;
-}
 
 #custom-sep {
     font-size: 1px;
-    padding-left: 1px;
-    padding-right: 1px;
 }
 
 /* Each critical module */
@@ -61,18 +26,18 @@
 }
 
 #workspaces button {
-    /* border-radius: 8px; */
-    /* border:1px solid @background; */
-    /* box-shadow: 0px 0px 4px rgba(0, 0, 0, .8); */
     transition: all .3s ease;
 }
 
 #workspaces button.active {
     color: @focused;
-    border-radius: 12px;
     border: 1px solid @focused;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, .8);
     transition: all .3s ease;
+}
+
+#clock {
+    font-family:'WenQuanYi Zen Hei Mono'
 }
 
 #pulseaudio-slider slider {
@@ -96,19 +61,46 @@
 }
 
 #hardwares {
-    padding: 0px 5px;
     transition: all .3s ease;
 }
 
 #custom-expand {
-    padding: 0px 5px;
     color: alpha(@foreground, .9);
     text-shadow: 0px 0px 2px rgba(0, 0, 0, .7);
     transition: all .4s ease;
 }
 
 #custom-expand:hover {
-    padding: 0px 5px;
     color: alpha(@foreground, .5);
     text-shadow: 0px 0px 2px rgba(15, 15, 15, .9);
 }
+
+.recorder-stop {
+    color: @foreground;
+    transition: all .3s ease;
+}
+
+.recording {
+    color: @warning;
+    transition: all .3s ease;
+}
+
+/*cffi实现的歌词显示标签 */
+#waylyrics {
+    color: @foreground;
+    background-color: transparent;
+    opacity: 0.5;
+    transition: all 0.5s ease;
+}
+
+#waylyrics.playing {
+    color: @urgent;
+    opacity: 1;
+    background-color: transparent;
+    transition: all 0.5s ease;
+}
+#waylyrics.paused {
+    color: @warning;
+    opacity: 0.5;
+}
+

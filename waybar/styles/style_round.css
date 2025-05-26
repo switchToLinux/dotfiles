@@ -1,0 +1,75 @@
+/* Reset all styles */
+* {
+    border: none;
+    border-radius: 16pt;
+    min-height: 0;
+    margin: 0;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    font-size: 18pt;
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-weight: bold;
+}
+
+/*自动根据配置引入正确的颜色搭配方案*/
+@import "../waybar/color.css";
+
+/* 引入 通用的样式 */
+@import "./styles/com_style.css";
+
+/* 自动生成的颜色配置方案 */
+@import "../waybar/styles/autogen_color.css";
+
+label {
+    border-radius: 16pt;
+    padding: 0pt 16pt;
+    transition: all.3s ease;
+}
+button {
+    padding: 2pt;
+}
+
+label:focus {
+    background-color: @focused;
+}
+
+#taskbar {
+    padding: 0pt 16pt;
+}
+#taskbar button  {
+    padding: 0pt 6pt;
+}
+window#waybar {
+    background-color: transparent;
+    color: @forground;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+*:hover {
+    color: @focused;
+    transition: all .3s ease;
+}
+
+#workspaces button.active {
+    color: @focused;
+    transition: all .3s ease;
+}
+
+
+#workspaces button.urgent {
+    background-color: @urgent;
+}
+
+#waylyrics {
+    font-size: 10pt;
+}
+
+#waylyrics.playing {
+    font-size: 14pt;
+}
+
+#waylyrics.paused {
+    font-size: 10pt;
+}

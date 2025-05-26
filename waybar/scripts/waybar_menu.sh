@@ -32,4 +32,11 @@ case "$str_action" in
 esac
 
 # 重新加载 Waybar
-killall -SIGUSR2 waybar
+if pidof waybar >/dev/null 2>&1; then
+    killall -SIGUSR2 waybar
+else
+    nohup waybar >/dev/null 2>&1 &
+fi
+
+
+

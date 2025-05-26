@@ -144,6 +144,23 @@ module 分类：
 - **布局搭配方案配置**： 在 configs 目录新创建一个布局配置文件。
 - **配置主题信息**： 在 themes.json 配置自己创建的主题信息。
 
+### themes.json配置说明
+
+```json
+[
+    {
+        "name": "TOP round",  // 主题名称，必须唯一
+        "config": "TOP-defo.json", // 布局配置文件
+        "style": "style_round.css", // 样式配置文件
+        "color": "auto_default.css", // 可选：支持自动切换颜色方案的默认颜色方案，需要以 auto_ 开头的颜色方案文件。
+        "arrow": "space space",  // 可选： 强制分隔符设定，配置此参数后，无论在菜单中选择那种分隔符都不会生效。
+        "scripts": [ // 配置需要执行的自定义脚本，这里配置了自动切换颜色脚本。
+            "auto_color.sh"
+        ]
+    }
+]
+
+```
 
 ## 配置参考资料
 

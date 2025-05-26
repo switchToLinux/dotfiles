@@ -24,8 +24,6 @@
     font-family: "Segoe UI", "Ubuntu";
     font-weight: 600;
     font-size: 12.7px;
-
-
 }
 
 window#waybar {
@@ -46,7 +44,8 @@ tooltip label {
     color: @content_main;
 }
 
-#custom-logo {
+#custom-logo,
+#custom-power {
     font-family: "JetBrainsMono Nerd Font";
     font-size: 24px;
     padding-left: 12px;

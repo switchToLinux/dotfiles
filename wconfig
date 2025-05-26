@@ -63,7 +63,7 @@ check_depends() {
 # 默认支持的发行版： arch 系列
 declare -A package_set=(
   ["display_manager"]="sddm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg"
-  ["compositor"]="hyprland hyprutils hyprlock hyprcursor hyprpaper hypridle xdg-desktop-portal-hyprland"
+  ["compositor"]="hyprland hyprutils hyprlock hyprcursor hyprpaper hypridle xdg-desktop-portal xdg-desktop-portal-hyprland"
   ["bar"]="waybar"
   ["launcher_menu"]="wofi"
   ["notification"]="mako dunst"
@@ -81,7 +81,7 @@ declare -A package_set=(
   ["devel_tools"]="base-devel code"
   ["video_recorder"]="wf-recorder"
   ["network_manager"]="networkmanager network-manager-applet"
-  ["audio_processor"]="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber qpwgraph playerctl pavucontrol"
+  ["audio_processor"]="pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber qpwgraph playerctl pavucontrol pamixer"
   ["fonts"]="ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk powerline noto-fonts-emoji"
   ["theme_config"]="qt5ct qt6ct nwg-look"
   ["utils"]="jq yq yt-dlp unzip unarchiver"
@@ -368,12 +368,12 @@ install_fonts() {
   notify "Install fonts success"
 }
 
-enable_de() {
+enable_dm() {
   LOG "enable sddm"
   sudo systemctl set-default graphical.target
-  sudo systemctl enable --now sddm
   sudo systemctl enable --now bluetooth.service
   sudo systemctl enable --now NetworkManager.service
+  sudo systemctl enable --now sddm
 
   [[ "$?" -ne "0" ]] && ERR "Enable sddm failed" && return 1
   LOG "Enable sddm success"
@@ -385,8 +385,6 @@ main_menu() {
   echo "-------------------------"
   echo "1. install hyprland"
   echo "2. config hyprland"
-  # echo "3. config sddm theme"
-  # echo "4. config grub theme"
   echo "-------------------------"
   echo "a. install aur"
   echo "d. install video driver"
@@ -413,7 +411,7 @@ do_main_menu() {
   0) auto_install ;;
   d) install_video_driver ;;
   f) install_fonts ;;
-  s) enable_de ;;
+  s) enable_dm ;;
   t) theme_config ;;
   q | "") return 0 ;;
   w) config_wallpaper ;;

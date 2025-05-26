@@ -6,12 +6,16 @@
 # 个人更新记录
 #     1. 增加 env_file 记录本地文件目录
 # Variables
-mDIR="$HOME/音乐"
 env_file="$HOME/.music_local.list"
 online_music_file="$HOME/.music_online.list"
+online_iptv_file="$HOME/.iptv_online.list"
+online_radio_file="$HOME/.radio_online.list"
+pid_file="/tmp/play_music_mpv.pid"
+
+
 SEP="|"  # title与 url 的分隔符
 
-declare -A online_music
+declare -A online_info
 # Online Stations. Edit as required
 declare -A online_music_list=(
   ["FM - Easy Rock 96.3 📻🎶"]="https://radio-stations-philippines.com/easy-rock"
@@ -33,19 +37,41 @@ declare -A online_music_list=(
   ["YT - Relaxing Piano Jazz Music 🎹🎶"]="https://youtu.be/85UEqRat6E4?si=jXQL1Yp2VP_G6NSn"
 )
 
+# Function for displaying notifications
+notification() {
+  notify-send  "Now Playing:" "$@"
+}
+
 stop_music() {
   # Check if music is already playing
-  ps -ef | grep mpv | grep -v mpvpaper | grep 'vid=no' | awk '{ print $2 }' | xargs kill
+  # ps -ef | grep mpv | grep -v mpvpaper | awk '{ print $2 }' | xargs kill
+  if [ -f "$pid_file" ]; then
+    pid=$(cat "$pid_file")
+    if [ -z "$pid" ]; then
+      rm -f "$pid_file"
+      return
+    else
+      kill "$pid"
+      rm -f "$pid_file"
+    fi
+  fi
   sleep 1
 }
 start_play_music() {
   stop_music
-  mpv --shuffle --loop-playlist --vid=no "$@"
+  nohup mpv --shuffle --loop-playlist --vid=no "$@" >/dev/null 2>&1 &
+  echo "$!" > "$pid_file"
+}
+
+start_play_video() {
+  stop_music
+  nohup mpv --loop-playlist "$@" >/dev/null 2>&1 &
+  echo "$!" > "$pid_file"
 }
 
 get_music_dir() {
   if [ -f "$env_file" ]; then
-      selected_dir=$( (cat "$env_file" && echo "..." ) | wofi -dmenu -p "Select Music Directory" --sort-order alphabetical)
+      selected_dir=$( (cat "$env_file" && echo "..." ) | wofi --dmenu -p "Select Music Directory" --sort-order alphabetical)
   else
     selected_dir="..."
   fi
@@ -75,10 +101,6 @@ populate_local_music() {
       -o -iname "*.mkv" -o -iname "*.mov" \))
 }
 
-# Function for displaying notifications
-notification() {
-  notify-send  "Now Playing:" "$@"
-}
 
 # Main function for playing local music
 play_local_music() {
@@ -97,8 +119,8 @@ play_local_music() {
     if [ "${filenames[$i]}" = "$choice" ]; then
       stop_music
       notification "$choice"
-      mpv --playlist-start="$i" --loop-playlist --vid=no  "${local_music[@]}"
-
+      nohup mpv --playlist-start="$i" --loop-playlist --vid=no  "${local_music[@]}" >/dev/null 2>&1 &
+      echo "$!" > "$pid_file"
       break
     fi
   done
@@ -110,44 +132,34 @@ shuffle_local_music() {
   
   selected_dir=$(get_music_dir)
   [[ -z "$selected_dir" ]] && notification "please select a valid directory, first" && return 1
-  # Play music in $mDIR on shuffle
   start_play_music "$selected_dir"
 }
 
-
-# Main function for playing online music
-play_online_music() {
-  if [[ -f "$online_music_file" ]] ; then
+# 播放在线资源模板函数
+# 参数:
+#   $1: online_config_file 资源配置列表文件(内容格式:title|url)
+play_online_audio() {
+  local online_config_file="$1"
+  if [[ -f "$online_config_file" ]] ; then
     # 读取文件并恢复数组
     while IFS="${SEP}" read -r key value; do
       [[ "$key" =~ ^#.*$ ]] && continue # 跳过注释行
       [[ "$key" =~ ^\s*$ ]] && continue # 跳过空行
       [[ -z "$key" || -z "$value" ]] && continue
 
-      online_music["$key"]="$value"
-    done <  $online_music_file
-  else
-    online_music=$online_music_list
-    for key in "${!online_music_list[@]}"; do
-      # 过滤掉空行和注释行
-      [[ "$key" =~ ^#.*$ ]] && continue # 跳过注释行
-      [[ "$key" =~ ^\s*$ ]] && continue # 跳过空行
-      [[ -z "$key" || -z "${online_music_list["$key"]}" ]] && continue
-
-      online_music["$key"]=${online_music_list["$key"]}
-      echo ${key}${SEP}${online_music_list["$key"]} >> $online_music_file
-    done
+      online_info["$key"]="$value"
+    done <  "$online_config_file"
   fi
 
-  choice=$(for online in "${!online_music[@]}"; do  echo "$online" ; done | wofi --dmenu --sort-order alphabetical -p "add playlist: title|link ")
+  choice=$(for online in "${!online_info[@]}"; do  echo "$online" ; done | wofi --dmenu --sort-order alphabetical -p "add playlist: title|link ")
   if [ -z "$choice" ]; then
     exit 1
   fi
-  link=${online_music["$choice"]}
+  link=${online_info["$choice"]}
   if [[ -z "$link" ]] ; then # 可能添加新链接
     IFS="$SEP"  read -r key value  <<< "$choice"
     if [[ ! -z "$key" && ! -z "$value" && "$value" =~ ^https: ]] ; then
-      echo "$key${SEP}${value}"  >> $online_music_file
+      echo "$key${SEP}${value}"  >> $online_config_file
       choice="$key"
       link="$value"
     fi
@@ -158,10 +170,13 @@ play_online_music() {
   start_play_music "$link"
 }
 
+
 show_menu() {
-  echo "1 播放在线音乐(Online Music)"
+  echo "1 随机本地音乐(Shuffle Local Music)"
   echo "2 播放本地音乐(Local Music)"
-  echo "3 随机本地音乐(Shuffle Local Music)"
+  echo "3 播放在线音乐(Online Music)"
+  echo "4 播放在线电台(Online Radio)"
+  echo "5 播放直播IPtv(Online IPtv)"
 }
 
 user_choice=$(show_menu| wofi --dmenu | cut -d" " -f1)
@@ -170,13 +185,19 @@ echo "User choice: $user_choice"
 
 case "$user_choice" in
   "1")
-    play_online_music
+    shuffle_local_music
     ;;
   "2")
     play_local_music
     ;;
   "3")
-    shuffle_local_music
+    play_online_audio "$online_music_file"
+    ;;
+  "4")
+    play_online_audio "$online_radio_file"
+    ;;
+  "5")
+    play_online_audio "$online_iptv_file"
     ;;
   *)
     ;;

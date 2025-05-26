@@ -19,15 +19,10 @@
     "modules-center": [],
     "modules-right": [
         "custom/music",
-        "cpu",
-        "temperature",
-        "memory",
-        "disk",
         "tray",
         "pulseaudio",
-        "network",
         "battery",
-        "hyprland/language",
-        "clock"
+        "clock",
+        "custom/power"
     ]
 }

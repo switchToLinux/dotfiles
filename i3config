@@ -49,39 +49,29 @@ function redr_line()   { printf "\033[0;31;7m$@\033[0m\n" ; }
 function green_line()  { printf "\033[0;32;1m$@\033[0m\n" ; }
 function greenr_line() { printf "\033[0;32;7m$@\033[0m\n" ; }
 
-line_feed="+--------------------------------------------------------------------------------+"
 
 # 临时存储代码、下载文件目录
 tmp_dir=/tmp
 item_index=0   # 记录菜单选项序号
 item_line_count=2   # 每行显示菜单数量
 ILEN=40   # 单个选项长度
-MLEN=$((${ILEN} * ${item_line_count}))   # 单行最大长度
-
-
-#### 检测当前终端支持色彩
-function check_term() {
-	# 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
-    if [[ "`tput colors`" -ge "256" ]] ; then
-        echo "支持 256color TERM终端"
-    else
-        export TERM=xterm
-        export COLORTERM=truecolor
-    fi
-    echo "当前终端类型: $TERM"
-    echo "当前终端色彩: $COLORTERM"
-	#echo "提示: 8bit 仅支持8种色彩, truecolor/24bit 支持更多色彩"
+MLEN=$(( (${ILEN}+1) * ${item_line_count}))   # 单行最大长度
+print_feed() {
+    for i in $(seq 1 $item_line_count) ; do
+        printf "+%${ILEN}s" | tr ' ' '-'
+    done
+    printf "+\n"
 }
 
-function menu_line() { let rlen="$item_line_count * $ILEN + 1" ; echo -en "|${BRB} $@ $NC" ; tput hpa $rlen ; echo "|" ; }
-function menu_head() { echo $line_feed ;   menu_line "$@" ; echo $line_feed ; }
+function menu_line() { echo -en "|${BRB} $@ $NC" ; tput hpa $MLEN ; echo "|" ; }
+function menu_head() { print_feed;   menu_line "$@" ; print_feed; }
 # 一行可以有 item_line_count 个菜单选项
-function menu_item() { let item_index=$item_index+1 ; n=$1 ; shift ; let rlen="$item_index * $ILEN + 1" ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; [[ "$item_index" == "$item_line_count" ]] && echo "|" && item_index=0 ; }
+function menu_item() { let item_index=$item_index+1 ; n=$1 ; shift ; let rlen="$item_index * $ILEN + 1" ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; [[ "$item_index" == "$item_line_count" ]] && echo " |" && item_index=0 ; }
 # 输出单行长菜单选项,长度有限制
-function menu_iteml() { let rlen="$item_line_count * $ILEN + 1" ; n=$1 ; shift ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $rlen ; echo "|" ; }
+function menu_iteml() { n=$1 ; shift ; echo -en "|  $BG ${n} $NC $@" ; tput hpa $MLEN ; echo "|" ; }
 # 用于输入长信息(非菜单选项),不限制结尾长度
-function menu_info() { n=$1 ; shift ; echo -e "|  $BG ${n} $NC $@" ; }
-function menu_tail() { [[ "$item_index" != "0" ]] && echo "|" ; echo $line_feed ; item_index=0 ; }
+function menu_info() { echo -en "| $@" ; tput hpa $MLEN ; echo "|" ; }
+function menu_tail() { [[ "$item_index" != "0" ]] && echo "|" ; print_feed; item_index=0 ; }
 
 # 日志记录
 log_file="/tmp/i3config.log"
@@ -90,12 +80,26 @@ function output_log() { if [ "$OUTPUTLOG" = "yes" ] ; then  output_msg $@ | tee 
 function loginfo() { output_log "INFO" $@  ; }
 function logerr()  { output_log "ERROR" $@ ; }
 
+
+#### 检测当前终端支持色彩
+function check_term() {
+	# 指定 TERM ，避免对齐问题(已知某些rxvt-unicode终端版本存在对齐问题)
+    if [[ "`tput colors`" -ge "256" ]] ; then
+        menu_info "支持 256color TERM终端"
+    else
+        export TERM=xterm
+        export COLORTERM=truecolor
+    fi
+    menu_info 终端类型: $TERM
+    menu_info 终端色彩: $COLORTERM
+}
+
 ################################################################
 #  文本信息设定
 
 # 欢迎和再见提示信息
-WELCOME="^_^你笑起来真好看!像春天的花一样!"
-SEE_YOU="^_^出去晒晒太阳吧!多运动才更健康!"
+WELCOME="^_^Have a good day!"
+SEE_YOU="^_^Do not have a good day! Have a great day!"
 
 READ_TIMEOUT=30   # read timeout seconds
 
@@ -118,7 +122,7 @@ function check_root() { [[ "`uid -u`" = "0" ]]  && ! prompt "提示:确认在roo
 
 function check_basic() { # 基础依赖命令检测与安装
     if command -v curl >/dev/null && command -v git >/dev/null  ; then
-        echo "curl and git command are available"
+        echo "curl and git command are available" >/dev/null
     else
         command -v apt-get >/dev/null 2>&1 && sudo apt-get install   -y curl git
         command -v dnf     >/dev/null 2>&1 && sudo dnf install       -y curl git
@@ -127,8 +131,9 @@ function check_basic() { # 基础依赖命令检测与安装
     fi
     # Anaconda3 环境可能导致编译失败.
     # 如果不是使用 conda init 方式设置环境，可能取消激活操作会失败
-    anaconda -V >/dev/null 2>&1 && echo -e "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`command -v python3`${NC}" && echo "检测到您使用了 anaconda 环境，这可能导致编译安装失败, 本脚本会关闭Anaconda环境" && conda deactivate
-    echo -e "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`command -v python3`${NC}"
+    #anaconda -V >/dev/null 2>&1 && menu_info "python3 version: ${BRB}`python3 --version` ${NC},path: ${BRB}`command -v python3`${NC}" && menu_info "检测到 anaconda 环境，这可能导致编译安装失败, 本脚本关闭Anaconda环境" && conda deactivate >/dev/null 2>&1
+    anaconda -V >/dev/null 2>&1 && conda deactivate >/dev/null 2>&1
+    command -v python3 >/dev/null && menu_info "python3 version: ${BRB}`python3 --version`${NC} ,path: ${BRB}`command -v python3`${NC}"
 }
 
 # 创建软链接或重命名目录

@@ -1,0 +1,118 @@
+/* Keyframes */
+
+@keyframes blink-critical {
+    to {
+        /*color: @white;*/
+        background-color: @critical;
+    }
+}
+
+/* Reset all styles */
+* {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    margin: 0;
+    box-shadow: none;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+    font-size: 18pt;
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-weight: bold;
+}
+
+/*自动根据配置引入正确的颜色搭配方案*/
+@import "../waybar/color.css";
+
+/* 引入 通用的样式 */
+@import "./styles/com_style.css";
+
+/* 自动生成的颜色配置方案 */
+@import "../waybar/styles/autogen_color.css";
+
+/* The whole bar */
+#waybar {
+    background-color: transparent;
+}
+
+/* Each module */
+#battery,
+#clock,
+#cpu,
+#language,
+#memory,
+#mode,
+#network,
+#pulseaudio,
+#temperature,
+#tray,
+#backlight,
+#idle_inhibitor,
+#disk,
+#user,
+#workspaces button,
+#mpd,
+#mpris,
+#taskbar {
+    padding: 0pt 8pt;
+    font-size: 18pt;
+}
+
+#taskbar button,
+#custom-power,
+#custom-logo,
+#custom-cliphist,
+#custom-tools,
+#custom-media,
+#custom-drawer,
+#custom-recoder,
+#custom-hyprshade,
+#custom-nope,
+#custom-expand {
+    padding: 0pt 12pt;
+    font-size: 20pt;
+}
+
+#custom-arrow1,
+#custom-arrow2,
+#custom-arrow3,
+#custom-arrow4,
+#custom-arrow5,
+#custom-arrow6,
+#custom-arrow7,
+#custom-arrow8,
+#custom-arrow9,
+#custom-arrow10,
+#custom-arrow11,
+#custom-arrow12,
+#custom-arrow13,
+#custom-arrow14,
+#custom-arrow15,
+#custom-arrow16,
+#custom-arrow17,
+#custom-arrow18,
+#custom-arrow19 {
+    font-size: 20.58pt;
+}
+
+#workspaces button {
+    padding: 0pt 12pt;
+    font-size: 20pt;
+}
+#workspaces button.active {
+    border-radius: 16pt;
+    padding: 0pt 16pt;
+    transition: all.3s ease;
+}
+
+#waylyrics {
+    font-size: 10pt;
+}
+
+#waylyrics.playing {
+    font-size: 14pt;
+}
+
+#waylyrics.paused {
+    font-size: 10pt;
+}

@@ -1,0 +1,24 @@
+/* background color schema , 基础背景色搭配 */
+@define-color color0 #41495d;
+@define-color color1 #1a5665;
+@define-color color2 #2f4552;
+@define-color color3 #19603f;
+@define-color color4 #33658A;
+@define-color color5 #26a269;
+@define-color color6 #c64600;
+@define-color color7 #613583;
+@define-color color8 #a51d2d;
+@define-color color9 #4a0000;
+
+/* foreground color schema , 前景色用途，避免与 color0-9重复 */
+@define-color color10 #ffffff;
+@define-color color11 #2ec27e;
+
+/* used by module color schema */
+@define-color foreground @color10;
+@define-color background @color0;
+@define-color focused @color11;
+@define-color cursor @color0;
+@define-color urgent @color8;
+@define-color critical @color2;
+@define-color warning @color6;
