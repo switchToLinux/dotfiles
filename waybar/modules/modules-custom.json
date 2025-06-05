@@ -28,9 +28,15 @@
         "max-length": 15
     },
     "cffi/lyrics": {
-        "module_path": "/apps/libs/libwaylyrics.so",
-        "id": "waylyrics",
+        "module_path": "/home/zioer/.config/waybar/cffi/libwaybar_cffi_lyrics.so",
+        "id": "waybar_cffi_lyrics",
+        "cache_dir": "~/.cache/libwaybar_cffi_lyrics",
         "interval": 1,
+        "format": "《{title}》- {artist}: {lyrics}",
+        "max-length": 80,
+        "log_level": 2,
+        "lyrics-title-max-length": 30,
+        "lyrics-max-duration": 300,
         "actions": {
             "on-click": "toggle",
             "on-click-right": "loop",
@@ -38,8 +44,6 @@
             "on-scroll-up": "prev",
             "on-scroll-down": "next"
         },
-        "tooltip": true,
-        "tooltip-format": "mpris歌词显示\n左键: 暂停/播放\n右键: 暂停/播放\n中键: 停止\n下滚: 下一首\n上滚: 上一首",
         "dest": "mpris"
     },
     "custom/wifi": {

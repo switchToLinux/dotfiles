@@ -26,6 +26,7 @@
         },
         "modules": [
             "custom/media",
+            "cava",
             "custom/music",
             "pulseaudio"
         ]
@@ -60,6 +61,32 @@
             "custom/hyprshade",
             "custom/showmethekey",
             "tray"
+        ]
+    },
+    "group/taskbar": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "taskbar-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/tools",
+            "wlr/taskbar"
+        ]
+    },
+    "group/lyrics": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "lyrics-info",
+            "click-to-reveal": true,
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/media",
+            "cffi/lyrics"
         ]
     }
 }

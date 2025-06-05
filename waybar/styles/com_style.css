@@ -86,21 +86,21 @@
 }
 
 /*cffi实现的歌词显示标签 */
-#waylyrics {
+#waybar_cffi_lyrics {
     color: @foreground;
     background-color: transparent;
     opacity: 0.5;
     transition: all 0.5s ease;
 }
 
-#waylyrics.playing {
-    color: @urgent;
+#waybar_cffi_lyrics.playing {
+    /* color: @urgent; */
     opacity: 1;
     background-color: transparent;
     transition: all 0.5s ease;
 }
-#waylyrics.paused {
-    color: @warning;
+#waybar_cffi_lyrics.paused {
+    /* color: @warning; */
     opacity: 0.5;
 }
 

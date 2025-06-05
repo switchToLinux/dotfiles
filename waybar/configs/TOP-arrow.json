@@ -9,21 +9,22 @@
     "position": "top",
     "modules-left": [
         "custom/logo",
-        "custom/arrow14",
+        "custom/arrow11",
         "hyprland/workspaces",
-        "custom/arrow10",
-        "wlr/taskbar",
-        "custom/arrow11"
+        "custom/arrow12",
+        "group/taskbar",
+        "custom/arrow13",
+        "group/lyrics",
+        "custom/arrow17"
     ],
     "modules-center": [
-        "cffi/lyrics"
     ],
     "modules-right": [
-        "custom/arrow9",
-        "group/media",
         "custom/arrow4",
+        "group/media",
+        "custom/arrow3",
         "group/tools",
-        "custom/arrow8",
+        "custom/arrow2",
         "clock",
         "custom/arrow1",
         "custom/power"

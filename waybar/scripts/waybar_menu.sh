@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd $HOME
 WAYBAR_HOME="$HOME/.config/waybar"
 
 # waybar 操作菜单
@@ -33,10 +34,9 @@ esac
 
 # 重新加载 Waybar
 if pidof waybar >/dev/null 2>&1; then
-    killall -SIGUSR2 waybar
-else
-    nohup waybar >/dev/null 2>&1 &
+    killall waybar
 fi
 
+hyprctl dispatch exec waybar
 
 

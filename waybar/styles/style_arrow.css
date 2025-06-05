@@ -105,14 +105,14 @@
     transition: all.3s ease;
 }
 
-#waylyrics {
+#waybar_cffi_lyrics {
     font-size: 10pt;
 }
 
-#waylyrics.playing {
+#waybar_cffi_lyrics.playing {
     font-size: 14pt;
 }
 
-#waylyrics.paused {
+#waybar_cffi_lyrics.paused {
     font-size: 10pt;
 }
